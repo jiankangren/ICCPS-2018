@@ -351,10 +351,10 @@
 \newcommand\JL[1]{$\diamondsuit$\footnote{MH: #1}}
 \newcommand\ME[1]{$\spadesuit$\footnote{ME: #1}}
 
-\renewcommand{\algorithmicrequire}{\textbf{Input:}}
-\renewcommand{\algorithmicensure}{\textbf{Output:}}
-\newcommand{\algorithmicbreak}{\textbf{break}}
-\newcommand{\BREAK}{\STATE \algorithmicbreak}
+%\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+%\renewcommand{\algorithmicensure}{\textbf{Output:}}
+%\newcommand{\algorithmicbreak}{\textbf{break}}
+%\newcommand{\BREAK}{\STATE \algorithmicbreak}
 
 %\renewcommand{\baselinestretch}{0.95}
 
@@ -417,7 +417,26 @@ The idea of check-pointing and recovery has been applied to many computing syste
 
 \section{Preliminaries}\label{sec:Preliminaries}
 \subsection{Markov Decision Process}
-
+A finite state Markov Decision Process (MDP) \cite{puterman2014markov} consists of a tuple $(S,A,T,R,\gamma)$ where:
+\begin{itemize}
+    \item The set $S$ is the set of all the states.
+    \item The set $A$ is the set of all possible actions.
+    \item The function $T : S\times A\times S \mapsto [0,1]$ is the transition probabilities function. $T(s,a,s')$ is the probability that moving to state $s'$ from state $s$ after action $a$ is taken.
+    \item The reward function $R$ can be a function of the state only $R(s)$, a function of states and actions $R(s,a)$, or a function of the states, actions, and the next states $R(s,a,s')$.
+    \item The discount factor $\gamma$ is the factor that the reward function gets discounted with over time.
+\end{itemize}
+To solve and MDP problem, we are interested in finding an optimal stationary policy $\pi^*: S \mapsto A$ that maximizes the expected value of the discounted future rewards.
+In order to find $\pi^*$, we need to define a value function for all state $s \in S$ given a reward function $R(s)$ and a policy $\pi$ as follows:
+\[ V^\pi(s,R) = R(s) + \sum_{s'}^{}\gamma\,T(s,\pi(s),s')\,V^\pi(s') \]
+The value function of state $s$ is equal to the reward received in state $s$ plus the sum of the discounted expected value function for each neighbor state $s'$ when we take actions according to policy $\pi$.
+We need also to define a function that evaluates the value of taking action $a$ for each state $s$ which is called the Q-function.
+\[Q^\pi(s,a,R) = R(s) + \sum_{s'}{} \gamma\,T(s,a,s')\,V^\pi(s') \]
+Then, a policy $\pi$ is optimal iff, for each state $s \in S$:
+\[ \pi(s) = \arg\!\max_{a\in A} Q^\pi(s,a,R)\]
+Clearly, the optimal policy $\pi^*$ corresponds to a state value function $V^*$ and a state-action value function $Q^*$.
+\subsection{Inverse Reinforcement Learning}
+In Inverse Reinforcement Learning (IRL), we consider an agent acting optimally or sub-optimally in an environment; or in MDP terms, the agent is following an optimal or sub-optimal policy $\pi^a(s)$. The policy of the agent $\pi^a(s)$ can be observed as a set of state-action pairs $\mathcal{O} = \{(s_1,a1),(s_2,a_2), ...,(s_N,a_N)\}$. The goal of IRL is to infer the reward function $R(s)$ that is responsible for generating these observations.
+\footnote{TODO: Talk about that it is an ill-posed problem ... And previous works made assumptions about the Reward function to solve this problem}
 \section{Problem Statement}\label{sec:problem}
 We consider an autonomous vehicle (AV) performing a navigation task to a desired destination. The AV has a set of sensors $\mathcal{S}$ where $|\mathcal{S}|=N$, $N$ is the number of AV sensors. A malicious attacker can spoof up a subset of sensors $\mathcal{S'}$ where $\mathcal{S'} \subset \mathcal{S}$, $|\mathcal{S'}| < N$. The goal of the attacker is to drive the AV towards a hostile destination. The attack begins at time $t_1$. The attack hides within the noise profiles of the AV sensors for a time period until it gets detected at time $t_2$.
 We are interested in solving the following problem:
@@ -431,34 +450,36 @@ We are interested in:
 \end{enumerate}
 
 \section{Attacker Intention Inference}\label{sec:intpredic}
-We propose to cast Problem 1 an Inverse Reinforcement Learning problem. In this problem, we want to infer the reward function the attacker is trying to maximize given a set of observations that are constructed by the attack vectors over time. The algorithm we propose infers the goal of the attacker by leveraging Bayesian Inverse Reinforcement Learning techniques (BIRL)\cite{Ramachandran2007}. In BIRL, the inference of the reward function posterior $Pr(R|O)$ is a function of the reward function prior $Pr(R)$ and the likelihood of the observations $Pr(O|R)$ as follows:
+We propose to cast Problem 1 an Inverse Reinforcement Learning problem. In this problem, we consider the compromised AV under attack acts as an optimal/sub-optimal agent who's goal is to reach the hostile destination $g_T$. The reward function that this agent is maximizing represents the intention of the attacker. In other words, we want to infer the intention of the attacker by inferring the reward function $R(s)$ the AV is trying to maximize given a set of observations. The algorithm we propose infers the reward function by leveraging Bayesian Inverse Reinforcement Learning techniques (BIRL)\cite{Ramachandran2007}. In BIRL, the inference of the reward function posterior $Pr(R|O)$ is a function of the reward function prior $Pr(R)$ and the likelihood of the observations $Pr(O|R)$ as follows:
 \[ 
     Pr(R|O) = \frac{Pr(O|R)Pr(R)}{Pr(O)}
 \]
-Where, $Pr(O)$ is the probability distribution of $O$ over the entire space of reward function $R$. $Pr(O)$ is hard to compute as it requires performing multiple integral calculations which is not feasible to compute analytically. To calculate the posterior distribution while avoiding calculating the normalization constant $Pr(O)$, we use the well-known MCMC sampling algorithm. The output of MCMC is an estimate of the distribution of the posterior $Pr(\tilde{R}|O)$. As this is an estimation problem, we are interested reporting the value of $R$ that minimizes the expected Lease Square Error (LSE) of the estimate $E[(R-\tilde{R})^2]$. It is proven in \cite{Ramachandran2007} that the mean of the estimated posterior distribution is the optimal estimator in that case.
+Where, $Pr(O)$ is the probability distribution of $O$ over the entire space of reward function $R$. The normalization constant $Pr(O)$ is usually hard to compute as it requires performing multiple integral calculations which is usually not feasible to compute analytically. To estimate the posterior distribution while avoiding calculating $Pr(O)$, we use the well-known MCMC sampling algorithm. The output of MCMC is an estimate of the distribution of the posterior $Pr(\tilde{R}|O)$. As this is an estimation problem, we are interested reporting the value of $R$ that minimizes the expected Lease Square Error (LSE) of the estimate $E[(R-\tilde{R})^2]$. It is proven in \cite{Ramachandran2007} that the mean of the estimated posterior distribution is the optimal estimator in that case.
 
 For the prior distribution, we define the prior of the attacker's reward function $R_g(s)$ for each possible goal $g \in \mathcal{G}$ to have a positive reward at the attacker's desired goal and zero elsewhere. 
 
   \[
     R_g(s)=\left\{
                 \begin{array}{ll}
-                  c, s\in \mathcal{G}\\
-                  0, s\notin \mathcal{G}
+                  c\hspace{2em} s\in \mathcal{G}\\
+                  0\hspace{2em} s\notin \mathcal{G}
                 \end{array}
               \right.
   \]
 Where $c$ is a positive constant.
 
 The second part we need to compute inside MCMC algorithm is the likelihood of the observations.
-In most of the previous work done in BIRL, the likelihood calculations require a forward reinforcement learning step for action comparison. This forward step is computationally expensive and it requires discretization of the state and action spaces which can result in a tremendously sized state space. Instead, we propose to do actions likelihood approximation which doesn't require discretization of the state and action spaces and compute. First, we record the action $a_i$ corresponding to each sensor reading $s_i$ to obtain the necessary set of state-action pairs to perform IRL. Then, to approximate the action likelihood for a goal $g$ at state $s_i$, we compute the difference between action $a_i$ and the action calculated from the controller at state $s_i$ to go to $g$ as follows:
+In most of the previous work done in BIRL, the likelihood of the observations is calculated as follows:
+\[Pr(O|R) = \frac{e^{\alpha\sum_{i}{Q^*(s_i,a_i,R)}}}{\sum_{b\in A}{}e^{\alpha\sum_{i}{}Q^*(s_i,b,R)}}\]
+Where, $\alpha$ is a factor that indicates how much we are confident that the agent is acting optimally. This calculation requires solving MDP problem to compute $Q^*$ for each state-action pairs. This step is computationally expensive and it requires discretization of the state and action spaces which can result in a tremendously sized state space. Inspired by Michini's work in \cite{Michini2013}, we propose to do actions likelihood approximation which doesn't require discretization of the state and action spaces and compute. First, we record the action $a_i$ corresponding to each sensor reading $s_i$ to obtain the necessary set of state-action pairs to perform IRL. Then, to approximate the action likelihood for a goal $g$ at state $s_i$, we compute the difference between action $a_i$ and the action calculated from the controller at state $s_i$ to go to $g$ as follows:
 \[
 P(O_i|R_{g}) = P(a_i|s_i,g) \propto e^{-\alpha \lVert a_i - a_{CL} \rVert_{2}}
 \]
-Where $a_{CL}$ is the action given by the system's closed loop controller to go from state $s_i$ to goal $g_i$, $\alpha$ is a factor that indicates how much we are confident that the attacker is acting optimally.
+Where $a_{CL}$ is the action given by the system's closed loop controller to go from state $s_i$ to goal $g_i$.
 
 In our problem, the attacker is trying to make the AV go to a hostile goal $g_A$, while making the autonomous controller of the AV believe that it is going towards it's original desired goal $g_T$. This means that we can infer from the set of states of the uncompromised sensors $\mathcal{S}_u$ along with the set of actions taken over time that the AV is moving towards one of the hostile goals.
 
-Algorithm 1 uses MCMC sampling technique, for each sensor, and computes the mean of the posterior of having a goal $g$ given the set of observations $\mathcal{O}_i$
+Algorithm 1 uses MCMC sampling technique, for each sensor, and computes the mean of the posterior of having a goal $g$ given the set of observations $\mathcal{O}_i$. It calculates the potential goal $g_M$ for each sensor $i$ by calculating the mean of the posterior distribution $P(g|\mathcal{O}_i)$ that MCMC outputs. Then, it checks whether this goal lies inside the set of hostile goals known a priori. If it is a hostile goal, then we conclude that this is the desired goal of the attacker, $g_T$, and the sensor $i$ is considered to be umcompromised. Otherwise, the sensor is considered to be compromised. \footnote{This part is so messy, because the algorithm is not sound to me till now}
 \begin{algorithm}
     %\SetKwInOut{Input}{Input}
     %\SetKwInOut{Output}{Output}
@@ -476,11 +497,11 @@ Algorithm 1 uses MCMC sampling technique, for each sensor, and computes the mean
             $g_M \leftarrow mean(P(g|\mathcal{O}_i)$)\;
             \eIf{$g_M \in \mathcal{G}$}
               {
-                $g_T$ \leftarrow $g_M$\;
-                $S_i \in \mathcal{S}_u$\;
+                $g_T \leftarrow g_M$\;
+                $z_i \in \mathcal{S}_u$\;
               }
               {
-                $S_i \in \mathcal{S}_c$\;
+                $z_i \in \mathcal{S}_c$\;
               }
         }
     }
