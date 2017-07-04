@@ -169,8 +169,8 @@
 %\usepackage{psfrag}
 %\usepackage{dsfont}
 \usepackage{multirow}
-\usepackage{algorithm}
-\usepackage{algorithmic}
+%\usepackage{algorithm}
+%\usepackage{algorithmic}
 \usepackage{todonotes}
 \usepackage{url}
 \usepackage{hyperref}
@@ -206,9 +206,9 @@
 %\usepackage{subfigure}
 % *** SPECIALIZED LIST PACKAGES ***
 %
-\usepackage{algorithm}
-\usepackage{algorithmic}
-
+%\usepackage{algorithm}
+%\usepackage{algorithmic}
+\usepackage[linesnumbered,ruled]{algorithm2e}
 % algorithmic.sty was written by Peter Williams and Rogerio Brito.
 % This package provides an algorithmic environment fo describing algorithms.
 % You can use the algorithmic environment in-text or within a figure
@@ -329,9 +329,6 @@
 % http://www.ctan.org/pkg/url
 % Basically, \url{my_url_here}.
 
-
-
-
 % *** Do not adjust lengths that control margins, column widths, etc. ***
 % *** Do not use packages that alter fonts (such as pslatex).         ***
 % There should be no need to do such things with IEEEtran.cls V1.6 and later.
@@ -419,42 +416,77 @@ The idea of check-pointing and recovery has been applied to many computing syste
 \end{enumerate}
 
 \section{Preliminaries}\label{sec:Preliminaries}
-MDP - RL - IRL
+\subsection{Markov Decision Process}
+
 \section{Problem Statement}\label{sec:problem}
 We consider an autonomous vehicle (AV) performing a navigation task to a desired destination. The AV has a set of sensors $\mathcal{S}$ where $|\mathcal{S}|=N$, $N$ is the number of AV sensors. A malicious attacker can spoof up a subset of sensors $\mathcal{S'}$ where $\mathcal{S'} \subset \mathcal{S}$, $|\mathcal{S'}| < N$. The goal of the attacker is to drive the AV towards a hostile destination. The attack begins at time $t_1$. The attack hides within the noise profiles of the AV sensors for a time period until it gets detected at time $t_2$.
 We are interested in solving the following problem:
 
-Problem 1 Attacker Intention Inference and AV Recovery: Consider the set $\mathcal{G}$ is the set of states that the AV shall avoid during its task (The set  $\mathcal{G}$ represent obstacles, or regions that are hostile). Consider a super-set of observations $\mathcal{O} = \{\mathcal{O}_1, \mathcal{O}_2, ..., \mathcal{O}_N\}$, where $\mathcal{O}_i = \{(s_1, a_1), (s_2, a_2), ... , (s_{t_2}, a_{t_2}), ... , (s_\infty, a_\infty)\}$ is the infinite set of state-action pairs for each sensor $i$ which includes the history of sensor data recorded starting from the beginning of the navigation task $t = 1$ until the time of the detection of the attack $t = t_2$, and the future sensor data when $t > t_2$. We denote the actual state of the vehicle at time $t$ by $\hat{s}_t$. Consider the case where the attacker's goal is to drive the autonomous vehicle towards a state $g_i$ inside the hostile regions set $\mathcal{G}$.
+Problem 1 Attacker Intention Inference and AV Recovery: Consider the set $\mathcal{G}$ is the set of states that the AV shall avoid during its task (The set  $\mathcal{G}$ represent obstacles, or regions that are hostile). Consider a super-set of observations $\mathcal{O} = \{\mathcal{O}_1, \mathcal{O}_2, ..., \mathcal{O}_N\}$, where $\mathcal{O}_i = \{(s_{i,1}, a_1), (s_{i,2}, a_2), ... , (s_{i,t_2}, a_{t_2}), ... , (s_{i,\infty}, a_\infty)\}$ is the infinite set of state-action pairs for each sensor $i$ which includes the history of sensor data recorded starting from the beginning of the navigation task $t = 1$ until the time of the detection of the attack $t = t_2$, and the future sensor data when $t > t_2$. We denote the actual state of the vehicle at time $t$ by $\hat{s}_t$. Consider the case where the attacker's goal is to drive the autonomous vehicle towards a state $g_A$ inside the hostile regions set $\mathcal{G}$.
 
 We are interested in:
 \begin{enumerate}
-    \item Inferring the intention of the attacker by finding the desired hostile goal $k_i$ and the subset of compromised sensors $\mathcal{S'}$.
+    \item Inferring the intention of the attacker by finding the desired hostile goal $g_A$ and the subset of compromised sensors $\mathcal{S_c}$.
     \item Determining the start time of the attack $t_2$ and the last un-compromised AV state $s_{t_2-1}$ and use this information to recover the actual future states of the AV $\hat{s}_t$.
 \end{enumerate}
 
 \section{Attacker Intention Inference}\label{sec:intpredic}
-To solve Problem 1, we develop an algorithm that leverages Non-Parametric Bayesian Inverse Reinforcement Learning techniques (NBIRL). In BIRL, the inference of the reward function posterior $Pr(R|O)$ is a function of the reward function prior $Pr(R)$ and the likelihood $Pr(O|R)$ as follows:
+We propose to cast Problem 1 an Inverse Reinforcement Learning problem. In this problem, we want to infer the reward function the attacker is trying to maximize given a set of observations that are constructed by the attack vectors over time. The algorithm we propose infers the goal of the attacker by leveraging Bayesian Inverse Reinforcement Learning techniques (BIRL)\cite{Ramachandran2007}. In BIRL, the inference of the reward function posterior $Pr(R|O)$ is a function of the reward function prior $Pr(R)$ and the likelihood of the observations $Pr(O|R)$ as follows:
 \[ 
     Pr(R|O) = \frac{Pr(O|R)Pr(R)}{Pr(O)}
 \]
-Where, $Pr(O)$ is the probability of $O$ over the entire space of reward function $R$. $Pr(O)$ is hard to compute but this can be avoided by using MCMC algorithm.
+Where, $Pr(O)$ is the probability distribution of $O$ over the entire space of reward function $R$. $Pr(O)$ is hard to compute as it requires performing multiple integral calculations which is not feasible to compute analytically. To calculate the posterior distribution while avoiding calculating the normalization constant $Pr(O)$, we use the well-known MCMC sampling algorithm. The output of MCMC is an estimate of the distribution of the posterior $Pr(\tilde{R}|O)$. As this is an estimation problem, we are interested reporting the value of $R$ that minimizes the expected Lease Square Error (LSE) of the estimate $E[(R-\tilde{R})^2]$. It is proven in \cite{Ramachandran2007} that the mean of the estimated posterior distribution is the optimal estimator in that case.
 
-In our case, we define the prior of the attacker's reward function $R_p$ to have a positive reward at the attacker's desired goal and zero elsewhere. 
+For the prior distribution, we define the prior of the attacker's reward function $R_g(s)$ for each possible goal $g \in \mathcal{G}$ to have a positive reward at the attacker's desired goal and zero elsewhere. 
 
   \[
-    R_p(s)=\left\{
+    R_g(s)=\left\{
                 \begin{array}{ll}
-                  0, s\in \mathcal{G}\\
-                  c, s\notin \mathcal{G}
+                  c, s\in \mathcal{G}\\
+                  0, s\notin \mathcal{G}
                 \end{array}
               \right.
   \]
 Where $c$ is a positive constant.
-In most of the previous work done in BIRL, the evidence likelihood calculations requires a forward reinforcement learning step for action comparison. This forward step is computationally expensive and it requires discretization of the state and action spaces which can result in a tremendously sized state space. Instead, we propose to do actions likelihood approximation which doesn't require discretization of the state and action spaces and compute. First, we record the action $a_i$ corresponding to each sensor reading $s_i$ to obtain the necessary set of state-action pairs to perform IRL. Then, to approximate the action likelihood for a goal $g_i$ at state $s_i$, we compute the difference between action $a_i$ and the action calculated from the controller at state $s_i$ to go to $g_i$ as follows:
+
+The second part we need to compute inside MCMC algorithm is the likelihood of the observations.
+In most of the previous work done in BIRL, the likelihood calculations require a forward reinforcement learning step for action comparison. This forward step is computationally expensive and it requires discretization of the state and action spaces which can result in a tremendously sized state space. Instead, we propose to do actions likelihood approximation which doesn't require discretization of the state and action spaces and compute. First, we record the action $a_i$ corresponding to each sensor reading $s_i$ to obtain the necessary set of state-action pairs to perform IRL. Then, to approximate the action likelihood for a goal $g$ at state $s_i$, we compute the difference between action $a_i$ and the action calculated from the controller at state $s_i$ to go to $g$ as follows:
 \[
-P(O_i|R_{g_i}) = P(a_i|s_i,g_i) \propto e^{-\alpha \lVert a_i - a_{CL} \rVert_{2}}
+P(O_i|R_{g}) = P(a_i|s_i,g) \propto e^{-\alpha \lVert a_i - a_{CL} \rVert_{2}}
 \]
 Where $a_{CL}$ is the action given by the system's closed loop controller to go from state $s_i$ to goal $g_i$, $\alpha$ is a factor that indicates how much we are confident that the attacker is acting optimally.
+
+In our problem, the attacker is trying to make the AV go to a hostile goal $g_A$, while making the autonomous controller of the AV believe that it is going towards it's original desired goal $g_T$. This means that we can infer from the set of states of the uncompromised sensors $\mathcal{S}_u$ along with the set of actions taken over time that the AV is moving towards one of the hostile goals.
+
+Algorithm 1 uses MCMC sampling technique, for each sensor, and computes the mean of the posterior of having a goal $g$ given the set of observations $\mathcal{O}_i$
+\begin{algorithm}
+    %\SetKwInOut{Input}{Input}
+    %\SetKwInOut{Output}{Output}
+    \underline{AIP} ($\mathcal{O}, \mathcal{G}$)\;
+    %\Input{Two nonnegative integers $a$ and $b$}
+    %\Output{$\gcd(a,b)$}
+    \ForEach {$\mathcal{O}_i \subset \mathcal{O} $}
+    {
+        \While{iteration $t < t_{max}$}{
+            \ForEach{Observation $(s_{i,k}, a_k) \in \mathcal{O}_i$}
+            { 
+                $P(a_k|s_{i,k},g) \leftarrow  e^{-\alpha \lVert a_k - a_{CL} \rVert_{2}}$\;
+                $P(g|(s_{i,k}, a_k)) \leftarrow  P(a_k|s_{i,k},g) P(g)$\;
+            }
+            $g_M \leftarrow mean(P(g|\mathcal{O}_i)$)\;
+            \eIf{$g_M \in \mathcal{G}$}
+              {
+                $g_T$ \leftarrow $g_M$\;
+                $S_i \in \mathcal{S}_u$\;
+              }
+              {
+                $S_i \in \mathcal{S}_c$\;
+              }
+        }
+    }
+    \caption{Attacker Intention Prediction}
+\end{algorithm}
+
 \section{Conclusions \& Future Work}\label{sec:conclusion}
 
 
