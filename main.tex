@@ -451,62 +451,67 @@ Determining the start time of the attack $t_1$ and the last un-compromised AV st
 
 \section{Attacker Intention Inference}\label{sec:intpredic}
 We propose to cast Problem 1 an Inverse Reinforcement Learning problem. In this problem, we consider the compromised AV under attack acts as an optimal/sub-optimal agent who's goal is to reach the hostile destination $g_A$. The reward function that this agent is maximizing represents the intention of the attacker. In other words, we want to infer the intention of the attacker by inferring the reward function $R(s)$ the AV is trying to maximize given a set of observations. The algorithm we propose infers the reward function by leveraging Bayesian Inverse Reinforcement Learning techniques (BIRL)\cite{Ramachandran2007}. In BIRL, the inference of the reward function posterior $Pr(R|O)$ is a function of the reward function prior $Pr(R)$ and the likelihood of the observations $Pr(O|R)$ as follows:
-\[ 
+\begin{equation} 
     Pr(R|O) = \frac{Pr(O|R)Pr(R)}{Pr(O)}
-\]
+\end{equation}
 Where, $Pr(O)$ is the probability distribution of $O$ over the entire space of reward function $R$. The normalization constant $Pr(O)$ is usually hard to compute as it requires performing multiple integral calculations which is usually not feasible to compute analytically. To estimate the posterior distribution while avoiding calculating $Pr(O)$, we use the well-known MCMC sampling algorithm. The output of MCMC is an estimate of the distribution of the posterior $Pr(\tilde{R}|O)$. As this is an estimation problem, we are interested reporting the value of $R$ that minimizes the expected Lease Square Error (LSE) of the estimate $E[(R-\tilde{R})^2]$. It is proven in \cite{Ramachandran2007} that the mean of the estimated posterior distribution is the optimal estimator in that case.
 
 For the prior distribution, we define the prior of the attacker's reward function $R_g(s)$ for each possible goal $g \in \mathcal{G}$ to have a positive reward at the attacker's desired goal and zero elsewhere. 
 
-  \[
+  \begin{equation}
     R_g(s)=\left\{
                 \begin{array}{ll}
                   c\hspace{2em} s\in \mathcal{G}\\
                   0\hspace{2em} s\notin \mathcal{G}
                 \end{array}
               \right.
-  \]
+  \end{equation}
 Where $c$ is a positive constant.
 
 The second part we need to compute inside MCMC algorithm is the likelihood of the observations.
 In most of the previous work done in BIRL, the likelihood of the observations is calculated as follows:
-\[Pr(O|R) = \frac{e^{\alpha\sum_{i}{Q^*(s_i,a_i,R)}}}{\sum_{b\in A}{}e^{\alpha\sum_{i}{}Q^*(s_i,b,R)}}\]
+\begin{equation}
+Pr(O|R) = \frac{e^{\alpha\sum_{i}{Q^*(s_i,a_i,R)}}}{\sum_{b\in A}{}e^{\alpha\sum_{i}{}Q^*(s_i,b,R)}}
+\end{equation}
 Where, $\alpha$ is a factor that indicates how much we are confident that the agent is acting optimally. This calculation requires solving MDP problem to compute $Q^*$ for each state-action pairs. This step is computationally expensive and it requires discretization of the state and action spaces which can result in a tremendously sized state space. Inspired by Michini's work in \cite{Michini2013}, we propose to do actions likelihood approximation which doesn't require discretization of the state and action spaces and compute. First, we record the action $a_i$ corresponding to each sensor reading $s_i$ to obtain the necessary set of state-action pairs to perform IRL. Then, to approximate the action likelihood for a goal $g$ at state $s_i$, we compute the difference between action $a_i$ and the action calculated from the controller at state $s_i$ to go to $g$ as follows:
-\[
+\begin{equation}
 P(O_i|R_{g}) = P(a_i|s_i,g) \propto e^{-\alpha \lVert a_i - a_{CL} \rVert_{2}}
-\]
+\end{equation}
 Where $a_{CL}$ is the action given by the system's closed loop controller to go from state $s_i$ to goal $g_i$.
 
 In our problem, the attacker is trying to make the AV go to a hostile goal $g_A$, while making the autonomous controller of the AV believe that it is going towards it's original desired goal $g_T$. This means that we can infer from the set of states of the uncompromised sensors $\mathcal{S}_u$ along with the set of actions taken over time that the AV is moving towards one of the hostile goals.
 
-Algorithm 1 uses MCMC sampling technique, for each sensor, and computes the mean of the posterior of having a goal $g$ given the set of observations $\mathcal{O}_i$. It calculates the potential goal $g_M$ for each sensor $z_i$ by calculating the mean of the posterior distribution $P(g|\mathcal{O}_i)$ that MCMC outputs. Then, it checks whether this goal lies inside the set of hostile goals known a priori. If it is a hostile goal, then we conclude that this is the desired goal of the attacker, $g_T$, and the sensor $z_i$ is considered to be umcompromised. Otherwise, the sensor is considered to be compromised. \footnote{This part is so messy, because the algorithm is not sound to me till now}
-\begin{algorithm}
-    %\SetKwInOut{Input}{Input}
-    %\SetKwInOut{Output}{Output}
-    \underline{AIP} ($\mathcal{O}, \mathcal{G}$)\;
-    %\Input{Two nonnegative integers $a$ and $b$}
-    %\Output{$\gcd(a,b)$}
-    \ForEach {$\mathcal{O}_i \subset \mathcal{O} $}
-    {
-        \While{iteration $t < t_{max}$}{
-            \ForEach{Observation $(s_{i,k}, a_k) \in \mathcal{O}_i$}
-            { 
-                $P(a_k|s_{i,k},g) \leftarrow  e^{-\alpha \lVert a_k - a_{CL} \rVert_{2}}$\;
-                $P(g|(s_{i,k}, a_k)) \leftarrow  P(a_k|s_{i,k},g) P(g)$\;
-            }
-            $g_M \leftarrow mean(P(g|\mathcal{O}_i)$)\;
-            \eIf{$g_M \in \mathcal{G}$}
-              {
-                $g_T \leftarrow g_M$\;
-                $z_i \in \mathcal{S}_u$\;
-              }
-              {
-                $z_i \in \mathcal{S}_c$\;
-              }
-        }
-    }
-    \caption{Attacker Intention Prediction}
-\end{algorithm}
+The idea is, for each time step $t$ we run MCMC algorithm to infer the hostile goal. We sample a goal $g$ from the set of goals $\mathbb{G}$ and then for each sensor $i$, we compute the posterior of having the goal $g$ as the hostile goal $g_A$ given the set of observations $\mathcal{O}_{i,t_2:t}$ as follows:
+\begin{equation} Pr(g=G_A|\mathcal{O}_{i,t_2:t}) \propto Pr(\mathcal{O}_{i,t_2:t} | g = G_A) Pr(g=G_A|\mathcal{O}_{i,t_2:t-1})
+\end{equation}
+The first term on the right hand side of the equation is the likelihood of the observations given that the goal $g$ is the hostile goal $g_A$ which can be computed according to (3) or (4). The second term is the prior which is updated from the posterior calculated at the previous time $t-1$. 
+%\begin{algorithm}
+%    %\SetKwInOut{Input}{Input}
+%    %\SetKwInOut{Output}{Output}
+%    \underline{AIP} ($\mathcal{O}, \mathcal{G}$)\;
+%    %\Input{Two nonnegative integers $a$ and $b$}
+%    %\Output{$\gcd(a,b)$}
+%    \ForEach {$\mathcal{O}_i \subset \mathcal{O} $}
+%    {
+%        \While{iteration $t < t_{max}$}{
+%            \ForEach{Observation $(s_{i,k}, a_k) \in \mathcal{O}_i$}
+%            { 
+%                $P(a_k|s_{i,k},g) \leftarrow  e^{-\alpha \lVert a_k - a_{CL} %\rVert_{2}}$\;
+%                $P(g|(s_{i,k}, a_k)) \leftarrow  P(a_k|s_{i,k},g) P(g)$\;
+%            }
+%            $g_M \leftarrow mean(P(g|\mathcal{O}_i)$)\;
+%            \eIf{$g_M \in \mathcal{G}$}
+%              {
+%                $g_T \leftarrow g_M$\;
+%                $z_i \in \mathcal{S}_u$\;
+%              }
+%              {
+%                $z_i \in \mathcal{S}_c$\;
+%              }
+%        }
+%    }
+%    \caption{Attacker Intention Prediction}
+%\end{algorithm}
 
 \section{Conclusions \& Future Work}\label{sec:conclusion}
 
