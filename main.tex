@@ -484,7 +484,7 @@ In our problem, the attacker is trying to make the AV go to a hostile goal $g_A$
 The idea is, for each time step $t$ we run MCMC algorithm to infer the hostile goal. We sample a goal $g$ from the set of goals $\mathbb{G}$ and then for each sensor $i$, we compute the posterior of having the goal $g$ as the hostile goal $g_A$ given the set of observations $\mathcal{O}_{i,t_2:t}$ as follows:
 \begin{equation} Pr(g=G_A|\mathcal{O}_{i,t_2:t}) \propto Pr(\mathcal{O}_{i,t_2:t} | g = G_A) Pr(g=G_A|\mathcal{O}_{i,t_2:t-1})
 \end{equation}
-The first term on the right hand side of the equation is the likelihood of the observations given that the goal $g$ is the hostile goal $g_A$ which can be computed according to (3) or (4). The second term is the prior which is updated from the posterior calculated at the previous time $t-1$. 
+The first term on the right hand side of the equation is the likelihood of the observations given that the goal $g$ is the hostile goal $g_A$ which can be computed according to (3) or can be approximated by (4). The second term is the prior which is updated from the posterior calculated at the previous time $t-1$. 
 %\begin{algorithm}
 %    %\SetKwInOut{Input}{Input}
 %    %\SetKwInOut{Output}{Output}
