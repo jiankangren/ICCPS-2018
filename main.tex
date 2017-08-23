@@ -203,6 +203,7 @@
 
 %\usepackage{subcaption}
 \usepackage{graphicx}
+\graphicspath{ {fig/} }
 %\usepackage{subfigure}
 % *** SPECIALIZED LIST PACKAGES ***
 %
@@ -400,7 +401,7 @@ An example of this type of attacks is the hijacking of the American military dro
 
 Various efforts have been done by members of the research society to maintain the safety of a cyber-physical system by designing systems that are resilient against attacks on sensors. A major contribution was done in solving the problem of secure and resilient state estimation of a cyber-physical system. The results presented in cite show that by using redundant sensors in a system, and leveraging the knowledge of the system model, the secure state estimators are able to correctly estimate the state of the system if the number of attacked sensors is less than half of the number of the sensors.
 
-After the resilient state estimator detects an attack, the data coming from the attacked sensors is removed from the calculations to estimate the state of the system. It doesn't determine whether the attacker was trying to crash the autonomous vehicle into an obstacle or trying to send it to a desired dangerous location. Inferring the intention of the attacker can important for several reasons: In some cases, the identity of the attacker can be revealed which is an important information especially in military applications. Also, inferring the intention of the attacker can be used to predict the future attack vectors on the compromised sensors and therefore, the attack vector can be removed and the compromised sensors can be reused. Another limitation the resilient state estimator has is that considering an attacker that can compromise more than half of the sensors, the resilient state estimator fails to detect which sensors are being compromised and which are not. This urges the need to develop an algorithm that can determine which sensors are being compromised if the system has at least one sensor not being compromised.\footnote{Show the need of attack intention prediction}
+When resilient state estimator detects an attack, it removes the spoofed of the sensors under attack from the calculations to estimate the state of the system correctly. It doesn't determine whether the attacker was trying to crash the autonomous vehicle into an obstacle or trying to send it to a desired dangerous location. Inferring the intention of the attacker can important for several reasons: In some cases, the identity of the attacker can be revealed which is an important information especially in military applications. Also, inferring the intention of the attacker can be used to predict the future attack vectors on the compromised sensors and therefore, the attack vector can be removed and the compromised sensors can be reused. Another limitation the resilient state estimator has is that considering an attacker that can compromise more than half of the sensors, the resilient state estimator fails to detect which sensors are being compromised and which are not. This urges the need to develop an algorithm that can determine which sensors are being compromised if the system has at least one sensor not being compromised.\footnote{Show the need of attack intention prediction}
 
 In this work, we are interested in addressing the aforementioned issues. We consider the case where we have an autonomous vehicle performing a navigation task and a malicious attacker who can spoof up till N-1 number of sensors. The attacker performs a coordinated attack to send the autonomous vehicle to a desired destination instead of its original destination. The attacker's desired destination can be a hostile territory, or an obstacle the robot will crash by hitting it.
 
@@ -433,15 +434,23 @@ We need also to define a function that evaluates the value of taking action $a$ 
 \[Q^\pi(s,a,R) = R(s) + \sum_{s'}{} \gamma\,T(s,a,s')\,V^\pi(s') \]
 Then, a policy $\pi$ is optimal iff, for each state $s \in S$:
 \[ \pi(s) = \arg\!\max_{a\in A} Q^\pi(s,a,R)\]
-Clearly, the optimal policy $\pi^*$ corresponds to a state value function $V^*$ and a state-action value function $Q^*$.
+The optimal policy $\pi^*$ corresponds to a state value function $V^*$ and a state-action value function $Q^*$.
+
 \subsection{Inverse Reinforcement Learning}
 In Inverse Reinforcement Learning (IRL), we consider an agent acting optimally or sub-optimally in an environment; or in MDP terms, the agent is following an optimal or sub-optimal policy $\pi^a(s)$. The policy of the agent $\pi^a(s)$ can be observed as a set of state-action pairs $\mathcal{O} = \{(s_1,a1),(s_2,a_2), ...,(s_N,a_N)\}$. The goal of IRL is to infer the reward function $R(s)$ that is responsible for generating these observations.
 \footnote{TODO: Talk about that it is an ill-posed problem ... And previous works made assumptions about the Reward function to solve this problem}
+
 \section{Problem Statement}\label{sec:problem}
-We consider an autonomous vehicle (AV) performing a navigation task to a desired destination. The AV has a set of sensors $\mathcal{S}$ where $|\mathcal{S}|=N$, $N$ is the number of AV sensors. A malicious attacker can spoof up a subset of sensors $\mathcal{S'}$ where $\mathcal{S'} \subset \mathcal{S}$, $|\mathcal{S'}| < N$. The goal of the attacker is to drive the AV towards a hostile destination. The attack begins at time $t_1$. The attack hides within the noise profiles of the spoofed AV sensors for a time period until it gets detected at time $t_2$.
+We consider an autonomous vehicle (AV) performing a navigation task to a desired destination. The AV has a set of sensors $\mathcal{S}$ where $|\mathcal{S}|=N$, $N$ is the number of AV sensors. We also consider a malicious attacker that can spoof a subset of sensors $\mathcal{S'}$ where $\mathcal{S'} \subset \mathcal{S}$, $|\mathcal{S'}| < N$. The goal of the attacker is to drive the AV towards a hostile destination while hiding the attack within the noise profiles of the spoofed AV sensors. The attack begins at time $t_1$. The attack stays stealthy until the noise margins of the spoofed sensors don't overlap anymore with the noise margins of the uncompromised ones at $t_2$ as shown in Fig. \ref{fig:sensor_spoofing}. From $t_2$, the AV state estimator can detect that there is an attack or fault that led to this divergence in readings, but it cannot distinguish which sensors are compromised and which are not.
+\begin{figure}[h]
+\caption{Divergence of sensor readings between a compromised and an umcompromised sensor}
+\centering
+\includegraphics[width=0.5\textwidth]{sensor_spoofing}
+ \label{fig:sensor_spoofing}
+\end{figure}
 We are interested in solving the following two problems:
 
-Problem 1 Attacker Intention Inference: Consider the set $\mathcal{G}$ is the set of states that are considered hostile. Consider a super-set of observations $\mathcal{O}_{t_2:t} = \{\mathcal{O}_1, \mathcal{O}_2, ..., \mathcal{O}_N\}$, where $\mathcal{O}_{i,t_2:t} = \{(s_{i,t_2}, a_{t_2}), (s_{i,t_2+1}, a_{t_2+1}), ..., (s_{i,t_2+t}, a_{t_2+t})\}$ is the infinite set of measurement-action pairs for each sensor $i$ which includes the history of sensor data recorded starting from the beginning of the time the attack is detected $t = t_2$ until the time $t$. We assume the attacker's goal is to drive the AV towards a state $g_A \in \mathcal{G}$. Where, $\mathcal{G}$ is the set of all possible hostile goals known a priori. Our goal is that, at each time t, we want to infer the intention of the attacker by estimating the desired hostile goal $g_A$ and hence, determine the subset of compromised sensors $\mathcal{S}_c$.
+Problem 1 Attacker Intention Inference: Consider the set $\mathcal{G}$ is the set of states that are considered hostile. Consider a super-set of observations $\mathcal{O}_{t_2:t} = \{\mathcal{O}_1, \mathcal{O}_2, ..., \mathcal{O}_N\}$, where $\mathcal{O}_{i,t_2:t} = \{(s_{i,t_2}, a_{t_2}), (s_{i,t_2+1}, a_{t_2+1}), ..., (s_{i,t_2+t}, a_{t_2+t})\}$ is the finite set of measurement-action pairs for each sensor $i$ which includes the history of sensor data recorded starting from the beginning of the detection time of the attack $t = t_2$ until the current time $t$. We assume the attacker's goal is to drive the AV towards a hostile goal which is located in a position or a state $g^a \in \mathcal{G}$. Where, $\mathcal{G}$ is the set of all possible hostile goals known a priori. Our goal is to infer, at each time t, the intention of the attacker by estimating their desired hostile goal $g^a$ and determine the subset of compromised sensors $\mathcal{S'}$.
 
 
 
@@ -450,16 +459,12 @@ TO BE MODIFIED
 Determining the start time of the attack $t_1$ and the last un-compromised AV state $s_{t_1-1}$ and use this information to recover the actual state of the AV at time $t$.
 
 \section{Attacker Intention Inference}\label{sec:intpredic}
-We propose to cast Problem 1 an Inverse Reinforcement Learning problem. In this problem, we consider the compromised AV under attack acts as an optimal/sub-optimal agent who's goal is to reach the hostile destination $g_A$. The reward function that this agent is maximizing represents the intention of the attacker. In other words, we want to infer the intention of the attacker by inferring the reward function $R(s)$ the AV is trying to maximize given a set of observations. The algorithm we propose infers the reward function by leveraging Bayesian Inverse Reinforcement Learning techniques (BIRL)\cite{Ramachandran2007}. In BIRL, the inference of the reward function posterior $Pr(R|O)$ is a function of the reward function prior $Pr(R)$ and the likelihood of the observations $Pr(O|R)$ as follows:
-\begin{equation} 
-    Pr(R|O) = \frac{Pr(O|R)Pr(R)}{Pr(O)}
-\end{equation}
-Where, $Pr(O)$ is the probability distribution of $O$ over the entire space of reward function $R$. The normalization constant $Pr(O)$ is usually hard to compute as it requires performing multiple integral calculations which is usually not feasible to compute analytically. To estimate the posterior distribution while avoiding calculating $Pr(O)$, we use the well-known MCMC sampling algorithm. The output of MCMC is an estimate of the distribution of the posterior $Pr(\tilde{R}|O)$. As this is an estimation problem, we are interested reporting the value of $R$ that minimizes the expected Lease Square Error (LSE) of the estimate $E[(R-\tilde{R})^2]$. It is proven in \cite{Ramachandran2007} that the mean of the estimated posterior distribution is the optimal estimator in that case.
+We propose to cast Problem 1 an Inverse Reinforcement Learning problem. In this problem, we consider the compromised AV under attack acts as an agent that moves according to a policy $\pi^a$. The policy $\pi^a$ drives the agents towards the hostile destination $g_A$ as fast as possible while hiding the attack within the sensors noise profiles or the environment disturbance model. At each state $s$, the policy $\pi^a$ is calculated according to:
+\[ \pi^a(s) = \arg\!\max_{a\in A} Q^{\pi^a}(s,a,R^a)\]
 
-For the prior distribution, we define the prior of the attacker's reward function $R_g(s)$ for each possible goal $g \in \mathcal{G}$ to have a positive reward at the attacker's desired goal and zero elsewhere. 
-
+The attacker's reward function can be modelled as follows. 
   \begin{equation}
-    R_g(s)=\left\{
+    R^a(s)=\left\{
                 \begin{array}{ll}
                   c\hspace{2em} s\in \mathcal{G}\\
                   0\hspace{2em} s\notin \mathcal{G}
@@ -467,6 +472,14 @@ For the prior distribution, we define the prior of the attacker's reward functio
               \right.
   \end{equation}
 Where $c$ is a positive constant.
+
+Given the set of observations $\mathcal{O}_{t_2:t}$, the goal is to infer the intention of the attacker by inferring the reward function $R(s)$ the AV is trying to maximize. The algorithm we propose infers the reward function by leveraging Bayesian Inverse Reinforcement Learning techniques (BIRL)\cite{Ramachandran2007}. In BIRL, the inference of the reward function posterior $Pr(R|O)$ is a function of the reward function prior $Pr(R)$ and the likelihood of the observations $Pr(O|R)$ as follows:
+\begin{equation} 
+    Pr(R|O) = \frac{Pr(O|R)Pr(R)}{Pr(O)}
+\end{equation}
+Where, $Pr(O)$ is the probability distribution of $O$ over the entire space of reward function $R$. The normalization constant $Pr(O)$ is usually hard to compute as it requires performing multiple integral calculations which is usually not feasible to compute analytically. To estimate the posterior distribution while avoiding calculating $Pr(O)$, we use the well-known MCMC sampling algorithm. The output of MCMC is an estimate of the distribution of the posterior $Pr(\tilde{R}|O)$. As this is an estimation problem, we are interested reporting the value of $R$ that minimizes the expected Lease Square Error (LSE) of the estimate $E[(R-\tilde{R})^2]$. It is proven in \cite{Ramachandran2007} that the mean of the estimated posterior distribution is the optimal estimator in that case.
+
+
 
 The second part we need to compute inside MCMC algorithm is the likelihood of the observations.
 In most of the previous work done in BIRL, the likelihood of the observations is calculated as follows:
@@ -484,7 +497,8 @@ In our problem, the attacker is trying to make the AV go to a hostile goal $g_A$
 The idea is, for each time step $t$ we run MCMC algorithm to infer the hostile goal. We sample a goal $g$ from the set of goals $\mathbb{G}$ and then for each sensor $i$, we compute the posterior of having the goal $g$ as the hostile goal $g_A$ given the set of observations $\mathcal{O}_{i,t_2:t}$ as follows:
 \begin{equation} Pr(g=G_A|\mathcal{O}_{i,t_2:t}) \propto Pr(\mathcal{O}_{i,t_2:t} | g = G_A) Pr(g=G_A|\mathcal{O}_{i,t_2:t-1})
 \end{equation}
-The first term on the right hand side of the equation is the likelihood of the observations given that the goal $g$ is the hostile goal $g_A$ which can be computed according to (3) or can be approximated by (4). The second term is the prior which is updated from the posterior calculated at the previous time $t-1$. 
+The first term on the right hand side of the equation is the likelihood of the observations given that the goal $g$ is the hostile goal $g_A$ which can be computed according to (3) or can be approximated by (4). The second term is the prior which is updated from the posterior calculated at the previous time $t-1$.
+
 %\begin{algorithm}
 %    %\SetKwInOut{Input}{Input}
 %    %\SetKwInOut{Output}{Output}
@@ -512,6 +526,8 @@ The first term on the right hand side of the equation is the likelihood of the o
 %    }
 %    \caption{Attacker Intention Prediction}
 %\end{algorithm}
+\section{Simulations \& Experimental Results}\label{sec:conclusion}
+
 
 \section{Conclusions \& Future Work}\label{sec:conclusion}
 
@@ -550,7 +566,7 @@ The first term on the right hand side of the equation is the likelihood of the o
 % set second argument of \begin to the number of references
 % (used to reserve space for the reference number labels box)
 \bibliographystyle{IEEEtran}
-\bibliography{bibliography}
+\bibliography{mendeley}
 
 
 % that's all folks
