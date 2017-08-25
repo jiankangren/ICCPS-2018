@@ -492,10 +492,10 @@ Where, $\alpha$ is a factor that indicates how much we are confident that the ag
 Where $a_{CL}$ is the action given by the system's closed loop controller to go from state $s_{i,t}$ to goal $g_j$.
 
 Algorithm 1, shows our proposed method to infer the goal the attacker is trying to make the AV navigate to .
-Initially, we assume that the prior for a hostile goal is normally distributed among all possible hostile goals. During MCMC iterations we update the for each time step $t$ we run MCMC algorithm to infer the hostile goal of the attacker. We sample a goal $g$ from the set of goals $\mathbb{G}$ and then for each sensor $i$, we compute the posterior of having the goal $g$ as the hostile goal $g_A$ given the set of observations $\mathcal{O}_{i,t_2:t}$ as follows:
-\begin{equation} Pr(g=g_a|\mathcal{O}_{i,t_2:t}) \propto Pr(\mathcal{O}_{i,t_2:t} | g = G_a) \\ \times Pr(g=g_a|\mathcal{O}_{i,t_2:t-1})
+Initially, we assume that the prior for a hostile goal is normally distributed among all possible hostile goals. During MCMC iterations we update the for each time step $t$ we run MCMC algorithm to infer the hostile goal of the attacker. We sample a goal $g$ from the set of goals $\matcal{G}$ and then for each sensor $i$, we compute the posterior that the goal $g_i$ is the hostile goal $g_a$ given the set of observations $\mathcal{O}_{i,t_2:t}$ as follows:
+\begin{equation} Pr(g=g_a|\mathcal{O}_{i,t_2:t}) \propto Pr(\mathcal{O}_{i,t_2:t} | g = g_a) \\ \times Pr(g=g_a|\mathcal{O}_{i,t_2:t-1})
 \end{equation}
-The first term on the right hand side of the equation is the likelihood of the observations given that the goal $g$ is the hostile goal $g_A$ which can be computed according to (3) or can be approximated by (4). The second term is the prior which is updated from the posterior calculated at the previous time $t-1$.
+The first term on the right hand side of the equation is the likelihood of the observations given that the goal $g$ is the hostile goal $g_a$ which can be computed according to (3) or can be approximated by (4). The second term is the prior which is updated from the posterior calculated at the previous time $t-1$.
 By examining all sensor data and all possible bad goals inside the set $\mathcal{G}$, we can infer which set of sensors are compromised and which are not. The recovery part can be done after that by removing the compromised sensors from the state estimator calculations.
 \begin{algorithm}
     %\SetKwInOut{Input}{Input}
