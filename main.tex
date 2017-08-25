@@ -441,9 +441,9 @@ In Inverse Reinforcement Learning (IRL), we consider an agent acting optimally o
 \footnote{TODO: Talk about that it is an ill-posed problem ... And previous works made assumptions about the Reward function to solve this problem}
 
 \section{Problem Statement}\label{sec:problem}
-We consider an autonomous vehicle (AV) performing a navigation task to a desired destination. The AV has a set of sensors $\mathcal{S}$ where $|\mathcal{S}|=N$, $N$ is the number of AV sensors. We also consider a malicious attacker that can spoof a subset of sensors $\mathcal{S'}$ where $\mathcal{S'} \subset \mathcal{S}$, $|\mathcal{S'}| < N$. The goal of the attacker is to drive the AV towards a hostile destination while hiding the attack within the noise profiles of the spoofed AV sensors. The attack begins at time $t_1$. The attack stays stealthy until the noise margins of the spoofed sensors don't overlap anymore with the noise margins of the uncompromised ones at $t_2$ as shown in Fig. \ref{fig:sensor_spoofing}. From $t_2$, the AV state estimator can detect that there is an attack or fault that led to this divergence in readings, but it cannot distinguish which sensors are compromised and which are not.
+We consider an autonomous vehicle (AV) performing a navigation task to a desired destination.  The AV navigates inside an environment The AV has a set of sensors $\mathcal{S}$ where $|\mathcal{S}|=N$, $N$ is the number of AV sensors. We also consider a malicious attacker that can spoof a subset of sensors $\mathcal{S'}$ where $\mathcal{S'} \subset \mathcal{S}$, $|\mathcal{S'}| < N$. The goal of the attacker is to drive the AV towards a hostile destination while hiding the attack within the noise profiles of the spoofed AV sensors. The attack begins at time $t_1$. The attack stays stealthy until the noise margins of the spoofed sensors don't overlap anymore with the noise margins of the uncompromised ones at $t_2$ as shown in Fig. \ref{fig:sensor_spoofing}. From $t_2$, the AV state estimator can detect that there is an attack or fault that led to this divergence in readings, but it cannot distinguish which sensors are compromised and which are not.
 \begin{figure}[h]
-\caption{Divergence of sensor readings between a compromised and an umcompromised sensor}
+\caption{An attack on the blue sensor starts at $t_1$. The attack can be detected at $t_2$ when the sensors error margins don't overlap anymore.}
 \centering
 \includegraphics[width=0.5\textwidth]{sensor_spoofing}
  \label{fig:sensor_spoofing}
@@ -459,30 +459,29 @@ TO BE MODIFIED
 Determining the start time of the attack $t_1$ and the last un-compromised AV state $s_{t_1-1}$ and use this information to recover the actual state of the AV at time $t$.
 
 \section{Attacker Intention Inference}\label{sec:intpredic}
-We propose to cast Problem 1 an Inverse Reinforcement Learning problem. In this problem, we consider the compromised AV under attack acts as an agent that moves according to a policy $\pi^a$. The policy $\pi^a$ drives the agents towards the hostile destination $g_A$ as fast as possible while hiding the attack within the sensors noise profiles or the environment disturbance model. At each state $s$, the policy $\pi^a$ is calculated according to:
+We propose to cast Problem 1 an Inverse Reinforcement Learning problem. In this problem, we consider the compromised AV under attack acts as an agent that navigates in the environment according to a policy $\pi^a$. The policy $\pi^a$ drives the agent towards the hostile destination $g^a$ as fast as possible while hiding the attack within the sensors noise profiles or the environment disturbance model. At each state $s$, the policy $\pi^a$ is calculated according to:
 \[ \pi^a(s) = \arg\!\max_{a\in A} Q^{\pi^a}(s,a,R^a)\]
 
-The attacker's reward function can be modelled as follows. 
+The reward function $R^a$ can take many forms. For the sake of simplicity we assume the reward function $R^a$ that makes the agent moves towards the hostile goal $g$ can be modelled as follows. 
   \begin{equation}
     R^a(s)=\left\{
                 \begin{array}{ll}
-                  c\hspace{2em} s\in \mathcal{G}\\
-                  0\hspace{2em} s\notin \mathcal{G}
+                  c\hspace{2em} s = g\\
+                  0\hspace{2em} s \ne g
                 \end{array}
               \right.
   \end{equation}
 Where $c$ is a positive constant.
 
-Given the set of observations $\mathcal{O}_{t_2:t}$, the goal is to infer the intention of the attacker by inferring the reward function $R(s)$ the AV is trying to maximize. The algorithm we propose infers the reward function by leveraging Bayesian Inverse Reinforcement Learning techniques (BIRL)\cite{Ramachandran2007}. In BIRL, the inference of the reward function posterior $Pr(R|O)$ is a function of the reward function prior $Pr(R)$ and the likelihood of the observations $Pr(O|R)$ as follows:
+Given the set of observations $\mathcal{O}_{t_2:t}$, the goal is to infer the intention of the attacker by inferring the reward function $R(s)$ the AV is trying to maximize. As attacker can compromise only a subset of sensors $\mathcal{S}'$, we use rely on this assumption to perform attacker's intention inference. Our intuition is that we can use the sensor readings of the compromised set of sensors and the actions taken by the AV to infer that they match the actions of the attacker's policy $\pi_a$. We propose a method that starts examining all the sensor readings and AV actions at the time the attack is detected $t_2$. The goal is to search for the subset of the compromised sensors $\mathcal{S}'$  that cause the AV to drift towards the bad goal. The algorithm we propose leverages Bayesian Inverse Reinforcement Learning techniques (BIRL)\cite{Ramachandran2007} in order to do the inference. In BIRL, the inference of the reward function posterior $Pr(R|O)$ is a function of the reward function prior $Pr(R)$ and the likelihood of the observations $Pr(O|R)$ as follows:
 \begin{equation} 
     Pr(R|O) = \frac{Pr(O|R)Pr(R)}{Pr(O)}
 \end{equation}
 Where, $Pr(O)$ is the probability distribution of $O$ over the entire space of reward function $R$. The normalization constant $Pr(O)$ is usually hard to compute as it requires performing multiple integral calculations which is usually not feasible to compute analytically. To estimate the posterior distribution while avoiding calculating $Pr(O)$, we use the well-known MCMC sampling algorithm. The output of MCMC is an estimate of the distribution of the posterior $Pr(\tilde{R}|O)$. As this is an estimation problem, we are interested reporting the value of $R$ that minimizes the expected Lease Square Error (LSE) of the estimate $E[(R-\tilde{R})^2]$. It is proven in \cite{Ramachandran2007} that the mean of the estimated posterior distribution is the optimal estimator in that case.
 
+In order for the MCMC algorithm to estimate the posterior $Pr(R|O)$, we need to compute two terms in each iteration. The first term is the prior $Pr(R)$ and the second one is the likelihood of the observations $Pr(O|R)$.
 
-
-The second part we need to compute inside MCMC algorithm is the likelihood of the observations.
-In most of the previous work done in BIRL, the likelihood of the observations is calculated as follows:
+The likelihood of the observations can be calculated as follows:
 \begin{equation}
 Pr(O|R) = \frac{e^{\alpha\sum_{i}{Q^*(s_i,a_i,R)}}}{\sum_{b\in A}{}e^{\alpha\sum_{i}{}Q^*(s_i,b,R)}}
 \end{equation}
@@ -492,40 +491,39 @@ P(O_i|R_{g}) = P(a_i|s_i,g) \propto e^{-\alpha \lVert a_i - a_{CL} \rVert_{2}}
 \end{equation}
 Where $a_{CL}$ is the action given by the system's closed loop controller to go from state $s_i$ to goal $g_i$.
 
-In our problem, the attacker is trying to make the AV go to a hostile goal $g_A$, while making the autonomous controller of the AV believe that it is going towards it's original desired goal $g_T$. This means that we can infer from the set of states of the uncompromised sensors $\mathcal{S}_u$ along with the set of actions taken over time that the AV is moving towards one of the hostile goals.
-
-The idea is, for each time step $t$ we run MCMC algorithm to infer the hostile goal. We sample a goal $g$ from the set of goals $\mathbb{G}$ and then for each sensor $i$, we compute the posterior of having the goal $g$ as the hostile goal $g_A$ given the set of observations $\mathcal{O}_{i,t_2:t}$ as follows:
-\begin{equation} Pr(g=G_A|\mathcal{O}_{i,t_2:t}) \propto Pr(\mathcal{O}_{i,t_2:t} | g = G_A) Pr(g=G_A|\mathcal{O}_{i,t_2:t-1})
+Algorithm 1, shows how we use MCMC for inference.
+Initially, we assume that the prior for a hostile goal is normally distributed among all  possible hostile goals. During MCMC iterations we update the for each time step $t$ we run MCMC algorithm to infer the hostile goal of the attacker. We sample a goal $g$ from the set of goals $\mathbb{G}$ and then for each sensor $i$, we compute the posterior of having the goal $g$ as the hostile goal $g_A$ given the set of observations $\mathcal{O}_{i,t_2:t}$ as follows:
+\begin{equation} Pr(g=g_a|\mathcal{O}_{i,t_2:t}) \propto Pr(\mathcal{O}_{i,t_2:t} | g = G_A) \\ \times Pr(g=g_a|\mathcal{O}_{i,t_2:t-1})
 \end{equation}
 The first term on the right hand side of the equation is the likelihood of the observations given that the goal $g$ is the hostile goal $g_A$ which can be computed according to (3) or can be approximated by (4). The second term is the prior which is updated from the posterior calculated at the previous time $t-1$.
-
-%\begin{algorithm}
-%    %\SetKwInOut{Input}{Input}
-%    %\SetKwInOut{Output}{Output}
-%    \underline{AIP} ($\mathcal{O}, \mathcal{G}$)\;
-%    %\Input{Two nonnegative integers $a$ and $b$}
-%    %\Output{$\gcd(a,b)$}
-%    \ForEach {$\mathcal{O}_i \subset \mathcal{O} $}
-%    {
-%        \While{iteration $t < t_{max}$}{
-%            \ForEach{Observation $(s_{i,k}, a_k) \in \mathcal{O}_i$}
-%            { 
-%                $P(a_k|s_{i,k},g) \leftarrow  e^{-\alpha \lVert a_k - a_{CL} %\rVert_{2}}$\;
-%                $P(g|(s_{i,k}, a_k)) \leftarrow  P(a_k|s_{i,k},g) P(g)$\;
-%            }
-%            $g_M \leftarrow mean(P(g|\mathcal{O}_i)$)\;
-%            \eIf{$g_M \in \mathcal{G}$}
-%              {
-%                $g_T \leftarrow g_M$\;
-%                $z_i \in \mathcal{S}_u$\;
-%              }
-%              {
-%                $z_i \in \mathcal{S}_c$\;
-%              }
-%        }
-%    }
-%    \caption{Attacker Intention Prediction}
-%\end{algorithm}
+By examining all sensor data and all possible bad goals inside the set $\mathcal{G}$, we can infer which set of sensors are compromised and which are not. The recovery part can be done after that by removing the compromised sensors from the state estimator calculations.
+\begin{algorithm}
+    %\SetKwInOut{Input}{Input}
+    %\SetKwInOut{Output}{Output}
+    \underline{AIP} ($\mathcal{O}, \mathcal{G}$)\;
+    %\Input{Two nonnegative integers $a$ and $b$}
+    %\Output{$\gcd(a,b)$}
+    \ForEach {$\mathcal{O}_i \subset \mathcal{O} $}
+    {
+        \While{iteration $t < t_{max}$}{
+            \ForEach{Observation $(s_{i,k}, a_k) \in \mathcal{O}_i$}
+            { 
+                $P(a_k|s_{i,k},g) \leftarrow  e^{-\alpha \lVert a_k - a_{CL} \rVert_{2}}$\;
+                $P(g|(s_{i,k}, a_k)) \leftarrow  P(a_k|s_{i,k},g) P(g)$\;
+            }
+            $g_M \leftarrow mean(P(g|\mathcal{O}_i)$)\;
+            \eIf{$g_M \in \mathcal{G}$}
+              {
+                $g_T \leftarrow g_M$\;
+                $z_i \in \mathcal{S}_u$\;
+              }
+              {
+                $z_i \in \mathcal{S}_c$\;
+              }
+        }
+    }
+    \caption{Attacker Intention Prediction}
+\end{algorithm}
 \section{Simulations \& Experimental Results}\label{sec:conclusion}
 
 
