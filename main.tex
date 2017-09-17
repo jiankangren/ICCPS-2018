@@ -361,7 +361,7 @@
 
 \begin{document}
 
-\title{Cyber-Physical Attack Intention Prediction and System Recovery} 
+\title{Cyber-Physical Attack Intention Prediction and Recovery} 
 
 % affiliations
 
@@ -393,30 +393,45 @@ Email: \{mae3tb,nbezzo\}@virginia.edu}}
 
 
 \section{Introduction}
-Cyber-Physical security has grasped a lot of attention in the research community specially during the last decade. Multiple incidents occured indicate the ability of a malicious attacker to compromise a cyber-physical system through different techniques operating on different levels. For example, The well known cyber attack performed on the Iranian nuclear reactors in 2011 was performed by exploiting five zero-day vulnerabilities in the Operating Systems installed on the computers that operates the SCADA system which controls the nuclear centrifuges. This type of attack operated on the cyber level targeting the physical system by leveraging the knowledge of how the physical system is being operated and controlled by the controllers. Another type of attacks is the one that operates on the system control level, trying to exploit vulnerabilities in the system by compromising different components of the control system.
+Cyber-Physical security has grasped a lot of attention in the research community specially during the last decade. Multiple incidents that had occurred indicate the ability of a malicious attacker to compromise a cyber-physical system through different techniques operating on different levels. For example, the well known cyber attack on the Iranian nuclear reactors in 2011 was performed by exploiting five zero-day vulnerabilities in the Operating Systems installed on the computers that operate the SCADA system to control the nuclear centrifuges\cite{langner_2013}. This type of attack operates on a cyber level targeting a physical system by leveraging the knowledge of how the physical system is being operated and controlled. Another type of attacks on a cyber-physical system is the one that operates on the system control level, with the aim to exploit vulnerabilities in the system by compromising different components of the control system.
 
-A typical cyber-physical system consists of the a) controllers b) sensors c) actuators d) the physical system itself. An attacker can compromise the task of the system by attacking any of these components. Attacking sensors can be done in various of ways. One of the most common known attacks on sensors is GPS sensor spoofing, where an attacker can use a hand-held device to deceive the GPS receiver by sending false data. This type of attack if applied to a dynamic cyber-physical system i.e. a UGV or a UAV, it can make the autonomous vehicle to crash or to be hijacked and sent to a desired location.
+A typical design of cyber-physical system with feedback control consists of a) controllers b) sensors c) actuators d) the physical system itself. An attacker can compromise the operation of the cyber-physical system by attacking any of these components. We focus in this paper on sensor attacks, specifically sensor spoofing attacks. One of the most widely used sensor to perform localization is GPS. It has been shown in \cite{humphreys2008assessing} that a typical GPS is vulnerable to sensor spoofing attacks. A malicious attacker can use a hand-held device to deceive the GPS receiver in a system by broadcasting incorrect GPS signals. If this type of attacks is performed on a dynamic cyber-physical system i.e. a UGV (Unmanned Ground Vehicle) or a UAV (Unmanned Aerial Vehicle) that is navigating to a desired destination, it can make the autonomous vehicle crash or get hijacked and sent to an undesired location.
 
-An example of this type of attacks is the hijacking of the American military drone that was done by Iranians in 2011. The autonomous drone was supposed to land in Afghanistan and the attack sent false positions to the drone via GPS spoofing to deceive the autonomous controller and make it land in Iran instead of Afghanistan. Another example of sensor spoofing attacks was done by researchers from University of Texas and Cornell University, when they conducted an attack by spoofing the GPS receiver on a yakht cruising in the Mediterranean sea which made the yakht go off the desired course while thinking it is still following the correct coarse.\footnote{Motivate that there cyber physical attacks are various and crucial}
+An example that shows how the impact of GPS spoofing can be drastic is the American UAV hijacking incident in 2011. According to \cite{peterson_faramarzi_2011} the autonomous drone was supposed to land in Afghanistan and the attacker sent false positions to the drone via GPS spoofing to deceive the autonomous controller and make it land in Iran instead of Afghanistan. The US government acknowledged losing the control of the drone but it didn't confirm whether it happened due to a GPS spoofing attack or not. Another example of GPS spoofing attacks was demonstrated by researchers from University of Texas and Cornell University, when they conducted an attack by spoofing the GPS receiver on a \$80 million vessel cruising in the Mediterranean sea. The attack made the vessel go off the desired course while thinking it is still following the correct coarse \cite{protecting_gps_2016}.
 
-Various efforts have been done by members of the research society to maintain the safety of a cyber-physical system by designing systems that are resilient against attacks on sensors. A major contribution was done in solving the problem of secure and resilient state estimation of a cyber-physical system. The results presented in cite show that by using redundant sensors in a system, and leveraging the knowledge of the system model, the secure state estimators are able to correctly estimate the state of the system if the number of attacked sensors is less than half of the number of the sensors.
+\begin{figure}[h]
+\caption{A malicious attacker spoofs UAV's  GPS receiver to drive it to an undesired destination instead of its original one}
+\centering
+\includegraphics[width=0.5\textwidth]{problem}
+ \label{fig:problem}
+\end{figure}
 
-When resilient state estimator detects an attack, it removes the spoofed of the sensors under attack from the calculations to estimate the state of the system correctly. It doesn't determine whether the attacker was trying to crash the autonomous vehicle into an obstacle or trying to send it to a desired dangerous location. Inferring the intention of the attacker can important for several reasons: In some cases, the identity of the attacker can be revealed which is an important information especially in military applications. Also, inferring the intention of the attacker can be used to predict the future attack vectors on the compromised sensors and therefore, the attack vector can be removed and the compromised sensors can be reused. Another limitation the resilient state estimator has is that considering an attacker that can compromise more than half of the sensors, the resilient state estimator fails to detect which sensors are being compromised and which are not. This urges the need to develop an algorithm that can determine which sensors are being compromised if the system has at least one sensor not being compromised.\footnote{Show the need of attack intention prediction}
+In this paper, we are interested in addressing problem illustrated in Fig.\ref{fig:problem}. We consider the case where an autonomous vehicle is performing a navigation task to go to a desired destination. The state estimator of the autonomous vehicle uses a number of sensors to estimate its position. We assume that the autonomous vehicle has at least one sensor that is not vulnerable to spoofing attacks or in other words, the attacker is not able to spoof at least one sensor. A malicious attacker performs a coordinated attack by spoofing one or more of the vulnerable sensors of the autonomous vehicle . The goal of the attacker is to drive the vehicle to a different destination than its original destination. The attacker's desired destination can be a hostile territory to the vehicle, or an obstacle that will make the vehicle crash if it hits it. We consider a smart attacker who hides his sensor attack vectors within the noise profiles of the attacked sensors or within the environment disturbance model.
 
-In this work, we are interested in addressing the aforementioned issues. We consider the case where we have an autonomous vehicle performing a navigation task and a malicious attacker who can spoof up till N-1 number of sensors. The attacker performs a coordinated attack to send the autonomous vehicle to a desired destination instead of its original destination. The attacker's desired destination can be a hostile territory, or an obstacle the robot will crash by hitting it.
-
-The main contribution of this work is in two folds: First, we leverage Inverse Reinforcement Learning (IRL) techniques to infer the intention of the attacker. In other words, given a set of observations represented by state-action pairs (The states represent the data coming from the sensors, and the actions represent the control input that corresponds to each state), we infer the reward function that the attacker aims to maximize which describes the destination goal the attacker wants the vehicle to go to. Second, we introduce the idea of check-pointing an recovery to a dynamic system under attack. Recording the sensor readings over time can be useful in better detection of attacks that hide within the noise profiles of the sensors. Moreover, by analyzing the history data, we can determine when the attack started and what was the last uncompromised state of the system which can be used to recover the system from the attack by correctly estimating the state of the system.
+Our goal is to develop a system level technique that can recover the autonomous vehicle from this type of attack. Our intuition is that if we were able to determine which set of sensors are under attack before the vehicle arrives to the undesired destination, we could correctly reconstruct the state of the vehicle using the non-vulnerable and the non attacked set of sensors. Once the vehicle state is estimated correctly, the autonomous controller can drive the vehicle back on its coarse navigating towards the desired destination.
 
 \subsection{Related Work}\label{subsec:related}
-The problem of Inverse Reinforcement Learning has been addressed in multiple domains. It was first introduced by Russel in \cite{Ng2000}. Abbeal and Ng presented an algorithm for apprenticeship learning via IRL  \cite{Abbeel2004a}. They considered the case where the reward function is expressible as a linear combination of known features. Ramachandran et al. \cite{Ramachandran2007} cast the IRL problem as a Bayesian inference problem. They showed that there Bayesian Inverse Reinforcment Learning (BIRL) algorithm can be used for reward learning and also policy learning. They introduced the policy walk algorithm that is based on Monte Carlo Marcov Chain (MCMC) algorithm which is used for sampling. Michini et al. \cite{Michini2015} extended BIRL algorithm to deal with continuous state and action spaces and introduced the Non-Parametric Bayesian Inverse Reinforcement Learning (NBIRL) algorithm.\footnote{To be completed}
+\subsubsection{Resilient State Estimators}
 
-The idea of check-pointing and recovery has been applied to many computing systems \cite{Zhang2003,Processors2017,Koo1987, Prakash1996}. By taking snapshots of the state of a system in a cyclic fashion or after the occurrence of specific events, we can roll-back to the last saved checkpoint if a fault occurs to recover the system from that fault. This technique cannot be directly applied to a dynamical system without modifying the definitions of a checkpoint and a roll-back for two reasons. 
-\begin{enumerate}
-    \item This technique assumes that every checkpoint we take represents a correct state of the system. For a dynamical system under sensor attack, detection of an attack doesn't occur immediately after an attack starts. Which means that the saved checkpoints between the time the attack started and the time it is detected are considered incorrect states. For that matter, we need to consider the fact that we can have correct and incorrect checkpoints in the system and the the recovery mechanism shall find the last correct checkpoint in the system.
-    \item Roll-back is considered successful when the last checkpoint is recovered. For a dynamical system which moves in the physical space. To tolerate a fault or mitigate an attack, the recovery process is considered success-full when the correctly estimate the state of the system, not necessarily by returning back to the last saved correct check-point. Thus, the role of the recovery mechanism in our case is to find what is the last correct checkpoint, and use this information to determine the current state of the system correctly.
-\end{enumerate}
+Various efforts have been done by members of the research community to guarantee the safety of cyber-physical system under sensor attacks. A major contribution was done by developing secure and resilient state estimators of cyber-physical systems. The results presented in \cite{Fawzi2014,Ivanov2014,Pajic2014,Pajic2017} show that by using redundant sensors in a system, and leveraging the knowledge of the system model, the secure state estimators are able to correctly estimate the state of the system if the number of attacked sensors is less than half of the number of the sensors. An important assumption that these works considered is that the sensor attack vectors don't hide within the noise profiles of the sensors nor the environment disturbance model. Given this assumption, the resilient state estimator can not only correctly estimate the state of a compromised system, but also it can tell which sensors are under attack and which are not by comparing sensor readings with system model.
+
+In our case, we assume that the attacker hides his attack vectors within the noise profiles of the system sensors, which means we need to develop a new technique to detect which set of sensors are under attack after we detect that an attack is happening. We leverage state-of-the-art Inverse Reinforcement Learning (IRL) techniques to infer the desired destination of the attacker and at the same time detect which sensors are compromised.
+
+\subsubsection{Inverse Reinforcement Learning}
+The problem of Inverse Reinforcement Learning has been addressed in multiple domains. It was first introduced in \cite{Ng2000}. An algorithm for apprenticeship learning via IRL was introduced in \cite{Abbeel2004a} where the authors considered the case where the reward function is expressible as a linear combination of known features. IRL problem was first cast as a Bayesian inference problem in  \cite{Ramachandran2007}. It was shown that there Bayesian Inverse Reinforcement Learning (BIRL) algorithm can be used for reward learning and also policy learning. Policy walk algorithm was also introduced which is based on Monte Carlo Marcov Chain (MCMC) algorithm. Michini et al. \cite{Michini2015,Michini2013,Michini2012} extended BIRL algorithm to deal with continuous state and action spaces and introduced the Non-Parametric Bayesian Inverse Reinforcement Learning (BNIRL) algorithm. They  showed that by observing a UAV performing different maneuvers in a continuous 3D space. The BNIRL algorithm was able to infer what are the intermediate goals and the final goal that the observed UAV was trying to reach. They used this predicted information to make another UAV perform the same observed maneuvers.
+
+The previous works considered the case where we can observe a moving agent completing its desired trajectory from source to destination. In other applications, we may want to observe the agent navigating in the environment and try to predict its future trajectory and its desired destination. In this case, we have partial set of observation. This problem was studied in \cite{Best2015} where they used Bayesian Inference to predict the intention of an agent navigating in a partially occluded environment. The intention of the agent was represented by the goal the agent is trying to reach based on the assumption that the agent will most likely take the shortest path to the goal position, with some uncertainty in its transition model.
+
+In the cyber-physical literature, to our knowledge, no research has been done so far that uses IRL to predict the intention of an attacker.
+
+%The idea of check-pointing and recovery has been applied to many computing systems \cite{Zhang2003,Processors2017,Koo1987, Prakash1996}. By taking snapshots of the state of a system in a cyclic fashion or after the occurrence of specific events, we can roll-back to the last saved checkpoint if a fault occurs to recover the system from that fault. This technique cannot be directly applied to a dynamical system without modifying the definitions of a checkpoint and a roll-back for two reasons. 
+%\begin{enumerate}
+    %\item This technique assumes that every checkpoint we take represents a correct state of the system. For a dynamical system under sensor attack, detection of an attack doesn't occur immediately after an attack starts. Which means that the saved checkpoints between the time the attack started and the time it is detected are considered incorrect states. For that matter, we need to consider the fact that we can have correct and incorrect checkpoints in the system and the the recovery mechanism shall find the last correct checkpoint in the system.
+    %\item Roll-back is considered successful when the last checkpoint is recovered. For a dynamical system which moves in the physical space. To tolerate a fault or mitigate an attack, the recovery process is considered success-full when the correctly estimate the state of the system, not necessarily by returning back to the last saved correct check-point. Thus, the role of the recovery mechanism in our case is to find what is the last correct checkpoint, and use this information to determine the current state of the system correctly.
+%\end{enumerate}
 
 \section{Preliminaries}\label{sec:Preliminaries}
+In this paper, we provide a solution that uses Bayesian Inverse Reinforcement Learning techniques inside a Markov Decision Process (MDP) environment. This section provides the foundations from MDP and IRL that our approach relies on.
 \subsection{Markov Decision Process}
 A finite state Markov Decision Process (MDP) \cite{puterman2014markov} consists of a tuple $(S,A,T,R,\gamma)$ where:
 \begin{itemize}
@@ -436,33 +451,28 @@ Then, a policy $\pi$ is optimal iff, for each state $s \in S$:
 \[ \pi(s) = \arg\!\max_{a\in A} Q^\pi(s,a,R)\]
 The optimal policy $\pi^*$ corresponds to a state value function $V^*$ and a state-action value function $Q^*$.
 
+\subsection{Reinforcement Learning}
+Reinforcement Learning provides the notion of an agent that navigates the states of MDP environment by taking and an action $a \in A$. The agent receives a reward $r$ when it transitions from a state $s$ to state $s'$ by taking action $a$. The reward $r$ can take any of the three forms described earlier. The task of Reinforcement Learning algorithms is to learn the optimal policy $\pi^*$ that maximizes the future expected rewards for the agent from its history of interaction with the environment. The history of the interactions can be formulated as a set of the tuple $\big \langle s,a,r,s' \big \rangle$
 \subsection{Inverse Reinforcement Learning}
-In Inverse Reinforcement Learning (IRL), we consider an agent acting optimally or sub-optimally in an environment; or in MDP terms, the agent is following an optimal or sub-optimal policy $\pi^a(s)$. The policy of the agent $\pi^a(s)$ can be observed as a set of state-action pairs $\mathcal{O} = \{(s_1,a1),(s_2,a_2), ...,(s_N,a_N)\}$. The goal of IRL is to infer the reward function $R(s)$ that is responsible for generating these observations.
-\footnote{TODO: Talk about that it is an ill-posed problem ... And previous works made assumptions about the Reward function to solve this problem}
+In Inverse Reinforcement Learning (IRL), we consider an agent acting optimally or sub-optimally in an MDP environment. The agent is following an optimal or sub-optimal policy $\pi^a(s)$. The policy of the agent $\pi^a(s)$ can be observed as a set of state-action pairs $\{(s_1,a1),(s_2,a_2), ...,(s_N,a_N)\}$, where $N$ is the number of observations. The goal of IRL is to infer the reward function $R)$ that is responsible for generating these observations. As mentioned before, $R$ can take on the three forms we described before.
 
 \section{Problem Statement}\label{sec:problem}
-We consider an autonomous vehicle (AV) performing a navigation task to a desired destination.  The AV navigates inside an environment The AV has a set of sensors $\mathcal{S}$ where $|\mathcal{S}|=N$, $N$ is the number of AV sensors. We also consider a malicious attacker that can spoof a subset of sensors $\mathcal{S'}$ where $\mathcal{S'} \subset \mathcal{S}$, $|\mathcal{S'}| < N$. The goal of the attacker is to drive the AV towards a hostile destination while hiding the attack within the noise profiles of the spoofed AV sensors. The attack begins at time $t_1$. The attack stays stealthy until the noise margins of the spoofed sensors don't overlap anymore with the noise margins of the uncompromised ones at $t_2$ as shown in Fig. \ref{fig:sensor_spoofing}. From $t_2$, the AV state estimator can detect that there is an attack or fault that led to this divergence in readings, but it cannot distinguish which sensors are compromised and which are not.
+We consider an autonomous vehicle that performs performing a navigation task to a desired destination in a stochastic environment. The vehicle has a set of sensors $\mathcal{S}$ where $|\mathcal{S}|=N$. The readings from the $N$ sensors are fused together to estimate the state of the vehicle. We also consider a malicious attacker that can spoof a subset of sensors $\mathcal{S'}$ where $\mathcal{S'} \subset \mathcal{S}$, $|\mathcal{S'}| < N$. The goal of the attacker is to drive the vehicle towards an undesired destination while hiding its attack vectors within the noise profiles of the spoofed vehicle sensors or hiding it within the disturbance model of the stochastic environment. The attack begins at time $t_1$. The attack can stay stealthy to the system until the noise margins of the spoofed sensors don't overlap anymore with the noise margins of the uncompromised ones at $t_2$ as shown in Fig. \ref{fig:sensor_spoofing}. From $t_2$, an attack or fault can be detected due to the divergence in sensor readings. At this point, it is hard to distinguish between the compromised and uncompromoised sensors, as all sensor readings comply with the uncertainty model of the vehicle dynamics and the environment. .
 \begin{figure}[h]
 \caption{An attack on the blue sensor starts at $t_1$. The attack can be detected at $t_2$ when the sensors error margins don't overlap anymore.}
 \centering
 \includegraphics[width=0.5\textwidth]{sensor_spoofing}
  \label{fig:sensor_spoofing}
 \end{figure}
-We are interested in solving the following two problems:
+Formally, We are interested in solving the following problem:
 
-Problem 1 Attacker Intention Inference: Consider the set $\mathcal{G}$ is the set of states that are considered hostile. Consider a super-set of observations $\mathcal{O}_{t_2:t} = \{\mathcal{O}_1, \mathcal{O}_2, ..., \mathcal{O}_N\}$, where $\mathcal{O}_{i,t_2:t} = \{(s_{i,t_2}, a_{t_2}), (s_{i,t_2+1}, a_{t_2+1}), ..., (s_{i,t_2+t}, a_{t_2+t})\}$ is the finite set of measurement-action pairs for each sensor $i$ which includes the history of sensor data recorded starting from the beginning of the detection time of the attack $t = t_2$ until the current time $t$. We assume the attacker's goal is to drive the AV towards a hostile goal which is located in a position or a state $g^a \in \mathcal{G}$. Where, $\mathcal{G}$ is the set of all possible hostile goals known a priori. Our goal is to infer, at each time t, the intention of the attacker by estimating their desired hostile goal $g^a$ and determine the subset of compromised sensors $\mathcal{S'}$.
-
-
-
-Problem 2 Recovery of last safe state:
-TO BE MODIFIED
-Determining the start time of the attack $t_1$ and the last un-compromised AV state $s_{t_1-1}$ and use this information to recover the actual state of the AV at time $t$.
+Problem 1 Attacker Intention Inference and Recovery: Consider the set $\mathcal{G}$ is the set of states that are considered undesired. Consider a super-set of observations $\mathcal{O}_{t_2:t} = \{\mathcal{O}_1, \mathcal{O}_2, ..., \mathcal{O}_N\}$, where $\mathcal{O}_{i,t_2:t} = \{(s_{i,t_2}, a_{t_2}), (s_{i,t_2+1}, a_{t_2+1}), ..., (s_{i,t_2+t}, a_{t_2+t})\}$ is the finite set of measurement-action pairs for each sensor $i$ which includes the history of sensor data recorded starting from the beginning of the attack detection time  $t = t_2$ until the current time $t$. We assume the attacker's goal is to drive the vehicle towards a target goal $g^a \in \mathcal{G}$. Where, $\mathcal{G}$ is the set of all possible undesired goals known a priori. Our goal is to recover from this attack. In order to do so, we need to infer the intention of the attacker by estimating their desired goal $g^a$ and determine the subset of compromised sensors $\mathcal{S'}$. 
 
 \section{Attacker Intention Inference}\label{sec:intpredic}
-We propose to cast Problem 1 an Inverse Reinforcement Learning problem. In this problem, we consider the compromised AV under attack acts as an agent that navigates in the environment according to a policy $\pi^a$. The policy $\pi^a$ drives the agent towards the hostile destination $g^a$ as fast as possible while hiding the attack within the sensors noise profiles or the environment disturbance model. At each state $s$, the policy $\pi^a$ is calculated according to:
+We propose to cast Problem 1 as Inverse Reinforcement Learning problem. In this problem, we consider the compromised autonomous vehicle under attack acts as an agent that navigates in the environment according to a policy $\pi^a$. The policy $\pi^a$ drives the agent towards the target destination $g^a$ as fast as possible while hiding the attack within the sensors noise profiles or the environment disturbance model. At each state $s$, the policy $\pi^a$ is calculated according to:
 \[ \pi^a(s) = \arg\!\max_{a\in A} Q^{\pi^a}(s,a,R^a)\]
 
-The reward function $R^a$ can take many forms. For the sake of simplicity we assume the reward function $R^a$ that makes the agent moves towards the hostile goal $g$ can be modelled as follows. 
+The reward function $R^a$ can take many forms. For the sake of simplicity we assume the reward function $R^a$ that makes the agent moves towards the target goal $g$ can be modelled as follows. 
   \begin{equation}
     R^a(s)=\left\{
                 \begin{array}{ll}
@@ -472,61 +482,85 @@ The reward function $R^a$ can take many forms. For the sake of simplicity we ass
               \right.
   \end{equation}
 Where $c$ is a positive constant.
-
-Given the set of observations $\mathcal{O}_{t_2:t}$, the goal is to infer the intention of the attacker by inferring the reward function $R(s)$ the AV is trying to maximize. As attacker can compromise only a subset of sensors $\mathcal{S}'$, we use rely on this assumption to perform attacker's intention inference. Our intuition is that we can use the sensor readings of the compromised set of sensors and the actions taken by the AV to infer that they match the actions of the attacker's policy $\pi_a$. We propose a method that starts examining all the sensor readings and AV actions at the time the attack is detected $t_2$. The goal is to search for the subset of the compromised sensors $\mathcal{S}'$  that cause the AV to drift towards the bad goal. The algorithm we propose leverages Bayesian Inverse Reinforcement Learning techniques (BIRL)\cite{Ramachandran2007} in order to do the inference. In BIRL, the inference of the reward function posterior $Pr(R|O)$ is a function of the reward function prior $Pr(R)$ and the likelihood of the observations $Pr(O|R)$ as follows:
+\subsection{Bayesian Inference Reinforcement Learning}
+Given the set of observations $\mathcal{O}_{t_2:t}$, the goal is to infer the intention of the attacker by inferring the reward function $R(s)$ the vehicle is trying to maximize. As attacker can compromise only a subset of sensors $\mathcal{S}'$, we use rely on this assumption to perform attacker's intention inference. Our intuition is that we can use the sensor readings of the compromised set of sensors and the actions taken by the vehicle to infer that they match the actions of the attacker's policy $\pi_a$. We propose a method that starts examining all the sensor readings and vehicle actions at the time the attack is detected $t_2$. The goal is to search for the subset of the compromised sensors $\mathcal{S}'$  that cause the vehicle to drift towards the bad goal. The algorithm we propose leverages Bayesian Inverse Reinforcement Learning techniques (BIRL)\cite{Ramachandran2007} in order to do the inference. In BIRL, the inference of the reward function posterior $Pr(R|O)$ is a function of the reward function prior $Pr(R)$ and the likelihood of the observations $Pr(O|R)$ as follows:
 \begin{equation} 
     Pr(R|O) = \frac{Pr(O|R)Pr(R)}{Pr(O)}
 \end{equation}
-Where, $Pr(O)$ is the probability distribution of $O$ over the entire space of reward function $R$. The normalization constant $Pr(O)$ is usually hard to compute as it requires performing multiple integral calculations which is usually not feasible to compute analytically. To estimate the posterior distribution while avoiding calculating $Pr(O)$, we use the well-known MCMC sampling algorithm. The output of MCMC is an estimate of the distribution of the posterior $Pr(\tilde{R}|O)$. As this is an estimation problem, we are interested reporting the value of $R$ that minimizes the expected Least Square Error (LSE) of the estimate $E[(R-\tilde{R})^2]$. It is proven in \cite{Ramachandran2007} that the mean of the estimated posterior distribution is the optimal estimator in that case.
+Where, $Pr(O)$ is the probability distribution of $O$ over the entire space of reward function $R$. The normalization constant $Pr(O)$ is usually hard to compute as it requires performing multiple integral calculations which is usually not feasible to compute analytically. To estimate the posterior distribution while avoiding calculating $Pr(O)$, we use the MCMC sampling algorithm\cite{andrieu2003introduction}. The output of MCMC is an estimate of the distribution of the posterior $Pr(\tilde{R}|O)$. As this is an estimation problem, we are interested reporting the value of $R$ that minimizes the expected Least Square Error (LSE) of the estimate $E[(R-\tilde{R})^2]$. It is proven in \cite{Ramachandran2007} that the mean of the estimated posterior distribution is the optimal estimator in that case.
 
 In order to estimate the posterior $Pr(R|O)$ using  MCMC algorithm, we need to compute two terms in each iteration. The first term is the prior $Pr(R)$ and the second one is the likelihood of the observations $Pr(O|R)$.
-The prior can be initialized according to our initial guess of the posterior distribution. If we don't have a guess about the posterior distribution, we can assume that the prior is a uniform distribution.
+The prior can be initialized according to our previous knowledge or intuition of the posterior distribution. If we don't have a prior knowledge about the posterior distribution, we can assume that the prior has the form of a uniform distribution.
 The likelihood of the observations can be calculated in different ways depending on the problem formulation. In our case, we want to calculate ,for each sensor $i$, the likelihood of observing a set of sensor readings and actions taken during a period $T$ follow an optimal policy of the agent to go to a potential goal $g_j$. We can achieve that by comparing, at each observed sensor reading (state), the state-action value of the action taken at this state with the state-action value all possible action that the agent can take at this state. Formally, we can calculate the likelihood of the observations as follows:
 \begin{equation}
 Pr(\mathcal{O}_{i,T} | g = g_j)  = \frac{e^{\alpha\sum_{T}{Q^*(s_{i,t},a_t,R_j)}}}{\sum_{b\in A}{}e^{\alpha\sum_{T}{}Q^*(s_{i,t},b,R_j)}}
+\label{eqn:3}
 \end{equation}
-Where, $\alpha$ is a factor that indicates how much we are confident that the agent is acting optimally. This calculation requires solving MDP problem to compute $Q^*$ for each state-action pair. In this paper, we consider an  environment with discrete state-space and actions. In case of an environment with continuous state space and actions, this step can be very computationally expensive as it requires discretization of the state and action spaces which can result in a tremendously sized state space. There are various methods proposed to do actions likelihood approximation without discretization of the state-space of action-space. Michini et al., showed in \cite{Michini2013} that they can do actions likelihood approximation by comparing the observed actions with actions generated by a simple closed loop controller. Similarly, we can use the same technique if we consider a continuous state space in our case. First, we record the action $a_i$ corresponding to each sensor reading $s_i$ to obtain the necessary set of state-action pairs to perform IRL. Then, to approximate the action likelihood for a goal $g_j$ at state $s_{i,t}$, we compute the difference between action $a_t$ and the action calculated from the controller at state $s_{i,t}$ to go to $g_i$ as follows:
-\begin{equation}
- Pr(a_t|s_{i,t},g_j) \propto e^{-\alpha \lVert a_t - a_{CL} \rVert_{2}}
-\end{equation}
-Where $a_{CL}$ is the action given by the system's closed loop controller to go from state $s_{i,t}$ to goal $g_j$.
+Where, $\alpha$ is a factor that indicates how much we are confident that the agent is acting optimally. This calculation requires solving an MDP problem to compute $Q^*$ for each state-action pair. 
 
-Algorithm 1, shows our proposed method to infer the goal the attacker is trying to make the AV navigate to .
-Initially, we assume that the prior for a hostile goal is normally distributed among all possible hostile goals. During MCMC iterations we update the for each time step $t$ we run MCMC algorithm to infer the hostile goal of the attacker. We sample a goal $g$ from the set of goals $\matcal{G}$ and then for each sensor $i$, we compute the posterior that the goal $g_i$ is the hostile goal $g_a$ given the set of observations $\mathcal{O}_{i,t_2:t}$ as follows:
-\begin{equation} Pr(g=g_a|\mathcal{O}_{i,t_2:t}) \propto Pr(\mathcal{O}_{i,t_2:t} | g = g_a) \\ \times Pr(g=g_a|\mathcal{O}_{i,t_2:t-1})
+Algorithm 1, shows our proposed method to infer the target goal of the attacker $g_a$ and the set of the compromised sensors $\mathcal{S}'$. Initially, we assume that the prior for the target goal is normally distributed among all possible undesired goals. At each time step, we run a number of MCMC iterations bounded by ${e}_{max}$ to infer the target goal. We obtain a sample $g_j$ from the prior distribution of the undesired goals set $\mathcal{G}$. Then, we loop over all the observations $\mathcal{O}_{i,T}$ we observed over a period of time $T$ for the sensor $i$. We update the posterior of the potential sampled goal $g_j$ from each observation by calculating the likelihood of the taken actions. The likelihood of taking action $a_t$ at state $s_{i,t}$ to go to goal $g_j$ can be directly computed as the action-value function (Q-function) for taking this action from this state:
+
+\begin{equation} Pr(a_t|s_{i,t},g_j) = Q^*(s_{t,k},a_t,R_j)
+\label{eqn:action_likelihood}
 \end{equation}
-The first term on the right hand side of the equation is the likelihood of the observations given that the goal $g$ is the hostile goal $g_a$ which can be computed according to (3) or can be approximated by (4). The second term is the prior which is updated from the posterior calculated at the previous time $t-1$.
-By examining all sensor data and all possible bad goals inside the set $\mathcal{G}$, we can infer which set of sensors are compromised and which are not. The recovery part can be done after that by removing the compromised sensors from the state estimator calculations.
+
+Then, we compute the posterior that the goal $g_i$ is the target goal $g_a$ given the set of observations $\mathcal{O}_{i,t_2:t}$ as follows:
+\begin{equation} Pr(g=g_a|\mathcal{O}_{i,t_2:t}) \propto Pr(\mathcal{O}_{i,t_2:t} | g = g_a) \\ \times Pr(g=g_a|\mathcal{O}_{i,t_2:t-1})
+\label{eqn:goal_posterior}
+\end{equation}
+The first term on the right hand side of the equation is the likelihood of the observations given that the goal $g$ is the target goal $g_a$ which can be computed according to (3) or it can be approximated as we explain later in this section. The second term is the prior which is updated from the posterior calculated at the previous time $t-1$.
+After the MCMC iterations are done, we evaluate the level of confidence that the estimated posterior for a potential goal $g_t$ is the actual target goal $g_a$. We perform this by calculating the mean of the posterior. The higher the value of the posterior mean, the higher the confidence we have about our estimation.  To start the recover process, we compare the posterior mean to a threshold value $h$, and trigger the recover process if  it is higher than the threshold value. The intuition behind the recovery process is that the readings we obtain from the uncompromised sensors will provide a posterior estimate of an undesired goal with high confidence. If we determine the set of uncompromised sensors, we consider the rest of the sensors to be compromised. Afterwards, the recovery can be performed by correctly estimating the state of the system by fusing the uncompromised sensors only. Once, the correct state of the system is estimated, the autonomous controller shall correct the coarse of the vehicle to navigate toward its desired destination.
 \begin{algorithm}
     %\SetKwInOut{Input}{Input}
     %\SetKwInOut{Output}{Output}
     \underline{AIP} ($\mathcal{O}, \mathcal{G}$)\;
     %\Input{Two nonnegative integers $a$ and $b$}
     %\Output{$\gcd(a,b)$}
-    \ForEach {$\mathcal{O}_i \subset \mathcal{O} $}
+    \ForEach {sensor $i \in \mathcal{S}$}
     {
-        \While{iteration $t < t_{max}$}{
+        \While{iteration $e < e_{max}$}
+        {
+            Sample goal $g_j \in \mathcal{G}$\;
             \ForEach{Observation $(s_{i,k}, a_k) \in \mathcal{O}_i$}
             { 
-                $P(a_k|s_{i,k},g) \leftarrow  e^{-\alpha \lVert a_k - a_{CL} \rVert_{2}}$\;
-                $P(g|(s_{i,k}, a_k)) \leftarrow  P(a_k|s_{i,k},g) P(g)$\;
+                $Pr(a_k|s_{i,k},g_j) \leftarrow Q^*(s_{i,k},a_k,R_j)$\;
             }
-            $g_M \leftarrow mean(P(g|\mathcal{O}_i)$)\;
-            \eIf{$g_M \in \mathcal{G}$}
-              {
-                $g_T \leftarrow g_M$\;
-                $z_i \in \mathcal{S}_u$\;
-              }
-              {
-                $z_i \in \mathcal{S}_c$\;
-              }
+            $Pr(\mathcal{O}_{i,T}|g=g_j) \leftarrow$  from \ref{eqn:3}\;
+            $Pr(g=g_j|\mathcal{O}_{i,T}) \leftarrow$ from \ref{eqn:goal_posterior}\;
+        }
+        $g_m \leftarrow mean(Pr(g=g_j|\mathcal{O}_i))$\;
+        \If{$g_m \in \mathcal{G}, Pr(g=g_j|\mathcal{O}_{i,T})>h$}
+        {
+            $g_a \leftarrow g_j$\;
+            $z_i \in \mathcal{S}'$\;
         }
     }
     \caption{Attacker Intention Prediction}
 \end{algorithm}
+
+\subsection{State Exploration Problem}
+The speed of convergence of the inference we perform in Algorithm 1 depends on which states the vehicle visited. Let's assume the policy that the vehicle follows to go to the desired goal is called the mission policy and the policy that the attacker wants the vehicle to follow by performing his attack is called the attacker policy. If the set of observations contains mostly states in which the action the vehicle takes according the mission policy is similar to the action it takes according to the attacker policy, the convergence of the inference algorithm will be slower and the level of confidence of the inferred posterior may not reach the threshold value. We can call these states as insensitive states. On the other hand, the set of observations which contains mostly states in which there is a discrepancy between the action the vehicle takes according to the mission policy and the action the vehicle takes according to the attacker policy, will lead to faster convergence. We may call these states as sensitive states. It is clear that we want to have a set of observations with as much sensitive states as possible.
+
+In most Inverse Reinforcement Learning problems, we don't have a control over the optimal agent, and we are constrained by the set of observations we get by recording the agent acting optimally. In our case, we exploit the fact that the autonomous controller of the vehicle still has control of the vehicle while being under attack by the malicious attacker. This means that the controller can make the vehicle explore more sensitive states by taking actions that are not necessarily the optimal actions to go to the desired goal. One approach to choose this exploring action is to pick an action randomly, but this approach doesn't guarantee that the chosen action will lead to a more or less sensitive state than the one the optimal action leads to. Another approach is to chose the action that leads to a state which gives the highest discrepancy between all potential attacker policies and the mission policy. The problem of this approach is that it gives the same weight to all potential goals and policies which may not lead to faster convergence of the inference algorithm.
+
+We propose an exploration approach that we call \textbf{\textit{Active Exploration}}. Active Exploration works as follows: After an attack is detected, we start the inference algorithm with a high value of an exploration factor $\delta, 0 < \delta < 1$ that decreases over time. The exploration factor $\delta$ indicates how much the inference algorithm will favor state exploration than following the mission policy. The exploration itself works by taking an action that leads to a state that maximizes the discrepancy between the attacker policy that leads to the most likely potential goal so far and the mission policy. Active Exploration is a directed exploration towards the goal we have the highest confidence in its posterior estimate. In other words, When the vehicle detects that there is an attack, it explores the space around that leads to better and faster understanding of the intention of the attack.
+
+\subsection{Discrete Vs Continuous Space}
+In this work, we consider an  environment with discrete state-space and actions. In case of an environment with continuous state space and actions, this step can be very computationally expensive as it requires discretization of the state and action spaces which can result in a tremendously sized state space. There are various methods proposed to do actions likelihood approximation without discretization of the state-space of action-space. Michini et al., showed in \cite{Michini2013} that they can do actions likelihood approximation by comparing the observed actions with actions generated by a simple closed loop controller. Similarly, we can use the same technique if we consider a continuous state space in our case. First, we record the action $a_i$ corresponding to each sensor reading $s_i$ to obtain the necessary set of state-action pairs to perform IRL. Then, to approximate the action likelihood for a goal $g_j$ at state $s_{i,t}$, we compute the difference between action $a_t$ and the action calculated from the controller at state $s_{i,t}$ to go to $g_i$ as follows:
+\begin{equation}
+ Pr(a_t|s_{i,t},g_j) \propto e^{-\alpha \lVert a_t - a_{CL} \rVert_{2}}
+\end{equation}
+Where $a_{CL}$ is the action given by the system's closed loop controller to go from state $s_{i,t}$ to goal $g_j$.
 \section{Simulations \& Experimental Results}\label{sec:conclusion}
+We performed a set of simulations and experiments to show the following:
+\begin{itemize}
+    \item An attacker can lead an autonomous vehicle to an undesired destination by spoofing its sensors while hiding the attack vectors within the noise profiles the sensors or the environment uncertainty model.
+    \item Algorithm 1 manages to infer the intention of the attacker and the set of compromised sensors.
+    \item The effect of applying Active Exploration approach to Algorithm 1
+\end{itemize}
+\subsection{Simulation Results}
 
-
+\subsection{Experiment Results}
 \section{Conclusions \& Future Work}\label{sec:conclusion}
 
 
@@ -564,7 +598,7 @@ By examining all sensor data and all possible bad goals inside the set $\mathcal
 % set second argument of \begin to the number of references
 % (used to reserve space for the reference number labels box)
 \bibliographystyle{IEEEtran}
-\bibliography{mendeley}
+\bibliography{mendeley,bibliography}
 
 
 % that's all folks
