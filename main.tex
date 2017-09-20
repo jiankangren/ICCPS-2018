@@ -348,10 +348,10 @@ We perform a set of simulations having an Unmanned Aerial Vehicle (UAV) navigati
 \subsection{Simulations Environment}
  We represent the discretized state space of the environment as an occupancy grid which maps the environment to a 2-D matrix of cells. Each cell represents a state and holds a probability value that indicates the probability of the vehicle reaching this cell by taking a certain action.
 In normal operation conditions (No attack detected), the UAV takes an action at each cell according to its mission optimal policy $\pi*$. The set of actions $A$ that the UAV can take at any cell is defined as follows:
-$A =$ \textit{\{ move forwards \{F\}, move backwards \{B\}, move right \{R\}, move left \{L\}\}}.
+$A =$ \textit{\{move forwards \{F\}, move backwards \{B\}, move right \{R\}, move left \{L\}\}}.
 Each action is mapped to an altitude and position control input to the UAV to make it move from one cell to the next desired cell. As the environment is stochastic, we define the transition probability function $T(s,s',a)$ that maps the disturbances in the environment to a probability associated with taking each action $a$ to go to state $s'$ from state $s$.
 \subsection{Simulation Results}
-We use a 10x10 occupancy grid to conduct the simulations. We define function $R$ as a function of the cell (state) only. $R(s) = 100$ for the desired destination and $R(s) = -3$ for any other cell. Figure. \ref{fig:sim-env}, explains how we define the transition probability function for each state-action pair.
+We use a 10x10 occupancy grid to conduct the simulations. We define function $R$ as a function of the cell (state) only. $R(s) = 100$ for the desired destination and $R(s) = -3$ for any other cell. Figure. \ref{fig:sim-env}, illustrates how we define the reward function for each state and the transition probability function for each state-action pair. The UAV uses two sensors to estimate its state. It has a kalman filter that performs the state estimation provides the state estimate to the controller. The controller calculates the optimal action that maximizes the UAV's expected future rewards, driving it to the desired goal.
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.5\textwidth]{sim-env}
@@ -359,7 +359,7 @@ We use a 10x10 occupancy grid to conduct the simulations. We define function $R$
  \label{fig:sim-env}
 \end{figure}
 \subsubsection{Sensor Spoofing Attack}
-We consider
+The UAV has
 \section{Experimental Results}\label{sec:exp}
 \section{Conclusions \& Future Work}\label{sec:conclusion}
 
