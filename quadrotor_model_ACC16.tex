@@ -1,0 +1,84 @@
+\section{Quadrotor Case Study}
+\label{sec:quad}
+The case study investigated in this paper is a motion planning way-point navigation mission in which a quadrotor aerial vehicle needs to cross a workspace from a starting point to a desired goal avoiding undesired locations.
+
+\subsection{Quadrotor Model and Controller}
+Fig.~\ref{fig:quadaxes} shows the coordinate system and free body diagram for modeling the quadrotor dynamics. 
+The quadrotor center of mass in the inertial frame is specified by the position vector $\mathbf{x} = \begin{bmatrix}x & y & z\end{bmatrix}^T$. The roll, pitch, and yaw Euler angles, $\phi$, $\theta$, and $\psi$, specify the quadrotor attitude and the body angular velocity is then defined as the rate vector $\mathbf{\omega} = \begin{bmatrix}p & q & r\end{bmatrix}^T$, \cite{bezzo2014cooperative, michael2010grasp}.
+
+%\begin{figure}[ht!]
+%\centering
+%\includegraphics[width=0.48 \textwidth]{figs/QUAD_FRAME4.png}
+%\vspace{-15pt}
+%\caption{\label{fig:quadaxes} Quadrotor and World frames.}
+%\vspace{-5pt}
+%\end{figure}
+
+The controller is derived by linearizing the equations of motion and motor models at an operating point that corresponds to the nominal hover state ${\bf x} = \{x, y, z\}$, $\theta = 0$, $\phi = 0$, $\psi = \psi_0$, ${\dot{\bf x} = 0}$ and $\dot{\phi} = \dot{\theta} = \dot{\psi} = 0$ with roll and pitch angles small. The nominal values for the inputs at hover are $u_1 = mg$, $u_2 = u_3 = u_4 = 0$.
+
+In order to control the quadrotor to follow a desired trajectory, we use the architecture in Fig.~\ref{fig:quadcon}.
+
+%\begin{figure}[ht!]
+%\centering
+%\includegraphics[width=0.48 \textwidth]{figs/quad_dia6.png}
+%%\vspace{-5pt}
+%\caption{\label{fig:quadcon} Diagram of the overall controller used on a quadrotor for ROMDP operations.}
+%%\vspace{-5pt}
+%\end{figure}
+
+The position control is used to track a desired trajectory $\xi$ characterized by ${\bf {x}}_\xi(t)$ and $\psi_\xi(t)$. Using a PID feedback controller on the error $e_k=(\mathbf {x}_{k,\xi}-\mathbf {x}_k)$ we can control the position and velocity of the quadrotor to maintain a desired trajectory.
+After linearization, we can obtain the relationship between desired roll and pitch angles and desired accelerations as follows
+\begin{gather}
+\begin{align}
+\phi^{\textrm{des}} &= \frac{1}{g}\left(\ddot{x}^{\textrm{des}}\sin(\psi_\xi) - \ddot{y}^{\textrm{des}}\cos(\psi_\xi)\right)\\
+\theta^{\textrm{des}} &= \frac{1}{g}\left(\ddot{x}^{\textrm{des}}\cos(\psi_\xi) + \ddot{y}^{\textrm{des}}\sin(\psi_\xi)\right)
+\end{align}
+\end{gather}
+and 
+\begin{equation}
+u_1 = mg + m\ddot{z}^{\textrm{des}} 
+\end{equation}
+ 
+Finally, the attitude control is realized using a PD controller as follows
+\begin{equation}\label{eq:att}
+\left(%
+\begin{array}{c}
+  u_2 \\
+  u_3\\
+  u_4\\
+\end{array}%
+\right) =\left(%
+\begin{array}{c}
+k_{p,\phi}(\phi^{\textrm{des}} - \phi) + k_{d,\phi}(p^{\textrm{des}} - p)\\
+k_{p,\theta}(\theta^{\textrm{des}} - \theta) + k_{d,\theta}(q^{\textrm{des}} - q)\\
+k_{p,\psi}(\psi^{\textrm{des}} - \psi) + k_{d,\psi}(r^{\textrm{des}} - r)
+\end{array}%
+\right)
+\end{equation}
+
+
+
+\subsection{Environment Setup}
+
+The environment configuration plays an important role in ROMDPs.
+The state space is discretely represented as an occupancy grid which maps the environment as an array of cells each representing a state and holding a probability value associated with the action taken by the robot. The minimum size of the cell has to be greater than the maximum displacement we can record due to measurements noise. 
+Choosing small cells has the benefit that the robot could have a finer estimate of its state, however, fewer cells in the environment allows for a faster computation of the ROMDP algorithm.
+A better strategy which we plan to investigate in future work is to have adaptive cells whose size changes over time based on the observed state.
+Fig.~\ref{fig:env} shows an example of occupancy grid for the missions considered in this work. Green colored cells represent the goals to reach while red colored cells are areas to be avoided. 
+%\begin{figure}[ht!]
+%\centering
+%\includegraphics[width=0.48 \textwidth]{figs/ENV5.png}
+%\vspace{-15 pt}
+%\caption{\label{fig:env} {Example of discretized environment. Each cell represents a different position state. Moving forward from state A5, the quadrotor has 0.8 probability of reaching B5 and 0.2 probability of reaching B4 and B6.}}
+%\vspace{-10 pt}
+%\end{figure}
+%The green cells on the upper left corner have a high reward equal to +100 while the red colored cells on the upper right corner have a negative reward of -1000. The remaining cells have -5 reward. 
+
+At each step the vehicle will make some observations and compute Algorithm \ref{alg:value} that will produce the optimal action to perform. We define a finite set of primitive actions as follows
+
+\begin{itemize}
+\item{$\mathcal A$ = \{ {\em{move forward (F), move backward (B), $\; \; \; \; \; \; \; \; \; \; \; \; \; $ move left (L), move right (R)}} \}.}
+\end{itemize}
+Each action is mapped into the position and attitude control described in the previous section. Specifically here $\{F,B\}$ is mapped into $u_3$ and $\{L,R\}$ into $u_2$ control inputs.
+
+Associated with each action there is a transition probability $\mathcal P_a$. If there are not disturbances in the environment, each action will make the quadrotor move to the next cell in the direction of the action. Since UAVs often exhibit position drifts due to noise and disturbances, here we build a stochastic model of the disturbance effect on each action. Specifically we assume that there is a probability $\mathcal P_a(s,s')$ that the UAV will end up in the desired state $s'$ from $s$, and $1-\mathcal P_a(s,s')$ probability to reach either adjacent cells of $s'$ ($s'\!-\!1$ or $s'\!+\!1$), as shown in Fig.~\ref{fig:env}.
