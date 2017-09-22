@@ -352,7 +352,7 @@ $A =$ \textit{\{move forwards \{F\}, move backwards \{B\}, move right \{R\}, mov
 Each action is mapped to an altitude and position control input to the UAV to make it move from one cell to the next desired cell. As the environment is stochastic, we define the transition probability function $T(s,s',a)$ that maps the disturbances in the environment to a probability associated with taking each action $a$ to go to state $s'$ from state $s$.
 \subsection{Simulation Results}
 \subsubsection{Simulation Setup}
-We use a 10x10 occupancy grid to conduct the simulations. We define function $R$ as a function of the cell (state) only. $R(s) = 100$ for the desired destination and $R(s) = -3$ for any other cell. Figure. \ref{fig:sim-env} illustrates how we define the reward function for each state and the transition probability function for each state-action pair. The UAV uses two sensors to estimate its state. State estimation is done by a kalman filter that fuses the two sensor readings and prorgices the state estimate to the controller. The controller calculates the optimal action that maximizes the UAV's expected future rewards, driving it to the desired goal.
+We use a 10mx10m occupancy grid to conduct the simulations. We define function $R$ as a function of the cell (state) only. $R(s) = 100$ for the desired destination and $R(s) = -3$ for any other cell. Figure. \ref{fig:sim-env} illustrates how we define the reward function for each state and the transition probability function for each state-action pair. The UAV uses two sensors to estimate its state. State estimation is done by a kalman filter that fuses the two sensor readings and prorgices the state estimate to the controller. The controller calculates the optimal action that maximizes the UAV's expected future rewards, driving it to the desired goal.
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.45\textwidth]{sim-env}
@@ -375,7 +375,16 @@ We simulate the casse where the UAV is being under a sensor spoofing attack on o
     \item Drive the UAV to the attacker's desired goal optimally.
 \end{itemize}
 Figure. \ref{fig:policies} illustrates the difference between the mission policy of the UAV and the attacker policy that he wants the UAV to follow towards his desired destination.
-he attacker hides his attack vectors inside the uncertainty model of the environment. 
+he attacker hides his attack vectors inside the uncertainty model of the environment.
+\begin{figure*}[]
+	\centering
+	\subfigure[] {\includegraphics[width=0.23\textwidth]{fig/good-goal-policy}}
+	\subfigure[] {\includegraphics[width=0.23\textwidth]{fig/bad-goal-policy}}
+	%\vspace{-5pt}
+	\caption{(a) Optimal actions to go to the desired destination (b) Optimal actions to go to the attacker's desired destination}
+	\label{fig:policies}
+%	\vspace{-1pt}
+\end{figure*}
 \section{Experimental Results}\label{sec:exp}
 \section{Conclusions \& Future Work}\label{sec:conclusion}
 
