@@ -376,7 +376,7 @@ We simulate the case where the UAV is being under a sensor spoofing attack on on
     \item Drive the UAV to the attacker's desired goal optimally.
 \end{itemize}
 Figure. \ref{fig:policies} illustrates the difference between the mission policy of the UAV and the attacker policy that he wants the UAV to follow towards his desired destination.
-he attacker hides his attack vectors inside the uncertainty model of the environment.
+he attacker hides his attack vectors inside the environment uncertainty bounds.
 
 \begin{figure*}[]
 	\centering
@@ -389,7 +389,7 @@ he attacker hides his attack vectors inside the uncertainty model of the environ
 	\subfigure[] {\includegraphics[width=0.15\textwidth]{fig/attack_successfull/11}}
 	\subfigure[] {\includegraphics[width=0.15\textwidth]{fig/attack_successfull/13}}
 	\vspace{-5pt}
-	\caption{(a) }
+	\caption{Red cells represent the readings from the compromised sensor. Attack vector makes sure Yellow cells represent estimated states (a) UAV is not under attack. (b-g) Attack is being applied hiding the attack vector within the environment uncertainty bounds. (h) The UAV eventually reaches the undesired destination.}
 	\label{fig:successful-attack}
 %	\vspace{-1pt}
 \end{figure*}
@@ -405,10 +405,11 @@ he attacker hides his attack vectors inside the uncertainty model of the environ
 	\subfigure[] {\includegraphics[width=0.15\textwidth]{fig/attack_recovery/7}}
 	\subfigure[] {\includegraphics[width=0.15\textwidth]{fig/attack_recovery/8}}
 	\vspace{-5pt}
-	\caption{(a) }
-	\label{fig:successful-attack}
+	\caption{Sensor attack sequence is applied as in Figure. \ref{fig:successful-attack}. (a-e) Sequence updates of attack intention inference for the compromised sensor. (f-h) The inference confidence level exceeds the threshold, the compromised sensor is discarded and the UAV recovers from the attack.}
+	\label{fig:recovered-attack}
 %	\vspace{-1pt}
 \end{figure*}
+
 \section{Experimental Results}\label{sec:exp}
 \section{Conclusions \& Future Work}\label{sec:conclusion}
 
