@@ -314,9 +314,10 @@ To start the recovery process, we compare the posterior mean to a threshold valu
             $Pr(g=g_j|\mathcal{O}_{i,T}) \leftarrow$ from \ref{eqn:goal_posterior}\;
         }
         $g_m \leftarrow mean(Pr(g=g_j|\mathcal{O}_i))$\;
-        \If{$g_m \in \mathcal{G}, Pr(g=g_j|\mathcal{O}_{i,T})>h$}
+        $g_v \leftarrow  var(Pr(g=g_j|\mathcal{O}_i))$\;
+        \If{$g_m \in \mathcal{G}, g_v < h$}
         {
-            $g_a \leftarrow g_j$\;
+            $g_a \leftarrow g_m$\;
             $z_i \in \mathcal{S}'$\;
         }
     }
@@ -369,20 +370,43 @@ We use a 10mx10m occupancy grid to conduct the simulations. We define function $
 	\label{fig:policies}
 %	\vspace{-1pt}
 \end{figure}
-We simulate the casse where the UAV is being under a sensor spoofing attack on one of its two sensors. The attacker's goal is to achieve the following:
+We simulate the case where the UAV is being under a sensor spoofing attack on one of its two sensors. The attacker's goal is to achieve the following:
 \begin{itemize}
     \item Hide his attack vectors within the environment uncertainty model.
     \item Drive the UAV to the attacker's desired goal optimally.
 \end{itemize}
 Figure. \ref{fig:policies} illustrates the difference between the mission policy of the UAV and the attacker policy that he wants the UAV to follow towards his desired destination.
 he attacker hides his attack vectors inside the uncertainty model of the environment.
+
 \begin{figure*}[]
 	\centering
-	\subfigure[] {\includegraphics[width=0.23\textwidth]{fig/good-goal-policy}}
-	\subfigure[] {\includegraphics[width=0.23\textwidth]{fig/bad-goal-policy}}
-	%\vspace{-5pt}
-	\caption{(a) Optimal actions to go to the desired destination (b) Optimal actions to go to the attacker's desired destination}
-	\label{fig:policies}
+	\subfigure[] {\includegraphics[width=0.23\textwidth]{fig/attack_successfull/1}}
+	\subfigure[] {\includegraphics[width=0.23\textwidth]{fig/attack_successfull/2}}
+	\subfigure[] {\includegraphics[width=0.23\textwidth]{fig/attack_successfull/4}}
+	\subfigure[] {\includegraphics[width=0.23\textwidth]{fig/attack_successfull/6}}
+	\subfigure[] {\includegraphics[width=0.23\textwidth]{fig/attack_successfull/8}}
+	\subfigure[] {\includegraphics[width=0.23\textwidth]{fig/attack_successfull/10}}
+	\subfigure[] {\includegraphics[width=0.23\textwidth]{fig/attack_successfull/11}}
+	\subfigure[] {\includegraphics[width=0.23\textwidth]{fig/attack_successfull/13}}
+	\vspace{-5pt}
+	\caption{(a) }
+	\label{fig:successful-attack}
+%	\vspace{-1pt}
+\end{figure*}
+
+\begin{figure*}[]
+	\centering
+	\subfigure[] {\includegraphics[width=0.23\textwidth]{fig/attack_successfull/1}}
+	\subfigure[] {\includegraphics[width=0.23\textwidth]{fig/attack_successfull/2}}
+	\subfigure[] {\includegraphics[width=0.23\textwidth]{fig/attack_successfull/4}}
+	\subfigure[] {\includegraphics[width=0.23\textwidth]{fig/attack_successfull/6}}
+	\subfigure[] {\includegraphics[width=0.23\textwidth]{fig/attack_successfull/8}}
+	\subfigure[] {\includegraphics[width=0.23\textwidth]{fig/attack_successfull/10}}
+	\subfigure[] {\includegraphics[width=0.23\textwidth]{fig/attack_successfull/11}}
+	\subfigure[] {\includegraphics[width=0.23\textwidth]{fig/attack_successfull/13}}
+	\vspace{-5pt}
+	\caption{(a) }
+	\label{fig:successful-attack}
 %	\vspace{-1pt}
 \end{figure*}
 \section{Experimental Results}\label{sec:exp}
