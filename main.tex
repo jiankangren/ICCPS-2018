@@ -294,7 +294,7 @@ Then, we compute the posterior that the goal $g_i$ is the target goal $g_a$ give
 The first term on the right hand side of the equation is the likelihood of the observations given that the goal $g$ is the target goal $g_a$ which can be computed according to \ref{eqn:likelihood}. The second term is the prior which is updated from the posterior calculated at the previous time $t-1$.
 After the MCMC iterations are done, we evaluate the level of confidence that the estimated posterior for a potential goal $g_t$ is the actual target goal $g_a$. We perform this by calculating the mean of the posterior. The higher the value of the posterior mean, the higher the confidence we have about our estimation. Algorithm \ref{alg:alg1} shows the steps we take to perform attacker's intention inference.
 
-To start the recovery process, we compare the posterior mean to a threshold value $h$, and trigger the recover process if  it is higher than the threshold value. The intuition behind the recovery process is that the readings we obtain from the uncompromised sensors will provide a posterior estimate of an undesired goal with high confidence. If we determine the set of uncompromised sensors, we consider the rest of the sensors to be compromised. Afterwards, the recovery can be performed by correctly estimating the state of the system by fusing the uncompromised sensors only. Once, the correct state of the system is estimated, the autonomous controller shall correct the coarse of the vehicle to navigate toward its desired destination.
+To start the recovery process, we compare the variance of posterior  to a threshold value $h$, and trigger the recover process if  it is less than the threshold value. The idea behind the trigger of the recovery process is that the readings we obtain from the uncompromised sensors will provide a posterior estimate of an undesired goal with high confidence which leads to low variance in the estimated posterior. Once the the set of the uncompromised sensors is determined, the rest of the sensors are considered to be compromised. The recovery process is performed by correctly estimating the state of the system by fusing the uncompromised sensors only and discarding the compromised ones. Once, the correct state of the system is estimated, the autonomous controller will be able correct the coarse of the vehicle to navigate toward its desired destination.
 \begin{algorithm}\label{alg:alg1}
     %\SetKwInOut{Input}{Input}
     %\SetKwInOut{Output}{Output}
@@ -325,12 +325,39 @@ To start the recovery process, we compare the posterior mean to a threshold valu
 \end{algorithm}
 
 \subsection{Active Exploration}
-The speed of convergence of the inference we perform in Algorithm \ref{alg:alg1} depends on which states the vehicle visited. If most of the states inside the the set of observations are associated with mission policy's actions similar to the attacker policy's actions, the convergence of the inference algorithm will be slower and the level of confidence of the inferred posterior may not reach the desired threshold value. We can call these states as insensitive states. On the other hand, the set of observations which contains mostly states in which there is a discrepancy between the action the vehicle takes according to the mission policy and the action the vehicle takes according to the attacker policy, will lead to faster convergence. We may call these states as sensitive states. It is clear that we want to have a set of observations with as much sensitive states as possible.
+The speed of convergence of the inference we perform in Algorithm \ref{alg:alg1} depends on which states the vehicle visited. If most of the states inside the the set of observations are associated with mission policy's actions similar to the attacker policy's actions, the convergence of the inference algorithm will be slower and the level of confidence of the inferred posterior may not reach the desired threshold value. We consider these states as insensitive states. On the other hand, the set of observations which contains mostly states in which there is a discrepancy between the action the vehicle takes according to the mission policy and the action the vehicle takes according to the attacker policy, will lead to faster convergence. We consider these states sensitive states. For Algorithm \ref{alg:alg1} to achieve convergence to the attacker's goal, it is clear that we want to collect a set of observations having as many sensitive states as possible.
 
-\NB{here we should talk about exploration vs exploitation. Here are a few lines of text that I wrote recently and that can come back useful. The goal is to go from a situation where the system is mostly exploring the environment to a situation where it is mostly exploiting the accumulated knowledge. To converge faster to an optimal policy we will leverage active learning policies to steer the system toward states in the environment in which we can learn faster the optimal policy of the attacker. Active learning is an area of semi-supervised machine learning where the learning algorithm queries the user for information about observations. This idea can be applied to Inverse Reinforcement Learning where the IRL algorithm queries the agent for their behavior in a selected state. In the context of autonomous vehicle operations, we could actively attempt to influence the states experienced by the agent in order to observe its response. Note that such perturbation of the vehicle?s state may hasten or delay the vehicle?s arrival at a state.} In most Inverse Reinforcement Learning problems, we don't have control over the optimal agent, and we are constrained by the set of observations we get by recording the agent acting optimally. Thus, in order to solve this problem in this work we propose an active learning policy in which we exploit the fact that the autonomous controller of the vehicle still has control of the vehicle while being under attack by the malicious attacker. This means that the controller can make the vehicle explore more sensitive states by taking actions that are not necessarily the optimal actions to go to the desired goal. One approach to choose this exploring action is to pick an action randomly, but this approach doesn't guarantee that the chosen action will lead to a more or less sensitive state than the one the optimal action leads to. Another approach is to chose the action that leads to a state which gives the highest discrepancy between all potential attacker policies and the mission policy.
+ In most Inverse Reinforcement Learning problems, we don't have control over the optimal agent, and we are constrained by the set of observations we get by recording the agent acting optimally. Thus, in order to solve this problem in this work we propose an active learning policy in which we exploit the fact that the autonomous controller of the vehicle still has control of the vehicle while being under attack by the malicious attacker. This means that if we know which states are sensitive, we can make the vehicle explore more sensitive states by taking actions that lead towards sensitive states and not necessarily towards the desired goal. Knowing which states are sensitive and which are not is a hard problem. We propose an approach that, at each time step, searches for the action which moves the vehicle to a state that gives the highest discrepancy between the mission policy all potential attacker policies weighted by their posterior estimates.
 
-We propose an exploration approach that we call \textbf{\textit{Active Exploration}}. Active Exploration works as follows: After an attack is detected, we start the inference algorithm with a high value of an exploration factor $\delta, 0 < \delta < 1$ that decreases over time.\NB{I have no idea what is this factor? I suggest to talk about virtual obstacles} The exploration factor $\delta$ indicates how much the inference algorithm will favor state exploration than following the mission policy. The exploration itself works by taking an action that leads to a state that maximizes the discrepancy between the attacker policy that leads to the most likely potential goal so far and the mission policy. Active Exploration is a directed exploration towards the goal we have the highest confidence in its posterior estimate. In other words, When the vehicle detects that there is an attack, it explores the space around that leads to better and faster understanding of the intention of the attack \NB{still not clear}.\NB{where is the mathematical formulation?}
+We describe our Active Exploration approach in Algorithm \ref{alg:alg2}. At each time step $k$, the algorithm chooses the next action to apply $a^*$ by looking into each possible combination of sensor reading $s_i$, next state $s'_i$ and possible goal $g_i$, It picks the action that maximizes the probability of making an action different than the optimal action in the next state. A discrepancy factor  $W[a]$ for each <action, next state, goal> tuple is calculated based the transition probability $T$ to go this next state $s'_i$ from $s_i$, and the posterior estimate value of having $g_i$ as the attacker's goal at the current time step $k$. The posterior estimate $mean(Pr(g=g_j|\mathcal{O}_i))$ is obtained from Algorithm \ref{alg:alg1}.
 
+We apply $a^*$ at each time step with a probability $\delta, 0 < \delta < 1$ that decreases over time. The exploration factor $\delta$ indicates how much the inference algorithm will apply an action according to Active Exploration algorithm than applying an action according to the mission policy. The goal of doing Active Exploration is to make Attacker Inention Inference algorithm converge to the attacker's goal before the vehicle gets close to the attacker's desired region.
+\begin{algorithm}\label{alg:alg2}
+    %\SetKwInOut{Input}{Input}
+    %\SetKwInOut{Output}{Output}
+    \underline{AE} ($\mathcal{O}, \mathcal{G}$)\;
+    %\Input{Two nonnegative integers $a$ and $b$}
+    %\Output{$\gcd(a,b)$}
+    Initialize W[$|A|$] with zeros\;
+    \ForEach {action $a\in A$}
+    {
+        \ForEach {sensor $i \in \mathcal{S}$}
+        {
+            \ForEach {state $s'_i$}
+            {
+                \ForEach {goal $g_i \in \mathcal{G}$}
+                {
+                    \If{$\pi^{g_i}(s'_i) \ne \pi^*(s'_i)$} 
+                    {
+                       $W[a]+=mean(Pr(g=g_j|\mathcal{O}_i))\times T(s_I, a, s'_i)$\;
+                    }
+                }
+            }
+        }
+    }
+    $a^*=\arg\!\max_{a\in A}W$\;
+    \caption{Active Exploration}
+\end{algorithm}
 \subsection{Dealing with continuous state space}\NB{change title}
 In this work, we discretize the environment and come up with a set of discrete state-space and actions. As the size of the environment gets bigger, it can be very computationally expensive to discretize state space and actions which will result in a tremendously sized discrete state space and actions. There are various methods proposed to avoid the discretization step and do actions likelihood approximation instead. In \cite{Michini2013}, the authors demonstrated that they can do actions likelihood approximation by comparing the observed actions with actions generated by a simple closed loop controller. Similarly, we can use the same technique if we consider a continuous state space in our case. First, we record the action $a_i$ corresponding to each sensor reading $s_i$ to obtain the necessary set of state-action pairs to perform IRL. Then, to approximate the action likelihood for a goal $g_j$ at state $s_{i,t}$, we compute the difference between action $a_t$ and the action calculated from the controller at state $s_{i,t}$ to go to $g_i$ as follows:
 \begin{equation}
@@ -370,14 +397,12 @@ We use a 10mx10m occupancy grid to conduct the simulations. We define function $
 	\label{fig:policies}
 %	\vspace{-1pt}
 \end{figure}
-We simulate the case where the UAV is being under a sensor spoofing attack on one of its two sensors. The attacker's goal is to achieve the following:
-\begin{itemize}
-    \item Hide his attack vectors within the environment uncertainty model.
-    \item Drive the UAV to the attacker's desired goal optimally.
-\end{itemize}
-Figure. \ref{fig:policies} illustrates the difference between the mission policy of the UAV and the attacker policy that he wants the UAV to follow towards his desired destination.
-he attacker hides his attack vectors inside the environment uncertainty bounds.
+We simulate the case where the an attacker is spoofing one of the two sensor the UAV has. We assume the attacker has full knowledge of the system and exploits the uncertainty in the system model to hide the attack vectors which means that both sensor readings will comply the system model and we cannot determine which sensor is compromised by just comparing the sequence of sensor readings to the dynamical model of the system. The goal of the attack is to make the UAV navigate towards the attacker's desired goal optimally. Figure. \ref{fig:policies} illustrates the difference between the mission policy of the UAV and the attacker policy. The arrow at each cell present the optimal action associated with that cell.
 
+As shown in Figures \ref{fig:successful-attack} (a-h), the sequence of the compromised sensor readings comply with the system model and it drags the estimated state of the UAV towards the cells associated with optimal actions that lead towards the attacker's goal instead of the mission's goal. The UAV can detect from the divergence of the two sensor readings that one of them is compromised but it cannot determine which one is being spoofed and ends up navigating to the attacker's goal.
+
+\subsubsection{Attacker Intention Inference}
+We show how the Attacker Intention Inference algorithm works as follows: We apply the same attack we illustrated in the previous section. As shown in Figures \ref{fig:recovered-attack}, the attack gets detected at snapshot (a) and the Attacker Intention Inference algorithms starts to run. We assume in this environment that the set of all undesired goals is the set of all boarder cells of the grid. We assume we don't have any initial knowledge about where the attacker's goal is, which means the prior takes the form of a uniform distribution initially. Snapshots (b-e) show the convergence of the posterior to the region of the attacker's goal. At snapshot (f), the variance of the estimated posterior of the attacker's goal goes below the threshold value which activates the recovery process. The compromised sensor is identified and is discarded from the calculations of the state estimation
 \begin{figure*}[]
 	\centering
 	\subfigure[] {\includegraphics[width=0.15\textwidth]{fig/attack_successfull/1}}
@@ -389,7 +414,7 @@ he attacker hides his attack vectors inside the environment uncertainty bounds.
 	\subfigure[] {\includegraphics[width=0.15\textwidth]{fig/attack_successfull/11}}
 	\subfigure[] {\includegraphics[width=0.15\textwidth]{fig/attack_successfull/13}}
 	\vspace{-5pt}
-	\caption{Red cells represent the readings from the compromised sensor. Attack vector makes sure Yellow cells represent estimated states (a) UAV is not under attack. (b-g) Attack is being applied hiding the attack vector within the environment uncertainty bounds. (h) The UAV eventually reaches the undesired destination.}
+	\caption{Red cells represent the readings from the compromised sensor. Yellow cells represent estimated states (a) UAV is not under attack. (b-g) Attack is being applied hiding the attack vector within the system uncertainty bounds. (h) The UAV eventually reaches the undesired destination.}
 	\label{fig:successful-attack}
 %	\vspace{-1pt}
 \end{figure*}
@@ -413,18 +438,10 @@ he attacker hides his attack vectors inside the environment uncertainty bounds.
 \section{Experimental Results}\label{sec:exp}
 \section{Conclusions \& Future Work}\label{sec:conclusion}
 
-
 % conference papers do not normally have an appendix
-
-
 % use section* for acknowledgment
 %\vspace{-15pt}
 \section*{Acknowledgment}
-
-
-
-
-
 % trigger a \newpage just before the given reference
 % number - used to balance the columns on the last page
 % adjust value as needed - may need to be readjusted if
