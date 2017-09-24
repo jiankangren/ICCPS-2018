@@ -169,13 +169,18 @@ A malicious attacker performs a coordinated attack by spoofing one or more of se
 %We consider a smart attacker who hides his sensor attack vectors within the noise profiles of the attacked sensors or within the environment disturbance model.
 
 Our goal is to develop a technique to infer the intention of the attacker and recover the system before reaching the undesired state. 
-The idea is that if we are able to determine which set of sensors are under attack before the vehicle arrives to the undesired destination, we can correctly reconstruct the state of the vehicle using the remaining uncompromised set of sensors.
-We show that by using Inverse Reinforcement Learning techniques we are able to:
+
+%The idea is that if we are able to determine which set of sensors are under attack before the vehicle arrives to the undesired destination, we can correctly reconstruct the state of the vehicle using the remaining uncompromised set of sensors.
+
+To this end we leverage sensor redundancy and the theory of Inverse Reinforcement Learning to:
 \begin{itemize}
-    \item Predict the intention of the attacker.
-    \item Determine the set of compromised sensors.
-    \item Recover the correct state of the vehicle and continue its operation. 
+    \item predict the intention of the attacker.
+    \item determine the set of compromised sensors.
+    \item recover the correct state of the vehicle and counteract to continue its desired objective. 
 \end{itemize}
+
+To help the inference and avoid reaching states too close to the undesired ones, we also propose an active exploration framework in which non-optimal control actions are taken to drive the system toward states in which it would be easier to learn the intention of the attacker. \NB{may need to expand more on this thoughts}
+
 %\NB{Check.you need to add the approach that we are using and contribution here.}
 %Once the vehicle state is estimated correctly, the controller can drive the vehicle back on its coarse navigating towards the desired destination.
 
@@ -202,7 +207,7 @@ The rest of the paper is organized as follows: In section \ref{sec:Preliminaries
 %\end{enumerate}
 
 \section{Preliminaries}\label{sec:Preliminaries}
-In this section, we provide the foundations from MDP, RL, and IRL that we use to develop our approach in this work.
+In this section, we provide the foundations of MDP, RL, and IRL that we will be used to develop the propsoed malicious intention inference approach.
 \subsection{Markov Decision Process}
 A finite state Markov Decision Process (MDP) \cite{puterman2014markov} consists of a tuple $(S,A,T,R,\gamma)$ where:
 \begin{itemize}
@@ -223,9 +228,9 @@ Then, a policy $\pi$ is optimal iff, for each state $s \in S$:
 The optimal policy $\pi^*$ corresponds to a state value function $V^*$ and a state-action value function $Q^*$.
 
 \subsection{Reinforcement and Inverse Reinforcement Learning}
-Reinforcement Learning provides the notion of an agent that navigates the states of MDP environment by taking and an action $a \in A$. The agent receives a reward $r$ when it transitions from a state $s$ to state $s'$ by taking action $a$. The task of Reinforcement Learning algorithms is to learn the optimal policy $\pi^*$ that maximizes the future expected rewards for the agent from its history of interaction with the environment. The history of the interactions can be formulated as a set of the tuple $\big \langle s,a,r,s' \big \rangle$.
+Reinforcement Learning provides the notion\NB{what's the notion?? A notion is a concept. RL provides a concept?? Please rewrite} of an agent that navigates the states of MDP environment by taking and an action $a \in A$. The agent receives a reward $r$ when it transitions from a state $s$ to state $s'$ by taking action $a$. The task of Reinforcement Learning algorithms is to learn the optimal policy $\pi^*$ that maximizes the future expected rewards for the agent from its history of interaction with the environment. The history of the interactions can be formulated as a set of the tuple $\big \langle s,a,r,s' \big \rangle$.
 
-Q-learning is a model-free reinforcement learning technique. It relies on learning the state-action value function for each state-action pair. By doing so, the optimal policy can be constructed by simply choosing the action that has the highest value at each state. The core of the iterative learning method does state-action value iteration update as follows:
+Q-learning is a model-free reinforcement learning technique. It relies on learning the state-action value function for each state-action pair. By doing so, the optimal policy can be constructed by simply choosing the action that has the highest value at each state. The core of the iterative learning method does state-action value iteration update as follows\NB{this sentence is very confusing. Rewrite}:
 \begin{equation}
     Q(s_t,a_t) \leftarrow Q(s_t,a_t) + \alpha ( r_t + \gamma \max_{a} Q(s_{t+1},a) - Q(s_t,a_t))
 \end{equation}
@@ -234,24 +239,24 @@ Where $\alpha$ is the learning rate, and $r_t$ is the reward observed at the cur
 In Inverse Reinforcement Learning (IRL), we consider an agent acting optimally or sub-optimally in an MDP environment. The agent is following an optimal or sub-optimal policy $\pi^a(s)$. The policy of the agent $\pi^a(s)$ can be observed as a set of state-action pairs $\{(s_1,a1),(s_2,a_2), ...,(s_N,a_N)\}$, where $N$ is the number of observations. The goal of IRL is to infer the reward function $R$ that is responsible for generating these observations.%\NB{Check.both this and the previous sections are too brief. Either we add some mathematical formulation that will be used next or we may have to remove or combine with another section}
 
 \section{Problem Statement}\label{sec:problem}
-We consider an autonomous vehicle that performs a navigation task to a desired destination in a stochastic environment. The vehicle is equipped with $N$ number of sensors. The readings from the sensors are fused together to estimate the state of the vehicle. We also consider a malicious attacker that can spoof a subset of sensors $\mathcal{S'}$ where $|\mathcal{S'}| < N$. The goal of the attacker is to drive the vehicle towards an undesired destination while hiding its attack vectors within the noise profiles of the spoofed vehicle sensors or hiding it within the disturbance model of the stochastic environment.  Fig. \ref{fig:sensor_spoofing} summarizes the situation in which a sensor spoofing attack stealthily begins at $t_1$. The attack can stay stealthy to the system until the noise margins of the spoofed sensors don't overlap anymore with the noise margins of the uncompromised ones at $t_2$ as shown in Fig. \ref{fig:sensor_spoofing}. From $t_2$, an attack or fault can be detected due to the divergence in sensor readings. At this point, it is hard to distinguish between the compromised and uncompromoised sensors, as all sensor readings comply with the uncertainty model of the vehicle dynamics and the environment. .
+In this work we consider an autonomous vehicle that performs a navigation task to a desired destination in a stochastic environment. The vehicle is equipped with $N$ sensors. The readings from the sensors are fused together to estimate the state of the vehicle. We also consider a malicious attacker that can spoof a subset of sensors $\mathcal{S'}$ where $|\mathcal{S'}| < N$. The goal of the attacker is to drive the vehicle towards an undesired destination while hiding its attack vectors within the noise profiles of the spoofed vehicle sensors and the disturbance model of the stochastic environment.  Fig. \ref{fig:sensor_spoofing} summarizes the situation in which a sensor spoofing attack stealthily begins at $t_1$ \NB{ change $t_1$ with $t_a$ and $t_2$ with $t_d$.}. The attack can stay stealthy to the system until the noise margins of the spoofed sensors don't overlap anymore with the noise margins of the uncompromised ones at $t_2$ as shown in Fig. \ref{fig:sensor_spoofing}. From $t_2$, an attack or fault can be detected due to the divergence in sensor readings. At this point, it is hard to distinguish between the compromised and uncompromoised sensors, as all sensor readings comply with the uncertainty model of the vehicle dynamics and the environment. .
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.5\textwidth]{sensor_spoofing}
 \caption{An attack on the blue sensor starts at $t_1$. The attack can be detected at $t_2$ when the error margins of the blue sensor (compromised) and the orange sensor (uncompromised) don't overlap anymore.}
  \label{fig:sensor_spoofing}
 \end{figure}
-
+\NB{what's a blue sensor and an orange sensor? Let's be more technical.}
 Formally, We are interested in solving the following problem:
 \begin{problem}\label{prob:p1}
-Attacker Intention Inference and Recovery: Given a set $\mathcal{G}$ of states that are considered undesired for the autonomous vehicle. Given a super-set of observations $\mathcal{O}_{t_2:t} = \{\mathcal{O}_1, \mathcal{O}_2, ..., \mathcal{O}_N\}$, where $\mathcal{O}_{i,t_2:t} = \{(s_{i,t_2}, a_{t_2}), (s_{i,t_2+1}, a_{t_2+1}), ..., (s_{i,t_2+t}, a_{t_2+t})\}$ is the finite set of measurement-action pairs for each sensor $i$ which includes the history of sensor data recorded starting from the beginning of the attack detection time  $t = t_2$ until the current time $t$. Assuming that the attacker's goal is to drive the vehicle towards a target goal $g^a \in \mathcal{G}$ and the attack vectors hide within the system uncertainty bounds, find a policy to predict the goal of the attacker, determine the set of compromised sensors $\mathcal{S}'$ and recover the vehicle from this type of attack.
+Attacker Intention Inference and Recovery: Given a set $\mathcal{G}$ of states that are considered undesired for the autonomous vehicle. Given a super-set of observations $\mathcal{O}_{t_2:t} = \{\mathcal{O}_1, \mathcal{O}_2, ..., \mathcal{O}_N\}$, where $\mathcal{O}_{i,t_2:t} = \{(s_{i,t_2}, a_{t_2}), (s_{i,t_2+1}, a_{t_2+1}), ..., (s_{i,t_2+t}, a_{t_2+t})\}$ is the finite set of measurement-action pairs for each sensor $i$ which includes the history of sensor data recorded starting from the beginning of the attack detection time  $t = t_2$ until the current time $t$. Assuming that the attacker's goal is to drive the vehicle towards a target goal $g^a \in \mathcal{G}$ and the attack vectors hide within the system uncertainty bounds, find a policy to predict the goal of the attacker, determine the set of compromised sensors $\mathcal{S}'$ and recover the vehicle from this type of attack. \NB{problem still not formal enough. Correct $t_1$ and $t_2$}
 \end{problem}
 
 \section{Attacker Intention Inference}\label{sec:approach}
-We propose to cast Problem \ref{prob:p1} as an Inverse Reinforcement Learning problem. In this problem, we consider that the autonomous vehicle follows an optimal policy $\pi*$ to perform its navigation task to the desired goal. We call $\pi*$ the mission policy. After the attacker starts his attack on the vehicle, we consider the vehicle starts acting as an agent that navigates in the environment according to the attacker's desired policy $\pi^a$. We call $\pi^a$ the attack policy. The policy $\pi^a$ drives the agent towards the target destination $g^a$ as fast as possible while hiding the attack within the sensors noise profiles or the environment disturbance model. At each state $s$, the policy $\pi^a$ is calculated according to:
+We propose to cast Problem \ref{prob:p1} as an Inverse Reinforcement Learning problem. Specifically, we consider that the autonomous vehicle follows an optimal policy $\pi^*$ to perform its navigation task to the desired goal. We call $\pi^*$ the mission policy. After the attacker starts his attack on the vehicle, we consider the vehicle starts acting as an agent that navigates in the environment according to the attacker's desired policy $\pi^a$ \NB{not clear at all. What does this mean? The optimal policy is still running and the attacker is leveraging that.} \NB{where is the optimal policy represented? I see only the attack policy below}. We call $\pi^a$ the attack policy. The policy $\pi^a$ drives the agent towards the target destination $g^a$ as fast as possible while hiding the attack within the sensors noise profiles or the environment disturbance model \NB{how is this represented in the formula below?}. At each state $s$, the policy $\pi^a$ is calculated according to:
 \[ \pi^a(s) = \arg\!\max_{a\in A} Q^{\pi^a}(s,a,R^a)\]
 
-The reward function $R^a$ can take many forms. For the sake of simplicity we assume that the reward function takes the following form . 
+The reward function $R^a$ can take many forms. For the sake of simplicity we assume that the reward function takes the following form \NB{Again, just go to the point. The reward function has the foll }. 
   \begin{equation}
     R^a(s)=\left\{
                 \begin{array}{ll}
