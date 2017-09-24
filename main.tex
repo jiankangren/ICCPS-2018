@@ -314,12 +314,12 @@ To start the recovery process, we compare the variance of posterior  to a thresh
             $Pr(\mathcal{O}_{i,T}|g=g_j) \leftarrow$  from \ref{eqn:likelihood}\;
             $Pr(g=g_j|\mathcal{O}_{i,T}) \leftarrow$ from \ref{eqn:goal_posterior}\;
         }
-        $g_m \leftarrow mean(Pr(g=g_j|\mathcal{O}_i))$\;
-        $g_v \leftarrow  var(Pr(g=g_j|\mathcal{O}_i))$\;
+        $g_m(i) \leftarrow mean(Pr(g=g_j|\mathcal{O}_i))$\;
+        $g_v(i) \leftarrow  var(Pr(g=g_j|\mathcal{O}_i))$\;
         \If{$g_v < h$}
         {
-            $g_a \leftarrow g_m$\;
-            $z_i \in \mathcal{S}'$\;
+            $g_a \leftarrow g_m(i)$\;
+            $i \in \mathcal{S}'$\;
         }
     }
     \caption{Attacker Intention Prediction}
@@ -330,9 +330,9 @@ The speed of convergence of the inference we perform in Algorithm \ref{alg:alg1}
 
  In most Inverse Reinforcement Learning problems, we don't have control over the optimal agent, and we are constrained by the set of observations we get by recording the agent acting optimally. Thus, in order to solve this problem in this work we propose an active learning policy in which we exploit the fact that the autonomous controller of the vehicle still has control of the vehicle while being under attack by the malicious attacker. This means that if we know which states are sensitive, we can make the vehicle explore more sensitive states by taking actions that lead towards sensitive states and not necessarily towards the desired goal. Knowing which states are sensitive and which are not is a hard problem. We propose an approach that, at each time step, searches for the action which moves the vehicle to a state that gives the highest discrepancy between the mission policy all potential attacker policies weighted by their posterior estimates.
 
-We describe our Active Exploration approach in Algorithm \ref{alg:alg2}. At each time step $k$, the algorithm chooses the next action to apply $a^*$ by looking into each possible combination of sensor reading $s_i$, next state $s'_i$ and possible goal $g_i$, It picks the action that maximizes the probability of making an action different than the optimal action in the next state. A discrepancy factor  $W[a]$ for each <action, next state, goal> tuple is calculated based the transition probability $T$ to go this next state $s'_i$ from $s_i$, and the posterior estimate value of having $g_i$ as the attacker's goal at the current time step $k$. The posterior estimate $mean(Pr(g=g_j|\mathcal{O}_i))$ is obtained from Algorithm \ref{alg:alg1}.
+We describe our Active Exploration approach in Algorithm \ref{alg:alg2}. At each time step $k$, the algorithm chooses the next action to apply $a^*$ by looking into each possible combination of sensor reading $s_i$, and next state $s'_i$. It picks the action that maximizes the probability of making an action different than the optimal action in the next state. A discrepancy factor  $W[a]$ for each <action, next state, goal> tuple is calculated based the transition probability $T$ to go this next state $s'_i$ from $s_i$, and estimated bad goal $g_m(i)$ for sensor $i$ at the current time step $k$, and how much we are confident that this estimate is the bad goal $g_v(i)$. The posterior estimate $g_m(i)$, and the variance $g_v(i)$ are calculated in Algorithm \ref{alg:alg1} in the same time step.
 
-We apply $a^*$ at each time step with a probability $\delta, 0 < \delta < 1$ that decreases over time. The exploration factor $\delta$ indicates how much the inference algorithm will apply an action according to Active Exploration algorithm than applying an action according to the mission policy. The goal of doing Active Exploration is to make Attacker Inention Inference algorithm converge to the attacker's goal before the vehicle gets close to the attacker's desired region.
+We apply $a^*$ at each time step with a probability $\delta, 0 < \delta < 1$ that decreases over time. The exploration factor $\delta$ indicates how much the inference algorithm will apply an action according to Active Exploration algorithm than applying an action according to the mission policy. The goal of doing Active Exploration is to make Attacker Intention Inference algorithm converge to the attacker's goal before the vehicle gets close to the attacker's desired region.
 \begin{algorithm}\label{alg:alg2}
     %\SetKwInOut{Input}{Input}
     %\SetKwInOut{Output}{Output}
@@ -346,12 +346,8 @@ We apply $a^*$ at each time step with a probability $\delta, 0 < \delta < 1$ tha
         {
             \ForEach {state $s'_i$}
             {
-                \ForEach {goal $g_i \in \mathcal{G}$}
-                {
-                    \If{$\pi^{g_i}(s'_i) \ne \pi^*(s'_i)$} 
-                    {
-                       $W[a]+=mean(Pr(g=g_j|\mathcal{O}_i))\times T(s_I, a, s'_i)$\;
-                    }
+                \If{$\pi^{g_m(i)}(s'_i) \ne \pi^*(s'_i)$} 
+                {                     $W[a]+= g_v(i) \times T(s_i, a, s'_i)$\;
                 }
             }
         }
