@@ -120,7 +120,14 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{abstract}
-Sensor spoofing attacks that hide within the uncertainty profiles of autonomous cyber-physical system (CPS) dynamics can drag the system to undesired dangerous states. Using state-of-the-art CPS security techniques is not sufficient to detect which sensors are being spoofed and fail to protect the system from such an attack. We propose an Inverse Reinforcement Learning technique that leverages Bayesian Inference and uses the history of sensor readings and control actions of a compromised autonomous (CPS) to predict the goal of the attacker and determine which set of sensors are compromised. We show that by predicting this information, we recover the system from the stealthy attack.
+Modern autonomous cyber-physical systems have been demonstrated to be vulnerable to cyber-attacks like sensor spoofing in which an attacker compromises sensor readings while remaining stealphy, hiding within the sensor noise profile and the expected dynamics, to hijack the system toward undesired possibly dangerous states. The majority of security techniques developed todays are however reactive and concerned with detection and interdiction of attacks without considering the intention of the attack. To deal with such problem, in this paper we propose a Bayesian Inverse Reinforcement Learning technique that leverages the history of sensor and control actions to predict the goal of the attacker and determine which sensors are compromised. We also propose an active exploration framework to help the intention inference converge before reaching undesired states of the system. The proposed solutions are validated with simulation and experimental results on quadrotor unmanned aerial vehicle autonomous navigation case studies. \NB{I rewrote the abstract but we may have to change it again and add more details about the approach that you are using} 
+%
+%In this paper we propose 
+% without considering the intention of the attack.
+%
+%
+%Cyber-attacks on modern autonomous cyber-physical systems leverage information about the dynamics of the systems and uncertainties and noise to spoof sensors and hijack a system to undesired possibly dangerous states 
+%Sensor spoofing attacks that hide within the uncertainty profile of the dynamics of autonomous cyber-physical system (CPS) dynamics can drag the system to undesired dangerous states. Using state-of-the-art CPS security techniques is not sufficient to detect which sensors are being spoofed and fail to protect the system from such an attack. We propose an Inverse Reinforcement Learning technique that leverages Bayesian Inference and uses the history of sensor readings and control actions of a compromised autonomous (CPS) to predict the goal of the attacker and determine which set of sensors are compromised. We show that by predicting this information, we recover the system from the stealthy attack.
 
 \end{abstract}
 
