@@ -156,7 +156,7 @@ For example, it is believed that GPS spoofing leaded to the capturing of a Senti
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.38\textwidth]{problem}
-\caption{A malicious attacker spoofs UAV's  GPS receiver to drive it to an undesired destination instead of its original one}
+\caption{Pictorial representation of the situation envisioned in this work in which a malicious attacker spoofs a sensor like a GPS on a UAV to hijack it to an undesired destination (red goal) taking it off its desired route (green goal)}
  \label{fig:problem}
 \end{figure}
 
@@ -413,7 +413,10 @@ The speed of convergence of the inference approach described in the previous sec
 
 %For Algorithm \ref{alg:alg1} to achieve convergence to the attacker's goal, it is clear that we want to collect a set of observations having as many sensitive states as possible.
 
-In most IRL problems, we don't have control over the optimal agent, and we are constrained by the set of observations/actions that follow a precomputed optimal policy. To increase the convergence speed, in this work we propose an active learning policy in which we exploit the fact that the vehicle has control over its inputs even during an attack and thus perturb its motion from the optimal policy to lead the vehicle towards sensitive states. This idea is reminiscent of reinforcement learning in which ... 
+In most IRL problems, we don't have control over the optimal agent, and we are constrained by the set of observations/actions that follow a precomputed optimal policy. To increase the convergence speed, in this work we propose an active exploration policy in which we exploit the fact that the vehicle has control over its inputs even during an attack and thus perturb its motion from the optimal policy to lead the vehicle towards sensitive states. This idea is reminiscent of reinforcement learning in which the environment is explored to learn the optimal policy toward a certain reward.
+
+
+%... The goal is to go from a situation where the system is mostly exploring the environment to a situation where it is mostly exploiting the accumulated knowledge. To converge faster to an optimal policy we will leverage active learning policies to steer the system toward states in the environment in which we can learn faster the optimal policy of the attacker. Active learning is an area of semi-supervised machine learning where the learning algorithm queries the user for information about observations. This idea can be applied to Inverse Reinforcement Learning where the IRL algorithm queries the agent for their behavior in a selected state. In the context of autonomous vehicle operations, we could actively attempt to influence the states experienced by the agent in order to observe its response. Note that such perturbation of the vehicle?s state may hasten or delay the vehicle?s arrival at a state.
 
 of the vehicle while being under attack by the malicious attacker. This means that if we know which states are sensitive, we can make the vehicle explore more sensitive states by taking actions that lead towards sensitive states and not necessarily towards the desired goal. Knowing which states are sensitive and which are not is a hard problem. We propose an approach that, at each time step, searches for the action which moves the vehicle to a state that gives the highest discrepancy between the mission policy all potential attacker policies weighted by their posterior estimates.
 
