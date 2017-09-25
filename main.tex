@@ -621,7 +621,21 @@ We show how the Attacker Intention Inference algorithm works as follows: We appl
 %%	\vspace{-1pt}
 %\end{figure*}
 \section{Conclusions \& Future Work}\label{sec:conclusion}
-\NB{I didn't touch this yet} We showed that, for cyber physical systems under sensor spoofing attacks, using Inverse Reinforcement Learning based method can predict both the intention of the attacker and the spoofed sensors. Our simulation results show that applying our proposed method is able to predict the goal of an attacker that hides his attack within the uncertainty bounds of the physical system before the system reaches the attacker's desired state, and uses this prediction information to recover the system from such an attack.
+\NB{I didn't touch this yet} 
+In this paper we have presented a IRL-based technique to infer the malicious intention of an attacker on an autonomous CPS operation. Using our approach we can reconstruct the compromised sensors even if their behavior is stealthy hiding within the noice profile and the expected uncertainties of the system. If an attacker is operating optimally, then we it is possible to recover the system before reaching undesired states in the environment. We also demonstrated an active exploration technique to speed up inference convergence.
+
+We notice that considering optimal MDP policies as discussed in this paper brings already a good level of security into the system. In fact, an attacker that is trying to hide within the system dynamics and noise will have to behave as expected by the model (i.e., the transition probabilities) of the system limiting the possible action that he/she can perform. Also, an attacker will have to perform a highly coordinated attack and have large resources to create the attacks described in the paper and even if successful, our proposed approach will be able to detect and infer the intention thus securing the system.
+
+We believe that the proposed approach could be deployed in any autonomous CPS to check for sensor/action consistency during run-time. This technique could be used also to detect and recover from failure in the system.
+
+Our current and future work is toward expanding this framework to deal also with the prediction of malicious intention of vehicle not under our control, like AUVs entering restricted airspace.
+We are also working on improving computation complexity of the proposed framework by expanding the idea proposed in Section IV.B to bring the problem into the continuous time domain.
+
+
+%
+% and thus it would not be possible to perform any action but rerouting and hijacking could be possible
+%
+%We showed that, for cyber physical systems under sensor spoofing attacks, using Inverse Reinforcement Learning based method can predict both the intention of the attacker and the spoofed sensors. Our simulation results show that applying our proposed method is able to predict the goal of an attacker that hides his attack within the uncertainty bounds of the physical system before the system reaches the attacker's desired state, and uses this prediction information to recover the system from such an attack.
 % conference papers do not normally have an appendix
 % use section* for acknowledgment
 %\vspace{-15pt}
