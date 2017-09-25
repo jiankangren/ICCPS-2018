@@ -247,11 +247,25 @@ In this work we consider an autonomous vehicle that performs a navigation task t
 \caption{An attack on sensor 1 starts at $t_a$. Sensor 2 is uncompromised. The attack can be detected at $t_d$ as the error margins sensor 1 readings and the orange sensor 2 readings don't overlap anymore.}
  \label{fig:sensor_spoofing}
 \end{figure}
+<<<<<<< HEAD
 Specifically, we consider that the autonomous vehicle follows an optimal mission policy $\pi^*$ to perform its navigation task to the desired goal. An attacker is lunched at a previously unknown time $t_a$ and by manipulating sensor data is acting such as the uncompromised sensor/actions follow the attacker policy $\pi^a$ as follows:
 \begin{equation}
 \pi^a(s) = \arg\!\max_{a\in A} Q^{\pi^a}(s,a,R^a)
 \end{equation}
 where, $R^a$ has following form:
+=======
+%\NB{what's a blue sensor and an orange sensor? Let's be more technical.}
+Formally, We are interested in solving the following problem:
+\begin{problem}\label{prob:p1}
+Attacker Intention Inference and Recovery: Given a set $\mathcal{G}$ of states that are considered undesired for the autonomous vehicle. Given a super-set of observations $\mathcal{O}_{1:N,T} = \{\mathcal{O}_{1,T}, \mathcal{O}_{2,T}, ..., \mathcal{O}_{N,T}\}$, where $\mathcal{O}_{i,T} = \{(s_{i,t_d}, a_{t_d}), (s_{i,t_d+1}, a_{t_d+1}), ..., (s_{i,t_d+t}, a_{t_d+t})\}$ is the finite set of measurement-action pairs for each sensor $i$ which includes the history of sensor data recorded over the period $T$ which is the time period between the attack detection time $t_d$ until the current time $t_c$. Assuming that the attacker's goal is to drive the vehicle towards a target goal $g^a \in \mathcal{G}$ and the attack vectors hide within the system uncertainty bounds, find a policy to predict the goal of the attacker, determine the set of compromised sensors $\mathcal{S}'$ and recover the vehicle from this type of attack.% \NB{problem still not formal enough. Correct $t_a$ and $t_d$}
+\end{problem}
+
+\section{Attacker Intention Inference}\label{sec:approach}
+We propose to cast Problem \ref{prob:p1} as an Inverse Reinforcement Learning problem. Specifically, we consider that the autonomous vehicle follows an optimal mission policy $\pi^*$ to perform its navigation task to the desired goal. After the attacker starts his attack on the vehicle, we assume the compromised vehicle acts as an agent that takes actions according to the attacker's desired policy $\pi^a$ \NB{Check. not clear at all. What does this mean? The optimal policy is still running and the attacker is leveraging that.} \NB{where is the optimal policy represented? I see only the attack policy below. ME: The optimal policy $\pi^*$ formula is presented before. It would be redundant to write it again. I believe if we just mention at this point that the vehicle is moving according to optimal policy $\pi*$ it should be understandable}. We call $\pi^a$ the attack policy. The policy $\pi^a$ drives the agent towards the target destination $g^a$ as fast as possible while hiding the attack within the sensors noise profiles or the environment disturbance model \NB{Check how is this represented in the formula below?.  ME:It is not presented ... this is how the attacker spoofs the sensor. It is something different than how the compromised vehicle acts which what this is about}. At each state $s$, the policy $\pi^a$ is calculated according to:
+\[ \pi^a(s) = \arg\!\max_{a\in A} Q^{\pi^a}(s,a,R^a)\]
+
+Where, $R^a$ can take the following form:\NB{Check. Again, just go to the point. The reward function has the foll }. 
+>>>>>>> origin/master
   \begin{equation}
     R^a(s)=\left\{
                 \begin{array}{ll}
@@ -344,12 +358,17 @@ In order to infer the attacker goal $g_a$ and the set of compromised sensors $\m
 
 The number of MCMC iterations is determined by the parameter ${e}_{max}$ \NB{we can remove this infomration}. \NB{all this next sentence is super confusing. Is the following the MCMC algorithm? } We obtain a sample $g_j$ from the prior distribution of the undesired goals set $\mathcal{G}$. Then, we iterate over all the observations $\mathcal{O}_{i,T}$ we observed over a period of time $T$ for the sensor $i$. We update the posterior of the potential sampled goal $g_j$ from each observation by calculating the likelihood of the taken actions. The likelihood of taking action $a_t$ at state $s_{i,t}$ to go to goal $g_j$ can be directly computed as the action-value function (Q-function) for taking this action from this state:
 
-\begin{equation} Pr(a_t|s_{i,t},g_j) = Q^*(s_{t,k},a_t,R_j)
+\begin{equation} Pr(a_t|s_{i,t},g_j) = Q^*(s_{i,t},a_t,R_j)
 \label{eqn:action_likelihood}
 \end{equation}
 
+<<<<<<< HEAD
 Then, we compute the posterior that the goal $g_i$ is the target goal $g_a$ given the set of observations $\mathcal{O}_{i,t_2:t}$ as follows:
 \begin{equation} Pr(g^a=g_j|\mathcal{O}_{i,t_2:t}) \propto Pr(\mathcal{O}_{i,t_2:t} | g^a = g_j) \\ \times Pr(g^a=g_j|\mathcal{O}_{i,t_2:t-1})
+=======
+Then, we compute the posterior that the goal $g_i$ is the target goal $g_a$ given the set of observations $\mathcal{O}_{i,t_d:t}$ as follows:
+\begin{equation} Pr(g=g_a|\mathcal{O}_{i,t_d:t}) \propto Pr(\mathcal{O}_{i,t_d:t} | g = g_a) \\ \times Pr(g=g_a|\mathcal{O}_{i,t_d:(t-1)})
+>>>>>>> origin/master
 \label{eqn:goal_posterior}
 \end{equation}
 
@@ -375,9 +394,9 @@ Once the set of the uncompromised sensors $\mathcal S^a \subset \mathcal S$ is d
         \While{iteration $e < e_{max}$}
         {
             Sample goal $g_j \in \mathcal{G}$\;
-            \ForEach{Observation $(s_{i,k}, a_k) \in \mathcal{O}_i$}
+            \ForEach{Observation $(s_{i,t}, a_t) \in \mathcal{O}_i$}
             { 
-                $Pr(a_k|s_{i,k},g_j) \leftarrow Q^*(s_{i,k},a_k,R_j)$\;
+                $Pr(a_k|s_{i,t},g_j) \leftarrow Q^*(s_{i,t},a_t,R_j)$\;
             }
             $Pr(\mathcal{O}_{i,T}|g=g_j) \leftarrow$  from \ref{eqn:likelihood}\;
             $Pr(g=g_j|\mathcal{O}_{i,T}) \leftarrow$ from \ref{eqn:goal_posterior}\;
@@ -402,7 +421,7 @@ In most IRL problems, we don't have control over the optimal agent, and we are c
 
 of the vehicle while being under attack by the malicious attacker. This means that if we know which states are sensitive, we can make the vehicle explore more sensitive states by taking actions that lead towards sensitive states and not necessarily towards the desired goal. Knowing which states are sensitive and which are not is a hard problem. We propose an approach that, at each time step, searches for the action which moves the vehicle to a state that gives the highest discrepancy between the mission policy all potential attacker policies weighted by their posterior estimates.
 
-We describe our Active Exploration approach in Algorithm \ref{alg:alg2}. At each time step $k$, the algorithm chooses the next action to apply $a^*$ by looking into each possible combination of sensor reading $s_i$, and next state $s'_i$. It picks the action that maximizes the probability of making an action different than the optimal action in the next state. A discrepancy factor  $W[a]$ for each <action, next state, goal> tuple is calculated based the transition probability $T$ to go this next state $s'_i$ from $s_i$, and estimated bad goal $g_m(i)$ for sensor $i$ at the current time step $k$, and how much we are confident that this estimate is the bad goal $g_v(i)$. The posterior estimate $g_m(i)$, and the variance $g_v(i)$ are calculated in Algorithm \ref{alg:alg1} in the same time step.
+We describe our Active Exploration approach in Algorithm \ref{alg:alg2}. At each time step $k$, the algorithm chooses the next action to apply $a^*$ by looking into each possible combination of sensor reading $s_i$, and next state $s'_i$. It picks the action that maximizes the probability of making an action different than the optimal action in the next state. A discrepancy factor  $W[a]$ for each (action, next state, goal) tuple is calculated based the transition probability $T$ to go this next state $s'_i$ from $s_i$, and estimated bad goal $g_m(i)$ for sensor $i$ at the current time step $k$, and how much we are confident that this estimate is the bad goal $g_v(i)$. The posterior estimate $g_m(i)$, and the variance $g_v(i)$ are calculated in Algorithm \ref{alg:alg1} in the same time step.
 
 We apply $a^*$ at each time step with a probability $\delta, 0 < \delta < 1$ that decreases over time. The exploration factor $\delta$ indicates how much the inference algorithm will apply an action according to Active Exploration algorithm than applying an action according to the mission policy. The goal of doing Active Exploration is to make Attacker Intention Inference algorithm converge to the attacker's goal before the vehicle gets close to the attacker's desired region.
 \begin{algorithm}\label{alg:alg2}
