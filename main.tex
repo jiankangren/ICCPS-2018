@@ -230,14 +230,14 @@ V^\pi(s,R) = R(s) + \sum_{s'}\gamma\,T(s,\pi(s),s')\,V^\pi(s')
 The value function of state $s$ is equal to the reward received in state $s$ plus the sum of the discounted expected value function for each neighbor state $s'$ when actions are taken according to the policy $\pi$.
 To evaluate the value of taking action $a$ for each state $s$, we define the state-action value function which is called the Q-function.
 \begin{equation}
-Q^\pi(s,a,R) = R(s) + \sum_{s'} \gamma\,T(s,a,s')\,V^\pi(s')
+Q^\pi(s,a,R) = R(s) + \sum_{s'} \gamma\,T(s,a,s')\,V^\pi(s') \;\; \forall a \in A
 \end{equation}
 
-Finally, the policy $\pi$ for each state $s \in S$ is chosen as follows:
+Finally, the optimal policy $\pi^*$ for each state $s \in S$ is chosen as follows:
 \begin{equation}
-\pi(s) = \arg\!\max_{a\in A} Q^\pi(s,a,R)
+\pi^*(s) = \arg\!\max_{a\in A} Q^\pi(s,a,R)
 \end{equation}
-The optimal policy $\pi^*$ corresponds to a state value function $V^*$ and a state-action value function $Q^*$. \NB{why is the above formula not optimal, i.e., with the $^*$}
+%The optimal policy $\pi^*$ corresponds to a state value function $V^*$ and a state-action value function $Q^*$. \NB{why is the above formula not optimal, i.e., with the $^*$}
 
 \subsection{Reinforcement and Inverse Reinforcement Learning}
 Reinforcement Learning considers the case\NB{Mahmoud, RL doesn't provide a concept or a notion. Let's be formal. This sentence is like you are writing that RL provides the dream of...} of an agent that can transition from a state $s$ to state $s'$ in MDP environment by taking and an action $a \in A$. The agent receives a reward $r$ \NB{why is the reward lower case?} after reaching state $s'$. The task of Reinforcement Learning algorithms is to learn the optimal policy $\pi^*$ that maximizes the future expected rewards for the agent from its history of interaction with the environment. The history of the interactions can be formulated as a set of the tuple $\big \langle s,a,r,s' \big \rangle$.
