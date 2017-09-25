@@ -174,9 +174,9 @@ Our goal is to develop a technique to infer the intention of the attacker and re
 
 To this end we leverage sensor redundancy and the theory of Inverse Reinforcement Learning to:
 \begin{itemize}
-    \item predict the intention of the attacker.
-    \item determine the set of compromised sensors.
-    \item recover the correct state of the vehicle and counteract to continue its desired objective. 
+    \item Predict the intention of the attacker.
+    \item Determine the set of compromised sensors.
+    \item Recover the correct state of the vehicle and counteract to continue its desired objective. 
 \end{itemize}
 
 To help the inference and avoid reaching states too close to the undesired ones, we also propose an active exploration framework in which non-optimal control actions are taken to drive the system toward states in which it would be easier to learn the intention of the attacker. \NB{may need to expand more on this thoughts}
@@ -233,17 +233,17 @@ To evaluate the value of taking action $a$ for each state $s$, we define the sta
 Q^\pi(s,a,R) = R(s) + \sum_{s'} \gamma\,T(s,a,s')\,V^\pi(s')
 \end{equation}
 
-Finally, an optimal policy $\pi$ for each state $s \in S$ is chosen as follows:
+Finally, the policy $\pi$ for each state $s \in S$ is chosen as follows:
 \begin{equation}
 \pi(s) = \arg\!\max_{a\in A} Q^\pi(s,a,R)
 \end{equation}
 The optimal policy $\pi^*$ corresponds to a state value function $V^*$ and a state-action value function $Q^*$. \NB{why is the above formula not optimal, i.e., with the $^*$}
 
 \subsection{Reinforcement and Inverse Reinforcement Learning}
-Reinforcement Learning provides the concept \NB{Mahmoud, RL doesn't provide a concept or a notion. Let's be formal. This sentence is like you are writing that RL provides the dream of...} of an agent that navigates the states of MDP environment by taking and an action $a \in A$. The agent receives a reward $R$ \NB{why is the reward lower case?} when it transitions from a state $s$ to state $s'$ by taking action $a$. The task of Reinforcement Learning algorithms is to learn the optimal policy $\pi^*$ that maximizes the future expected rewards for the agent from its history of interaction with the environment. The history of the interactions can be formulated as a set of the tuple $\big \langle s,a,r,s' \big \rangle$.
+Reinforcement Learning considers the case\NB{Mahmoud, RL doesn't provide a concept or a notion. Let's be formal. This sentence is like you are writing that RL provides the dream of...} of an agent that can transition from a state $s$ to state $s'$ in MDP environment by taking and an action $a \in A$. The agent receives a reward $r$ \NB{why is the reward lower case?} after reaching state $s'$. The task of Reinforcement Learning algorithms is to learn the optimal policy $\pi^*$ that maximizes the future expected rewards for the agent from its history of interaction with the environment. The history of the interactions can be formulated as a set of the tuple $\big \langle s,a,r,s' \big \rangle$.
 
 Q-learning is a model-free reinforcement learning technique. It relies on learning the state-action value function (Q-function) for each state-action pair. By doing so, the optimal policy can be constructed by choosing at each state the action that is associated with the largest Q-function value. The core part of the iterative method of Q-learning does state-action value iteration update as follows\NB{Check. this sentence is very confusing. Rewrite}:
-\begin{equation}
+\begin{equation}\label{eq:qlearn}
     Q(s_t,a_t) \leftarrow Q(s_t,a_t) + \alpha ( r_t + \gamma \max_{a} Q(s_{t+1},a) - Q(s_t,a_t))
 \end{equation}
 Where $\alpha$ is the learning rate, and $r_t$ is the reward observed at the current state.
@@ -268,7 +268,7 @@ An attacker is lunched at a previously unknown time $t_a$ and by manipulating se
 \begin{equation}
 \pi^a(s) = \arg\!\max_{a\in A} Q^{\pi^a}(s,a,R)
 \end{equation}
-where, $R$ has the following form for bot mission and attack policy:
+where, $R$ has the following form for both mission and attack policy:
 %=======
 %%\NB{what's a blue sensor and an orange sensor? Let's be more technical.}
 %Formally, We are interested in solving the following problem:
@@ -290,7 +290,7 @@ where, $R$ has the following form for bot mission and attack policy:
                 \end{array}
               \right.
   \end{equation}
-with $C \in \Ne^+$  and $\epsilon << C \in \Ne^+ $. $\epsilon$ represents the cost to take an action and can be thought has the energy consumed by the agent to move from one state to another state.
+with $C \in \Ne^+$  and $\epsilon << C \in \Ne^+ $. The term $\epsilon$ represents the cost to take an action and can be thought has the energy consumed by the agent to move from one state to another state.
 % This reward function gives a small negative penalty for each action the vehicle takes (which can model the vehicle battery charge loss for example) and it gives a very high reward if the vehicle reaches the goal.
 
 To summarize, the vehicle uses fused data from all sensors and an optimal policy $\pi^*$ to navigate to $g^*$. An attacker spoofs sensors data such that the fused sensor information show that the vehicle is at a state such that the  action associated to the state of the uncompromised sensors (i.e., the actual state of the system) follows the attack optimal policy $\pi^a$ toward $g^a$. The attacker is assumed to know both the optimal mission policy $\pi^*$ and the MDP model of the system.   
@@ -353,12 +353,11 @@ To estimate the mean of posterior distribution while avoiding calculating $Pr(\m
 In order to estimate the posterior $Pr(R|\mathcal{O})$ using MCMC algorithm, we need to compute two terms at each iteration: i) the prior $Pr(R)$ and ii) the likelihood of the observations $Pr(\mathcal{O}|R)$.
 The prior can be initialized according to a previous knowledge of the posterior distribution. If a prior knowledge about the posterior distribution is not available, then we can assume that the prior is drawn from a uniform distribution.
 In our case, we want to calculate ,for each sensor $i$, the likelihood of observing a set of sensor readings and actions taken during a period $\Delta t$ following an optimal policy of the agent to go to a potential goal $g_j \forall g_j \in \mathcal G$. We can compute this likelihood by comparing, at each observed sensor reading, the Q-function value of the action taken at the state observed by each sensor with the Q-function value of all possible actions that the agent can take at those states. Formally, we can calculate the likelihood of the observations as follows:
-\begin{equation}
+\begin{equation}\label{eq:likelihood}
 Pr(\mathcal{O}_{i,T} | g = g_j)  = \frac{e^{\alpha\sum_{T}{Q^*(s_{i,t},a_t,R_j)}}}{\sum_{b\in A}{}e^{\alpha\sum_{T}{}Q^*(s_{i,t},b,R_j)}}
-\label{eq:likelihood}
 \end{equation}
 \NB{is this equation with $g^a$}
-where, $\alpha$ is a factor that indicates how confident we are that the agent is acting optimally. To solve \eqref{eq:likelihood} it is required to solve an MDP problem as in \eqref{} \NB{put a number on all equations in preliminaries and refer to the right equation}
+where, $\alpha$ is a factor that indicates how confident we are that the agent is acting optimally. To solve \eqref{eq:likelihood} it is required to solve an MDP problem as in \eqref{eq:qlearn} \NB{put a number on all equations in preliminaries and refer to the right equation}
 %to compute $Q^*$ for each state-action pair by performing Q-learning iterations as described in section \ref{sec:Preliminaries}.
 
 
@@ -380,20 +379,20 @@ The number of MCMC iterations is determined by the parameter ${e}_{max}$ \NB{we 
 \end{equation}
 
 
-Then, we compute the posterior that the goal $g_j$ is the target goal $g_a$ given the set of observations $\mathcal{O}_{i,t_2:t}$ as follows:
-\begin{equation} Pr(g^a=g_j|\mathcal{O}_{i,t_2:t}) \propto Pr(\mathcal{O}_{i,t_2:t} | g^a = g_j) \\ \times Pr(g^a=g_j|\mathcal{O}_{i,t_2:t-1})
+Then, we compute the posterior that the potential goal $g_j$ is a target goal $g$ given the set of observations $\mathcal{O}_{i,t_d:t}$ as follows:
+\begin{equation} Pr(g=g_j|\mathcal{O}_{i,t_d:t}) \propto Pr(\mathcal{O}_{i,t_d:t} | g = g_j) \\ \times Pr(g=g_j|\mathcal{O}_{i,t_d:t-1})
 \label{eqn:goal_posterior}
 \end{equation}
 
 The first term on the right hand side (rhs) of the equation represents the likelihood of the observations given that the goal $g^a=g_j$ which can be computed using \eqref{eq:likelihood}. The second term on the rhs represents the prior which is updated from the posterior calculated at the previous time $t-1$ and initialized in the beginning with a sample drawn from a uniform distribution.
-After the MCMC iterations is completed, we evaluate the level of confidence that $g^a = g_j$ by calculating the mean of the posterior. The higher the value of the posterior mean, the higher the confidence we have about the estimation. Algorithm \ref{alg:alg1} summarizes the steps taken to perform attacker's intention inference. \NB{the algorithm needs to be fixed. What is $g_m$}
+After the MCMC iterations is completed, we evaluate the level of confidence that $g = g_j$ by calculating the mean of the posterior. The higher the value of the posterior mean $\mu_i$, the higher the confidence we have about the estimation. Algorithm \ref{alg:alg1} summarizes the steps taken to perform attacker's intention inference. \NB{the algorithm needs to be fixed. What is $g_m$}
 \NB{equation is latex are referred using slash eqref{eq: label} to create the parenthesis around the number }
 
 A recovery procedure is triggered if there exists a sensor or a set of sensors that return a state $s_i$ such that the variance of the posterior probability $\nu_i \leq \tau$ where $\tau$ is a user selected threshold. The higher the threshold the sooner a recovery will be initiated but a less precise inference will be computed. Vice versa a small threshold may cause a delayed recovery. The sensors associated with such posterior probabilities are the compromised ones and thus a re removed from considerations during recovery.
 
 %... we are ... To start the recovery process, we compare the variance of posterior  to a threshold value $h$, and trigger the recover process if  it is less than the threshold value. The idea behind the trigger of the recovery process is that the readings we obtain from the uncompromised sensors will provide a posterior estimate of an undesired goal with high confidence which leads to low variance in the estimated posterior. 
 
-Once the set of the uncompromised sensors $\mathcal S^a \subset \mathcal S$ is determined, the optimal policy $\pi^a$ is considered to drive the vehicle back to its desired goal.
+Once the set of the uncompromised sensors $\mathcal S' \subset \mathcal S$ is determined, the optimal policy $\pi^a$ is considered to drive the vehicle back to its desired goal.
 
 %the rest of the sensors are considered to be compromised. The recovery process is performed by using only the uncompromised sensors correctly estimating the state of the system by fusing the uncompromised sensors only and discarding the compromised ones and considering the optimal policy. Once, the correct state of the system is estimated, the autonomous controller will be able correct the coarse of the vehicle to navigate toward its desired destination.
 \begin{algorithm}\label{alg:alg1}
@@ -409,14 +408,14 @@ Once the set of the uncompromised sensors $\mathcal S^a \subset \mathcal S$ is d
             Sample goal $g_j \in \mathcal{G}$\;
             \ForEach{Observation $(s_{i,t}, a_t) \in \mathcal{O}_i$}
             { 
-                $Pr(a_k|s_{i,t},g_j) \leftarrow Q^*(s_{i,t},a_t,R_j)$\;
+                $Pr(a_t|s_{i,t},g_j) \leftarrow Q^*(s_{i,t},a_t,R_j)$\;
             }
-            $Pr(\mathcal{O}_{i,T}|g=g_j) \leftarrow$  from \ref{eqn:likelihood}\;
+            $Pr(\mathcal{O}_{i,T}|g=g_j) \leftarrow$  from \ref{eq:likelihood}\;
             $Pr(g=g_j|\mathcal{O}_{i,T}) \leftarrow$ from \ref{eqn:goal_posterior}\;
         }
-        $g_m(i) \leftarrow mean(Pr(g=g_j|\mathcal{O}_i))$\;
-        $g_v(i) \leftarrow  var(Pr(g=g_j|\mathcal{O}_i))$\;
-        \If{$g_v < h$}
+        $\mu_i \leftarrow mean(Pr(g=g_j|\mathcal{O}_i))$\;
+        $\nu_i \leftarrow  var(Pr(g=g_j|\mathcal{O}_i))$\;
+        \If{$\nu_i < \tau$}
         {
             $g_a \leftarrow g_m(i)$\;
             $i \in \mathcal{S}'$\;
@@ -436,7 +435,7 @@ In most IRL problems, we don't have control over the optimal agent, and we are c
 %... The goal is to go from a situation where the system is mostly exploring the environment to a situation where it is mostly exploiting the accumulated knowledge. To converge faster to an optimal policy we will leverage active learning policies to steer the system toward states in the environment in which we can learn faster the optimal policy of the attacker. Active learning is an area of semi-supervised machine learning where the learning algorithm queries the user for information about observations. This idea can be applied to Inverse Reinforcement Learning where the IRL algorithm queries the agent for their behavior in a selected state. In the context of autonomous vehicle operations, we could actively attempt to influence the states experienced by the agent in order to observe its response. Note that such perturbation of the vehicle?s state may hasten or delay the vehicle?s arrival at a state.
 
 %of the vehicle while being under attack by the malicious attacker. This means that if we know which states are sensitive, we can make the vehicle explore more sensitive states by taking actions that lead towards sensitive states and not necessarily towards the desired goal. 
-Knowing which states are sensitive and which are not is a hard problem. We propose an approach that, at each time step, searches for the action which moves the vehicle to a state that gives the highest discrepancy between the mission policy all potential attacker policies weighted by their posterior estimates.\NB{??????}
+Knowing which states are sensitive and which are not is a hard problem. We propose an approach that, at each time step, searches for the action which moves the vehicle to a state that gives the highest discrepancy between the mission policy and all potential attacker policies weighted by their posterior estimates.\NB{??????}
 
 We describe our Active Exploration approach in Algorithm \ref{alg:alg2}.\NB{let's remove the algorithm} At each time step $k$, the algorithm chooses the next action to apply $a^*$ by looking into each possible combination of sensor reading $s_i$, and next state $s'_i$. It picks the action that maximizes the probability of making an action different than the optimal action in the next state. A discrepancy factor  $W[a]$ for each (action, next state, goal) tuple is calculated based the transition probability $T$ to go this next state $s'_i$ from $s_i$, and estimated bad goal $g_m(i)$ for sensor $i$ at the current time step $k$, and how much we are confident that this estimate is the bad goal $g_v(i)$. The posterior estimate $g_m(i)$, and the variance $g_v(i)$ are calculated in Algorithm \ref{alg:alg1} in the same time step.
 
@@ -452,10 +451,11 @@ We apply $a^*$ at each time step with a probability $\delta, 0 < \delta < 1$ tha
     {
         \ForEach {sensor $i \in \mathcal{S}$}
         {
-            \ForEach {state $s'_i$}
+            \ForEach {state $s'_i$ where $T(s,s',a) \ne 0$}
             {
-                \If{$\pi^{g_m(i)}(s'_i) \ne \pi^*(s'_i)$} 
-                {                     $W[a]+= g_v(i) \times T(s_i, a, s'_i)$\;
+                \If{$\pi^{\mu_i}(s'_i) \ne \pi^*(s'_i)$} 
+                {                     $W[a]+=
+                \nu_i\times T(s_i, a, s'_i)$\;
                 }
             }
         }
@@ -544,14 +544,14 @@ k_{p,\psi}(\psi^{\textrm{des}} - \psi) + k_{d,\psi}(r^{\textrm{des}} - r)
 \end{equation}
 
 
-\subsection{Simulations Environment}
+\subsection{Simulation Environment}
  We represent the discretized state space of the environment as an occupancy grid which maps the environment to a 2-D matrix of cells. Each cell represents a state and holds a probability value that indicates the probability of the vehicle reaching this cell by taking a certain action.
 In normal operation conditions (No attack detected), the UAV takes an action at each cell according to its mission optimal policy $\pi*$. The set of actions $A$ that the UAV can take at any cell is defined as follows:
 $A =$ \textit{\{move forwards \{F\}, move backwards \{B\}, move right \{R\}, move left \{L\}\}}.
 Each action is mapped to an altitude and position control input to the UAV to make it move from one cell to the next desired cell. As the environment is stochastic, we define the transition probability function $T(s,s',a)$ that maps the disturbances in the environment to a probability associated with taking each action $a$ to go to state $s'$ from state $s$.
 \subsection{Simulation Results}
 \subsubsection{Simulation Setup}
-We use a 10mx10m occupancy grid to conduct the simulations. We define function $R$ as a function of the cell (state) only. $R(s) = 100$ for the desired destination and $R(s) = -3$ for any other cell. Figure. \ref{fig:sim-env} illustrates how we define the reward function for each state and the transition probability function for each state-action pair. The UAV uses two sensors to estimate its state. State estimation is done by a kalman filter that fuses the two sensor readings and prorgices the state estimate to the controller. The controller calculates the optimal action that maximizes the UAV's expected future rewards, driving it to the desired goal.
+We use a $10m\times10m$ occupancy grid to conduct the simulations. We define function $R$ as a function of the cell (state) only. $R(s) = 100$ for the desired destination and $R(s) = -3$ for any other cell. Figure. \ref{fig:sim-env} illustrates how we define the reward function for each state and the transition probability function for each state-action pair. The UAV uses two sensors to estimate its state. State estimation is done by a kalman filter that fuses the two sensor readings and prorgices the state estimate to the controller. The controller calculates the optimal action that maximizes the UAV's expected future rewards, driving it to the desired goal.
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.45\textwidth]{sim-env}
