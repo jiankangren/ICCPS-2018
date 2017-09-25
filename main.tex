@@ -279,6 +279,7 @@ with $C \in \Ne^+$  and $\epsilon << C \in \Ne^+ $. $\epsilon$ represents the co
 
 To summarize, the vehicle uses fused data from all sensors and an optimal policy $\pi^*$ to navigate to $g^*$. An attacker spoofs sensors data such that the fused sensor information show that the vehicle is at a state such that the  action associated to the state of the uncompromised sensors (i.e., the actual state of the system) follows the attack optimal policy $\pi^a$ toward $g^a$. The attacker is assumed to know the optimal mission policy $\pi^*$ and know the MDP model of the system.   
 
+For the sake of simplicity here we consider that the sensors on board of the vehicles are measuring the state of the vehicle. 
 %\NB{Check. not clear at all. What does this mean? The optimal policy is still running and the attacker is leveraging that.} \NB{where is the optimal policy represented? I see only the attack policy below. ME: The optimal policy $\pi^*$ formula is presented before. It would be redundant to write it again. I believe if we just mention at this point that the vehicle is moving accroding to optimal policy $\pi*$ it should be understandable}. We call $\pi^a$ the attack policy. The policy $\pi^a$ drives the agent towards the target destination $g^a$ as fast as possible while hiding the attack within the sensors noise profiles or the environment disturbance model \NB{Check how is this represented in the formula below?.  ME:It is not presented ... this is how the attacker spoofs the sensor. It is something different than how the compromised vehicle acts which what this is about}. At each state $s$, the policy $\pi^a$ is calculated according to:
 %\[ \pi^a(s) = \arg\!\max_{a\in A} Q^{\pi^a}(s,a,R^a)\]
 
@@ -493,11 +494,11 @@ We show how the Attacker Intention Inference algorithm works as follows: We appl
 \begin{figure*}[]
 	\centering
 	\subfigure[] {\includegraphics[width=0.15\textwidth]{fig/attack_successfull/1}}
-	\subfigure[] {\includegraphics[width=0.15\textwidth]{fig/attack_successfull/2}}
+%	\subfigure[] {\includegraphics[width=0.15\textwidth]{fig/attack_successfull/2}}
 	\subfigure[] {\includegraphics[width=0.15\textwidth]{fig/attack_successfull/4}}
 	\subfigure[] {\includegraphics[width=0.15\textwidth]{fig/attack_successfull/6}}
 	\subfigure[] {\includegraphics[width=0.15\textwidth]{fig/attack_successfull/8}}
-	\subfigure[] {\includegraphics[width=0.15\textwidth]{fig/attack_successfull/10}}
+%	\subfigure[] {\includegraphics[width=0.15\textwidth]{fig/attack_successfull/10}}
 	\subfigure[] {\includegraphics[width=0.15\textwidth]{fig/attack_successfull/11}}
 	\subfigure[] {\includegraphics[width=0.15\textwidth]{fig/attack_successfull/13}}
 	\vspace{-5pt}
