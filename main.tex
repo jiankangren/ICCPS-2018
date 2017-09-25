@@ -222,7 +222,8 @@ A finite state Markov Decision Process (MDP) \cite{puterman2014markov} consists 
     \item $\gamma$ is a discount factor with $0\leq\gamma\leq1$.
 \end{itemize}
 Solving an MDP problem consists on finding an optimal policy of actions $\pi^*: S \mapsto A$ that maximizes the expected value of the discounted future rewards \cite{bezzo2016stochastic}.
-In order to find $\pi^*$, we need to define a value function for all state $s \in S$ given a reward function $R(s)$ and a policy $\pi$ as follows \NB{I cannot understand what's the difference between the two equations below}:
+In order to find $\pi^*$, we need to define a value function for all state $s \in S$ given a reward function $R(s)$ and a policy $\pi$ as follows 
+%\NB{I cannot understand what's the difference between the two equations below}:
 \begin{equation}
 V^\pi(s,R) = R(s) + \sum_{s'}\gamma\,T(s,\pi(s),s')\,V^\pi(s') 
 \end{equation}
@@ -230,7 +231,7 @@ V^\pi(s,R) = R(s) + \sum_{s'}\gamma\,T(s,\pi(s),s')\,V^\pi(s')
 The value function of state $s$ is equal to the reward received in state $s$ plus the sum of the discounted expected value function for each neighbor state $s'$ when actions are taken according to the policy $\pi$.
 To evaluate the value of taking action $a$ for each state $s$, we define the state-action value function which is called the Q-function.
 \begin{equation}
-Q^\pi(s,a,R) = R(s) + \sum_{s'} \gamma\,T(s,a,s')\,V^\pi(s') \;\; \forall a \in A
+Q^\pi(s,a,R) = R(s) + \sum_{s'} \gamma\,T(s,a,s')\,V^\pi(s'), \;\; \forall a \in A
 \end{equation}
 
 Finally, the optimal policy $\pi^*$ for each state $s \in S$ is chosen as follows:
@@ -240,15 +241,17 @@ Finally, the optimal policy $\pi^*$ for each state $s \in S$ is chosen as follow
 %The optimal policy $\pi^*$ corresponds to a state value function $V^*$ and a state-action value function $Q^*$. \NB{why is the above formula not optimal, i.e., with the $^*$}
 
 \subsection{Reinforcement and Inverse Reinforcement Learning}
-Reinforcement Learning considers the case\NB{Mahmoud, RL doesn't provide a concept or a notion. Let's be formal. This sentence is like you are writing that RL provides the dream of...} of an agent that can transition from a state $s$ to state $s'$ in MDP environment by taking and an action $a \in A$. The agent receives a reward $r$ \NB{why is the reward lower case?} after reaching state $s'$. The task of Reinforcement Learning algorithms is to learn the optimal policy $\pi^*$ that maximizes the future expected rewards for the agent from its history of interaction with the environment. The history of the interactions can be formulated as a set of the tuple $\big \langle s,a,r,s' \big \rangle$.
+Reinforcement Learning considers the case\NB{Mahmoud, RL doesn't provide a concept or a notion. Let's be formal. This sentence is like you are writing that RL provides the dream of...} of an agent that can transition from a state $s$ to state $s'$ in MDP environment by taking and an action $a \in A$. The agent receives a reward $R(s)$ \NB{why is the reward lower case?} after reaching state $s'$. The task of Reinforcement Learning algorithms is to learn the optimal policy $\pi^*$ that maximizes the future expected rewards for the agent from its history of interaction with the environment. The history of the interactions can be formulated as a set of the tuple $\big \langle s,a,R(s),s' \big \rangle$.
 
 Q-learning is a model-free reinforcement learning technique. It relies on learning the state-action value function (Q-function) for each state-action pair. By doing so, the optimal policy can be constructed by choosing at each state the action that is associated with the largest Q-function value. The core part of the iterative method of Q-learning does state-action value iteration update as follows\NB{Check. this sentence is very confusing. Rewrite}:
 \begin{equation}\label{eq:qlearn}
-    Q(s_t,a_t) \leftarrow Q(s_t,a_t) + \alpha ( r_t + \gamma \max_{a} Q(s_{t+1},a) - Q(s_t,a_t))
+    Q(s,a) \leftarrow Q(s,a) + \alpha ( R(s) + \gamma \max_{a} Q(s',a) - Q(s,a))
+%        Q(s_t,a_t) \leftarrow Q(s_t,a_t) + \alpha ( R(s) + \gamma \max_{a} Q(s_{t+1},a) - Q(s_t,a_t))
 \end{equation}
-Where $\alpha$ is the learning rate, and $r_t$ is the reward observed at the current state.
+Where $\alpha$ is a learning rate factor.
+%, and $r_t$ is the reward observed at the current state.
 
-In Inverse Reinforcement Learning (IRL), we consider an agent acting optimally or sub-optimally in an MDP environment. The agent is following an optimal or sub-optimal policy $\pi^a(s)$. The policy of the agent $\pi^a(s)$ can be observed as a set of state-action pairs $\{(s_1,a1),(s_2,a_2), ...,(s_N,a_N)\}$, where $N$ is the number of observations. The goal of IRL is to infer the reward function $R$ that is responsible for generating these observations.%\NB{Check.both this and the previous sections are too brief. Either we add some mathematical formulation that will be used next or we may have to remove or combine with another section}
+In Inverse Reinforcement Learning (IRL), we consider an agent acting optimally or sub-optimally in an MDP environment. The agent is following an optimal or sub-optimal policy $\pi^a(s)$. The policy of the agent $\pi^a(s)$ can be observed as a set of state-action pairs $\{(s_1,a_1),(s_2,a_2), ...,(s_N,a_N)\}$, where $N$ is the number of observations. The goal of IRL is to infer the reward function $R$ that is responsible for generating these observations.%\NB{Check.both this and the previous sections are too brief. Either we add some mathematical formulation that will be used next or we may have to remove or combine with another section}
 
 \section{Problem Formulation}\label{sec:problem}
 In this work we consider an autonomous vehicle that performs a navigation task to a desired goal $g^* \in \mathcal G$ in a stochastic environment. The vehicle is equipped with $N$ sensors. The readings from the sensors are fused together to estimate the state of the vehicle. We also consider a malicious attacker that can spoof a subset of sensors $\mathcal{S}^a \subset \mathcal{S}$. The goal of the attacker is to drive the vehicle towards a different undesired location $g^a \neq g^*$ while hiding its attack vector within the noise profile of the spoofed sensors and the disturbance model of the stochastic environment.  Fig. \ref{fig:sensor_spoofing} summarizes the situation in which a sensor spoofing attack stealthily begins at $t_a$. The attack remains stealthy until the noise margins of the spoofed sensors don't overlap anymore with the noise margins of the uncompromised sensor at $t_d$ as shown in Fig. \ref{fig:sensor_spoofing}. At $t_d$, the attack can be detected due to the difference in sensor readings. However at that time, it would be hard to distinguish between the compromised and uncompromoised sensors, since all sensor readings comply with the uncertainty and disturbance model of the vehicle dynamics and the environment. The problem that we are interested to solve in this work is to infer the intention of an attack by observing and comparing measurements data and control inputs, hence recognizing what sensor is misbehaving and finally recover the system. 
@@ -632,7 +635,7 @@ Our current and future work is toward expanding this framework to deal also with
 We are also working on improving computation complexity of the proposed framework by expanding the idea proposed in Section IV.B to bring the problem into the continuous time domain.
 
 We are also working on experiments on real quadrotor UAVs that we plan to include in future contributions.
-
+\NB{maybe we can add that a drawback is that there are a lot of parameters to tune to have that teh proposed technique works}
 
 
 %
