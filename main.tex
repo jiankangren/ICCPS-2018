@@ -120,7 +120,7 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{abstract}
-Modern autonomous cyber-physical systems have been demonstrated to be vulnerable to cyber-attacks like sensor spoofing in which an attacker compromises sensor readings while remaining stealphy, hiding within the sensor noise profile and the expected dynamics, to hijack the system toward undesired possibly dangerous states. The majority of security techniques developed todays are however reactive and concerned with detection and interdiction of attacks without considering the intention of the attack. To deal with such problem, in this paper we propose a Bayesian Inverse Reinforcement Learning technique that leverages the history of sensor and control actions to predict the goal of the attacker and determine which sensors are compromised. We also propose an active exploration framework to help the intention inference converge before reaching undesired states of the system. The proposed solutions are validated with simulation and experimental results on quadrotor unmanned aerial vehicle autonomous navigation case studies. \NB{I rewrote the abstract but we may have to change it again and add more details about the approach that you are using} 
+Modern autonomous cyber-physical systems have been demonstrated to be vulnerable to cyber-attacks like sensor spoofing in which an attacker compromises sensor readings while remaining stealphy, hiding within the sensor noise profile and the expected dynamics, to hijack the system toward undesired possibly dangerous states. The majority of security techniques developed todays are however reactive and concerned with detection and interdiction of attacks without considering the intention of the attack. To deal with such problem, in this paper we propose a Bayesian Inverse Reinforcement Learning technique that leverages the history of sensor and control actions to predict the goal of the attacker and determine which sensors are compromised. We also propose an active exploration framework to help the intention inference converge before reaching undesired states of the system. The proposed solutions are validated with simulation results on a quadrotor unmanned aerial vehicle autonomous navigation case studies. \NB{I rewrote the abstract but we may have to change it again and add more details about the approach that you are using} 
 %
 %In this paper we propose 
 % without considering the intention of the attack.
@@ -197,7 +197,10 @@ The problem of Inverse Reinforcement Learning has been addressed in multiple dom
 
 The previous works considered the case where we can observe a moving agent completing its desired trajectory from source to destination. In other applications, we may want to observe the agent navigating in the environment and try to predict its future trajectory and its desired destination. In this case, we have partial set of observation. This problem was studied in \cite{Best2015} where they used Bayesian Inference to predict the intention of an agent navigating in a partially occluded environment. The intention of the agent was represented by the goal the agent is trying to reach based on the assumption that the agent will most likely take the shortest path to the goal position, with some uncertainty in its transition model.
 
-In the cyber-physical literature, to our knowledge, no research has been done so far that uses IRL to predict the intention of an attacker.
+In this work we contribute to the literature on CPS cyber-security by proposing a Bayesian Inverse Reinforcement Learning approach to infer the intention of an attacker that spoofs some of the sensor onboard a vehicle to hijack teh vehicle off route toward undesired states in the environment. We also propose an active exploration method to gain more information by forcing the system to follow suboptimal policies toward states in which malicious intention inference will be more visible.
+To the best of our knowledge an inverse reinforcement learning approach to deal with the problem of CPS cyber-security and especially malicious intention inference has never been proposed before.
+%
+%In the cyber-physical literature, to our knowledge, no research has been done so far that uses IRL to predict the intention of an attacker.
 
 The rest of the paper is organized as follows: In section \ref{sec:Preliminaries}, we describe the theoretical foundation of our approach. In section \ref{sec:approach}, we provide details of our approach. In section \ref{sec:simulations}, we illustrate the simulations we ran to test our approach. Finally, we conclude our work in section \ref{sec:conclusion}.
 %The idea of check-pointing and recovery has been applied to many computing systems \cite{Zhang2003,Processors2017,Koo1987, Prakash1996}. By taking snapshots of the state of a system in a cyclic fashion or after the occurrence of specific events, we can roll-back to the last saved checkpoint if a fault occurs to recover the system from that fault. This technique cannot be directly applied to a dynamical system without modifying the definitions of a checkpoint and a roll-back for two reasons. 
@@ -214,10 +217,11 @@ A finite state Markov Decision Process (MDP) \cite{puterman2014markov} consists 
     \item $S$ is the set of all the states.
     \item $A$ is the set of all possible actions.
     \item $T : S\times A\times S \mapsto [0,1]$ is the transition probabilities function. $T(s,a,s')$ is the probability of moving to state $s'$ from state $s$ after taking action $a$.
-    \item $R$ is the reward function which can be a function of the state only $R(s)$, a function of states and actions $R(s,a)$, or a function of the states, actions, and the next states $R(s,a,s')$. For the rest of the paper, we will use $R(s)$ to denote the reward function without loss of generality. \NB{what are we using on this paper? 1, 2, or 3? }
+    \item $R$ is the reward function which in our case is a function of the state $R(s)$
+%    can be a function of the state only $R(s)$, a function of states and actions $R(s,a)$, or a function of the states, actions, and the next states $R(s,a,s')$. For the rest of the paper, we will use $R(s)$ to denote the reward function without loss of generality. \NB{what are we using on this paper? 1, 2, or 3? }
     \item $\gamma$ is a discount factor with $0\leq\gamma\leq1$.
 \end{itemize}
-Solving an MDP problem consists in finding an optimal policy of actions $\pi^*: S \mapsto A$ that maximizes the expected value of the discounted future rewards \cite{bezzo2016stochastic}.
+Solving an MDP problem consists on finding an optimal policy of actions $\pi^*: S \mapsto A$ that maximizes the expected value of the discounted future rewards \cite{bezzo2016stochastic}.
 In order to find $\pi^*$, we need to define a value function for all state $s \in S$ given a reward function $R(s)$ and a policy $\pi$ as follows \NB{I cannot understand what's the difference between the two equations below}:
 \[ V^\pi(s,R) = R(s) + \sum_{s'}^{}\gamma\,T(s,\pi(s),s')\,V^\pi(s') \] \NB{Please use equation environment in latex. begin equation end equation notation}
 The value function of state $s$ is equal to the reward received in state $s$ plus the sum of the discounted expected value function for each neighbor state $s'$ when actions are taken according to the policy $\pi$.
@@ -225,10 +229,10 @@ To evaluate the value of taking action $a$ for each state $s$, we define the sta
 \[Q^\pi(s,a,R) = R(s) + \sum_{s'}{} \gamma\,T(s,a,s')\,V^\pi(s') \]
 Finally, an optimal policy $\pi$ for each state $s \in S$ is chosen as follows:
 \[ \pi(s) = \arg\!\max_{a\in A} Q^\pi(s,a,R)\]
-The optimal policy $\pi^*$ corresponds to a state value function $V^*$ and a state-action value function $Q^*$.
+The optimal policy $\pi^*$ corresponds to a state value function $V^*$ and a state-action value function $Q^*$. \NB{why is the above formula not optimal, i.e., with the $^*$}
 
 \subsection{Reinforcement and Inverse Reinforcement Learning}
-Reinforcement Learning provides the concept \NB{Mahmoud, RL doesn't provide a concept or a notion. Let's be formal. This sentence is like you are writing that RL provides the dream of...} of an agent that navigates the states of MDP environment by taking and an action $a \in A$. The agent receives a reward $r$ \NB{why is the reward lower case?} when it transitions from a state $s$ to state $s'$ by taking action $a$. The task of Reinforcement Learning algorithms is to learn the optimal policy $\pi^*$ that maximizes the future expected rewards for the agent from its history of interaction with the environment. The history of the interactions can be formulated as a set of the tuple $\big \langle s,a,r,s' \big \rangle$.
+Reinforcement Learning provides the concept \NB{Mahmoud, RL doesn't provide a concept or a notion. Let's be formal. This sentence is like you are writing that RL provides the dream of...} of an agent that navigates the states of MDP environment by taking and an action $a \in A$. The agent receives a reward $R$ \NB{why is the reward lower case?} when it transitions from a state $s$ to state $s'$ by taking action $a$. The task of Reinforcement Learning algorithms is to learn the optimal policy $\pi^*$ that maximizes the future expected rewards for the agent from its history of interaction with the environment. The history of the interactions can be formulated as a set of the tuple $\big \langle s,a,r,s' \big \rangle$.
 
 Q-learning is a model-free reinforcement learning technique. It relies on learning the state-action value function (Q-function) for each state-action pair. By doing so, the optimal policy can be constructed by choosing at each state the action that is associated with the largest Q-function value. The core part of the iterative method of Q-learning does state-action value iteration update as follows\NB{Check. this sentence is very confusing. Rewrite}:
 \begin{equation}
@@ -244,7 +248,7 @@ In this work we consider an autonomous vehicle that performs a navigation task t
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.5\textwidth]{sensor_spoofing}
-\caption{An attack on sensor 1 starts at $t_a$. Sensor 2 is uncompromised. The attack can be detected at $t_d$ as the error margins sensor 1 readings and the orange sensor 2 readings don't overlap anymore.}
+\caption{An attack on sensor 1 starts at $t_a$. Sensor 2 is uncompromised. The attack can be detected at $t_d$ since the two sensor readings don't overlap anymore.}
  \label{fig:sensor_spoofing}
 \end{figure}
 %<<<<<<< HEAD
