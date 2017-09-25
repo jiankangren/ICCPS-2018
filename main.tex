@@ -348,7 +348,7 @@ The algorithm that we propose in this work to do such inference leverages the Ba
 \end{equation}
 where, $Pr(\mathcal{O})$ is the probability distribution of $\mathcal{O}$ over the entire space of reward function $R$. The normalization constant $Pr(\mathcal{O})$ is usually hard to compute as it requires performing multiple integral calculations which are usually not feasible to compute analytically. 
 
-To estimate the mean of posterior distribution while avoiding calculating $Pr(\mathcal{O})$, we leverage the MCMC sampling algorithm presented in \cite{andrieu2003introduction} that allows to estimate the distribution of the posterior $Pr(\tilde{R}|\mathcal{O})$. Since this is an estimation problem, we are interested in finding the value of $R$ that minimizes the expected least square error (LSE) of the estimate $E[(R-\tilde{R})^2]$. It was proven in \cite{Ramachandran2007} that the mean of the estimated posterior distribution is the optimal estimator that we can use and thus we omit the proof here.
+We leverage MCMC sampling algorithm presented in \cite{andrieu2003introduction} which allows us to estimate the distribution of the posterior $Pr(\tilde{R}|\mathcal{O})$ without the need to calculate $Pr(\mathcal{O})$. The idea of MCMC is that by iteratively sampling markov-chain-connected samples from the prior distribution, we come up with samples that can provide an estimate of the posterior distribution. Since we use MCMC to solve an estimation problem, we are interested in finding the value of $R$ that minimizes the expected least square error (LSE) of the estimate $E[(R-\tilde{R})^2]$. It was proven in \cite{Ramachandran2007} that the mean of the estimated posterior distribution is the optimal estimator to use and thus we omit the proof here.
 
 In order to estimate the posterior $Pr(R|\mathcal{O})$ using MCMC algorithm, we need to compute two terms at each iteration: i) the prior $Pr(R)$ and ii) the likelihood of the observations $Pr(\mathcal{O}|R)$.
 The prior can be initialized according to a previous knowledge of the posterior distribution. If a prior knowledge about the posterior distribution is not available, then we can assume that the prior is drawn from a uniform distribution.
@@ -437,7 +437,7 @@ In most IRL problems, we don't have control over the optimal agent, and we are c
 %of the vehicle while being under attack by the malicious attacker. This means that if we know which states are sensitive, we can make the vehicle explore more sensitive states by taking actions that lead towards sensitive states and not necessarily towards the desired goal. 
 Knowing which states are sensitive and which are not is a hard problem. We propose an approach that, at each time step, searches for the action which moves the vehicle to a state that gives the highest discrepancy between the mission policy and all potential attacker policies weighted by their posterior estimates.\NB{??????}
 
-We describe our Active Exploration approach in Algorithm \ref{alg:alg2}.\NB{let's remove the algorithm} At each time step $k$, the algorithm chooses the next action to apply $a^*$ by looking into each possible combination of sensor reading $s_i$, and next state $s'_i$. It picks the action that maximizes the probability of making an action different than the optimal action in the next state. A discrepancy factor  $W[a]$ for each (action, next state, goal) tuple is calculated based the transition probability $T$ to go this next state $s'_i$ from $s_i$, and estimated bad goal $g_m(i)$ for sensor $i$ at the current time step $k$, and how much we are confident that this estimate is the bad goal $g_v(i)$. The posterior estimate $g_m(i)$, and the variance $g_v(i)$ are calculated in Algorithm \ref{alg:alg1} in the same time step.
+We describe our Active Exploration approach in Algorithm \ref{alg:alg2}.\NB{let's remove the algorithm} At each time step $t$, the algorithm chooses the next action to apply $a^*$ by looking into each possible combination of sensor reading $s_i$, and next state $s'_i$. It picks the action that maximizes the probability of making an action different than the optimal action in the next state. A discrepancy factor $W_a$ for each (action, next state, goal) tuple is calculated based the transition probability $T$ to go this next state $s'_i$ from $s_i$, and estimated bad goal $\mu_i$ for sensor $i$ at the current time step $k$, and how much we are confident that this estimate is the bad goal $\nu_i$. The posterior estimate $\mu_i$, and the variance $\nu_i$ are calculated in Algorithm \ref{alg:alg1} in the same time step $t$.
 
 We apply $a^*$ at each time step with a probability $\delta, 0 < \delta < 1$ that decreases over time. The exploration factor $\delta$ indicates how much the inference algorithm will apply an action according to Active Exploration algorithm than applying an action according to the mission policy. The goal of doing Active Exploration is to make Attacker Intention Inference algorithm converge to the attacker's goal before the vehicle gets close to the attacker's desired region.
 \begin{algorithm}\label{alg:alg2}
@@ -446,15 +446,15 @@ We apply $a^*$ at each time step with a probability $\delta, 0 < \delta < 1$ tha
 %    \underline{AE} ($\mathcal{O}, \mathcal{G}$)\;
     %\Input{Two nonnegative integers $a$ and $b$}
     %\Output{$\gcd(a,b)$}
-    Initialize W[$|A|$] with zeros\;
     \ForEach {action $a\in A$}
     {
+        $W_a = 0$\;
         \ForEach {sensor $i \in \mathcal{S}$}
         {
             \ForEach {state $s'_i$ where $T(s,s',a) \ne 0$}
             {
                 \If{$\pi^{\mu_i}(s'_i) \ne \pi^*(s'_i)$} 
-                {                     $W[a]+=
+                {                     $W_a= W_a +
                 \nu_i\times T(s_i, a, s'_i)$\;
                 }
             }
