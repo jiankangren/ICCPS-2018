@@ -269,6 +269,7 @@ In this work we consider an autonomous vehicle that performs a navigation task t
 Specifically, we consider that the autonomous vehicle follows an optimal mission policy $\pi^*$ to perform its navigation task to the desired goal. 
 \begin{equation}
 \pi^*(s) = \arg\!\max_{a\in A} Q^{\pi^*}(s,a,R)
+\label{eq:pistar}
 \end{equation}
 An attacker is lunched at a previously unknown time $t_a$ and by manipulating sensor data is acting such as the uncompromised sensor/actions follow the attacker policy $\pi^a$ as follows:
 \begin{equation}
@@ -319,7 +320,7 @@ For the sake of simplicity here we consider that the sensors on board of the veh
 %\NB{what's a blue sensor and an orange sensor? Let's be more technical.}
 Formally, we are interested in solving the following problem:
 \begin{problem}\label{prob:p1}
-{ \bf Attacker Intention Inference and Recovery:} Consider a robot equipped with $N$ sensors, tasked to go to a goal $g^* \in \mathcal G$ following an optimal policy $\pi^*$ obtained by solving an MDP shown in \eqref{}. Assume that at an unknown time $t_a$, one or more sensors, up to $N-1$ are compromised by an attack whose intention is to steer the robot toward a goal $g^a \in \mathcal G$ with $g^a \neq g^*$. Given a super-set of observations $\mathcal{O}_{1:N} = \{\mathcal{O}_{1}, \mathcal{O}_{2}, ..., \mathcal{O}_{N}\}$, where $\mathcal{O}_{i} = \{(s_{i,t_d}, a_{t_d}), (s_{i,t_d+1}, a_{t_d+1}), ..., (s_{i,t_d+t}, a_{t_d+n})\}$ is the finite set of measurement-action pairs for each sensor $i=1 \ldots N$ which includes the history of sensor and actuator input data recorded over the period $\Delta t = [t_d, t_d+n ]$ with $n \in \Ne$ where the current time $t=t_d+n$, find a policy to predict the goal $g^a$ of the attacker, determine the set of compromised sensors $\mathcal{S}'$ and recover the vehicle from this type of attack by implementing the optimal policy $\pi^*$ on the set of uncompromised sensors $\mathcal S^u = \mathcal S \setminus \mathcal{S}^a$.
+{ \bf Attacker Intention Inference and Recovery:} Consider a robot equipped with $N$ sensors, tasked to go to a goal $g^* \in \mathcal G$ following an optimal policy $\pi^*$ obtained by solving an MDP shown in \eqref{eq:pistar}. Assume that at an unknown time $t_a$, one or more sensors, up to $N-1$ are compromised by an attack whose intention is to steer the robot toward a goal $g^a \in \mathcal G$ with $g^a \neq g^*$. Given a super-set of observations $\mathcal{O}_{1:N} = \{\mathcal{O}_{1}, \mathcal{O}_{2}, ..., \mathcal{O}_{N}\}$, where $\mathcal{O}_{i} = \{(s_{i,t_d}, a_{t_d}), (s_{i,t_d+1}, a_{t_d+1}), ..., (s_{i,t_d+n}, a_{t_d+n})\}$ is the finite set of measurement-action pairs for each sensor $i=1 \ldots N$ which includes the history of sensor and actuator input data recorded over the period $\Delta t = [t_d, t_d+n ]$ with $n \in \Ne$ where the current time $t=t_d+n$, find a policy to predict the goal $g^a$ of the attacker, determine the set of compromised sensors $\mathcal{S}'$ and recover the vehicle from this type of attack by implementing the optimal policy $\pi^*$ on the set of uncompromised sensors $\mathcal S^u = \mathcal S \setminus \mathcal{S}^a$.
 
 % is the which is the time period between the attack detection time $t_d$ until the current time $t_c$. Assuming that the attacker's goal is to drive the vehicle towards a target goal $g^a \in \mathcal{G}$ and the attack vectors hide within the system uncertainty bounds, find a policy to predict the goal of the attacker, determine the set of compromised sensors $\mathcal{S}'$ and recover the vehicle from this type of attack.% \NB{problem still not formal enough. Correct $t_a$ and $t_d$}
 \end{problem}
@@ -376,7 +377,7 @@ where, $\alpha$ is a factor that indicates how confident we are that the agent i
 
 %we assume, initially, that the prior for the target goal is uniformly distributed among all possible undesired goals. 
 
-In order to infer the attacker goal $g_a$ and the set of compromised sensors $\mathcal{S}^a$, we use the MCMC technique to iteratively calculate the mean of the attacker's goal posterior. \NB{here we need an equation for the MCMC}
+In order to infer the attacker goal $g^a$ and the set of compromised sensors $\mathcal{S}^a$, we use the MCMC technique to iteratively calculate the mean of the attacker's goal posterior. \NB{here we need an equation for the MCMC}
 
 The number of MCMC iterations is determined by the parameter ${e}_{max}$ \NB{we can remove this infomration}. \NB{all this next sentence is super confusing. Is the following the MCMC algorithm? } We obtain a sample $g_j$ from the prior distribution of the undesired goals set $\mathcal{G}$. Then, we iterate over all the observations $\mathcal{O}_{i,T}$ we observed over a period of time $T$ for the sensor $i$. We update the posterior of the potential sampled goal $g_j$ from each observation by calculating the likelihood of the taken actions. The likelihood of taking action $a_t$ at state $s_{i,t}$ to go to goal $g_j$ can be directly computed as the action-value function (Q-function) for taking this action from this state:
 
