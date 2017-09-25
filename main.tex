@@ -207,28 +207,28 @@ The rest of the paper is organized as follows: In section \ref{sec:Preliminaries
 %\end{enumerate}
 
 \section{Preliminaries}\label{sec:Preliminaries}
-In this section, we provide the foundations of MDP, RL, and IRL that we will be used to develop the propsoed malicious intention inference approach.
+In this section, we provide the foundations of Markov decision processes (MDP), Reinforcement Learning (RL), and Inverse Reinforcement Learning (IRL) that will be used to develop the proposed malicious intention inference approach.
 \subsection{Markov Decision Process}
 A finite state Markov Decision Process (MDP) \cite{puterman2014markov} consists of a tuple $(S,A,T,R,\gamma)$ where:
 \begin{itemize}
     \item $S$ is the set of all the states.
     \item $A$ is the set of all possible actions.
-    \item $T : S\times A\times S \mapsto [0,1]$ is the transition probabilities function. $T(s,a,s')$ is the probability that moving to state $s'$ from state $s$ after action $a$ is taken.
-    \item $R$ is the reward function which can be a function of the state only $R(s)$, a function of states and actions $R(s,a)$, or a function of the states, actions, and the next states $R(s,a,s')$. For the rest of the paper, we will use $R(s)$ to denote the reward function without loss of generality.
-    \item $\gamma$ is the discount factor that the reward function gets discounted with over time.
+    \item $T : S\times A\times S \mapsto [0,1]$ is the transition probabilities function. $T(s,a,s')$ is the probability of moving to state $s'$ from state $s$ after taking action $a$.
+    \item $R$ is the reward function which can be a function of the state only $R(s)$, a function of states and actions $R(s,a)$, or a function of the states, actions, and the next states $R(s,a,s')$. For the rest of the paper, we will use $R(s)$ to denote the reward function without loss of generality. \NB{what are we using on this paper? 1, 2, or 3? }
+    \item $\gamma$ is a discount factor with $0\leq\gamma\leq1$.
 \end{itemize}
-To solve and MDP problem, we are interested in finding an optimal stationary policy $\pi^*: S \mapsto A$ that maximizes the expected value of the discounted future rewards.
-In order to find $\pi^*$, we need to define a value function for all state $s \in S$ given a reward function $R(s)$ and a policy $\pi$ as follows:
-\[ V^\pi(s,R) = R(s) + \sum_{s'}^{}\gamma\,T(s,\pi(s),s')\,V^\pi(s') \]
+Solving an MDP problem consists in finding an optimal policy of actions $\pi^*: S \mapsto A$ that maximizes the expected value of the discounted future rewards \cite{bezzo2016stochastic}.
+In order to find $\pi^*$, we need to define a value function for all state $s \in S$ given a reward function $R(s)$ and a policy $\pi$ as follows \NB{I cannot understand what's the difference between the two equations below}:
+\[ V^\pi(s,R) = R(s) + \sum_{s'}^{}\gamma\,T(s,\pi(s),s')\,V^\pi(s') \] \NB{Please use equation environment in latex. begin equation end equation notation}
 The value function of state $s$ is equal to the reward received in state $s$ plus the sum of the discounted expected value function for each neighbor state $s'$ when actions are taken according to the policy $\pi$.
 To evaluate the value of taking action $a$ for each state $s$, we define the state-action value function which is called the Q-function.
 \[Q^\pi(s,a,R) = R(s) + \sum_{s'}{} \gamma\,T(s,a,s')\,V^\pi(s') \]
-Then, a policy $\pi$ is optimal iff, for each state $s \in S$:
+Finally, an optimal policy $\pi$ for each state $s \in S$ is chosen as follows:
 \[ \pi(s) = \arg\!\max_{a\in A} Q^\pi(s,a,R)\]
 The optimal policy $\pi^*$ corresponds to a state value function $V^*$ and a state-action value function $Q^*$.
 
 \subsection{Reinforcement and Inverse Reinforcement Learning}
-Reinforcement Learning provides the concept of an agent that navigates the states of MDP environment by taking and an action $a \in A$. The agent receives a reward $r$ when it transitions from a state $s$ to state $s'$ by taking action $a$. The task of Reinforcement Learning algorithms is to learn the optimal policy $\pi^*$ that maximizes the future expected rewards for the agent from its history of interaction with the environment. The history of the interactions can be formulated as a set of the tuple $\big \langle s,a,r,s' \big \rangle$.
+Reinforcement Learning provides the concept \NB{Mahmoud, RL doesn't provide a concept or a notion. Let's be formal. This sentence is like you are writing that RL provides the dream of...} of an agent that navigates the states of MDP environment by taking and an action $a \in A$. The agent receives a reward $r$ \NB{why is the reward lower case?} when it transitions from a state $s$ to state $s'$ by taking action $a$. The task of Reinforcement Learning algorithms is to learn the optimal policy $\pi^*$ that maximizes the future expected rewards for the agent from its history of interaction with the environment. The history of the interactions can be formulated as a set of the tuple $\big \langle s,a,r,s' \big \rangle$.
 
 Q-learning is a model-free reinforcement learning technique. It relies on learning the state-action value function (Q-function) for each state-action pair. By doing so, the optimal policy can be constructed by choosing at each state the action that is associated with the largest Q-function value. The core part of the iterative method of Q-learning does state-action value iteration update as follows\NB{Check. this sentence is very confusing. Rewrite}:
 \begin{equation}
@@ -238,25 +238,20 @@ Where $\alpha$ is the learning rate, and $r_t$ is the reward observed at the cur
 
 In Inverse Reinforcement Learning (IRL), we consider an agent acting optimally or sub-optimally in an MDP environment. The agent is following an optimal or sub-optimal policy $\pi^a(s)$. The policy of the agent $\pi^a(s)$ can be observed as a set of state-action pairs $\{(s_1,a1),(s_2,a_2), ...,(s_N,a_N)\}$, where $N$ is the number of observations. The goal of IRL is to infer the reward function $R$ that is responsible for generating these observations.%\NB{Check.both this and the previous sections are too brief. Either we add some mathematical formulation that will be used next or we may have to remove or combine with another section}
 
-\section{Problem Statement}\label{sec:problem}
-In this work we consider an autonomous vehicle that performs a navigation task to a desired destination in a stochastic environment. The vehicle is equipped with $N$ sensors. The readings from the sensors are fused together to estimate the state of the vehicle. We also consider a malicious attacker that can spoof a subset of sensors $\mathcal{S'}$ where $|\mathcal{S'}| < N$. The goal of the attacker is to drive the vehicle towards an undesired destination while hiding its attack vectors within the noise profiles of the spoofed vehicle sensors and the disturbance model of the stochastic environment.  Fig. \ref{fig:sensor_spoofing} summarizes the situation in which a sensor spoofing attack stealthily begins at $t_a$. The attack can stay stealthy to the system until the noise margins of the spoofed sensors don't overlap anymore with the noise margins of the uncompromised ones at $t_d$ as shown in Fig. \ref{fig:sensor_spoofing}. From $t_2$, an attack or fault can be detected due to the divergence in sensor readings. At this point, it is hard to distinguish between the compromised and uncompromoised sensors, as all sensor readings comply with the uncertainty model of the vehicle dynamics and the environment. .
+\section{Problem Formulation}\label{sec:problem}
+In this work we consider an autonomous vehicle that performs a navigation task to a desired goal $g^* \in \mathcal G$ in a stochastic environment. The vehicle is equipped with $N$ sensors. The readings from the sensors are fused together to estimate the state of the vehicle. We also consider a malicious attacker that can spoof a subset of sensors $\mathcal{S}^a \subset \mathcal{S}$. The goal of the attacker is to drive the vehicle towards a different undesired location $g^a \neq g^*$ while hiding its attack vector within the noise profile of the spoofed sensors and the disturbance model of the stochastic environment.  Fig. \ref{fig:sensor_spoofing} summarizes the situation in which a sensor spoofing attack stealthily begins at $t_a$. The attack remain stealthy until the noise margins of the spoofed sensors don't overlap anymore with the noise margins of the uncompromised sensor at $t_d$ as shown in Fig. \ref{fig:sensor_spoofing}. At $t_d$, the attack can be detected due to the difference in sensor readings. However at that time, it would be hard to distinguish between the compromised and uncompromoised sensors, since all sensor readings comply with the uncertainty and disturbance model of the vehicle dynamics and the environment. The problem that we are interested to solve in this work is to infere the intention of an attack by observing and comparing measurements data and control inputs, hence recognizing what sensor is misbehaving and finally recover the system. 
+%Our proposed approach allows to deal with such problem by looking and comparing historic measurements and input data and 
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.5\textwidth]{sensor_spoofing}
 \caption{An attack on sensor 1 starts at $t_a$. Sensor 2 is uncompromised. The attack can be detected at $t_d$ as the error margins sensor 1 readings and the orange sensor 2 readings don't overlap anymore.}
  \label{fig:sensor_spoofing}
 \end{figure}
-%\NB{what's a blue sensor and an orange sensor? Let's be more technical.}
-Formally, We are interested in solving the following problem:
-\begin{problem}\label{prob:p1}
-Attacker Intention Inference and Recovery: Given a set $\mathcal{G}$ of states that are considered undesired for the autonomous vehicle. Given a super-set of observations $\mathcal{O}_{1:N,T} = \{\mathcal{O}_{1,T}, \mathcal{O}_{2,T}, ..., \mathcal{O}_{N,T}\}$, where $\mathcal{O}_{i,T} = \{(s_{i,t_d}, a_{t_d}), (s_{i,t_d+1}, a_{t_d+1}), ..., (s_{i,t_d+t}, a_{t_d+t})\}$ is the finite set of measurement-action pairs for each sensor $i$ which includes the history of sensor data recorded over the period $T$ which is the time period between the attack detection time $t_d$ until the current time $t_c$. Assuming that the attacker's goal is to drive the vehicle towards a target goal $g^a \in \mathcal{G}$ and the attack vectors hide within the system uncertainty bounds, find a policy to predict the goal of the attacker, determine the set of compromised sensors $\mathcal{S}'$ and recover the vehicle from this type of attack.% \NB{problem still not formal enough. Correct $t_a$ and $t_d$}
-\end{problem}
-
-\section{Attacker Intention Inference}\label{sec:approach}
-We propose to cast Problem \ref{prob:p1} as an Inverse Reinforcement Learning problem. Specifically, we consider that the autonomous vehicle follows an optimal mission policy $\pi^*$ to perform its navigation task to the desired goal. After the attacker starts his attack on the vehicle, we assume the compromised vehicle acts as an agent that takes actions according to the attacker's desired policy $\pi^a$ \NB{Check. not clear at all. What does this mean? The optimal policy is still running and the attacker is leveraging that.} \NB{where is the optimal policy represented? I see only the attack policy below. ME: The optimal policy $\pi^*$ formula is presented before. It would be redundant to write it again. I believe if we just mention at this point that the vehicle is moving accroding to optimal policy $\pi*$ it should be understandable}. We call $\pi^a$ the attack policy. The policy $\pi^a$ drives the agent towards the target destination $g^a$ as fast as possible while hiding the attack within the sensors noise profiles or the environment disturbance model \NB{Check how is this represented in the formula below?.  ME:It is not presented ... this is how the attacker spoofs the sensor. It is something different than how the compromised vehicle acts which what this is about}. At each state $s$, the policy $\pi^a$ is calculated according to:
-\[ \pi^a(s) = \arg\!\max_{a\in A} Q^{\pi^a}(s,a,R^a)\]
-
-Where, $R^a$ can take the following form:\NB{Check. Again, just go to the point. The reward function has the foll }. 
+Specifically, we consider that the autonomous vehicle follows an optimal mission policy $\pi^*$ to perform its navigation task to the desired goal. An attacker is lunched at a previously unknown time $t_a$ and by manipulating sensor data is acting such as the uncompromised sensor/actions follow the attacker policy $\pi^a$ as follows:
+\begin{equation}
+\pi^a(s) = \arg\!\max_{a\in A} Q^{\pi^a}(s,a,R^a)
+\end{equation}
+where, $R^a$ has following form:
   \begin{equation}
     R^a(s)=\left\{
                 \begin{array}{ll}
@@ -265,24 +260,75 @@ Where, $R^a$ can take the following form:\NB{Check. Again, just go to the point.
                 \end{array}
               \right.
   \end{equation}
-Where $C$ and $\epsilon$ are positive constants, the value of $C$ is much larger than the value of $\epsilon$. This reward function gives a small negative penalty for each action the vehicle takes (which can model the vehicle battery charge loss for example) and it gives a very high reward if the vehicle reaches the goal.
-\subsection{Bayesian Inference Reinforcement Learning}
-Given the super set of observations $\mathcal{\mathcal{O}}_{1:N,T}$, the goal is to infer the intention of the attacker by inferring the reward function $R(s)$ the vehicle is trying to maximize. As attacker can compromise only a subset of sensors $\mathcal{S}'$, we rely on this assumption to infer the intention of the attacker. We use the history of past actions/sensor measurements to compare multiple optimal policies for each potential goal of the attacker to infer the intention. We propose a method that examines all the sensor readings and vehicle actions at the time the attack is detected $t_d$. The goal is to search for the subset of the compromised sensors $\mathcal{S}'$  that cause the vehicle to drift towards the bad goal. The algorithm we propose leverages Bayesian Inverse Reinforcement Learning techniques (BIRL)\cite{Ramachandran2007} in order to do the inference. In BIRL, the inference of the reward function posterior $Pr(R|\mathcal{O})$ is a function of the reward function prior $Pr(R)$ and the likelihood of the observations $Pr(\mathcal{O}|R)$ as follows:
+with $C \in \Ne^+$  and $\epsilon << C \in \Ne^+ $. $\epsilon$ represents the cost to take an action and can be thought has the energy consumed by the agent to move from one state to another state.
+% This reward function gives a small negative penalty for each action the vehicle takes (which can model the vehicle battery charge loss for example) and it gives a very high reward if the vehicle reaches the goal.
+
+To summarize, the vehicle uses fused data from all sensors and an optimal policy $\pi^*$ to navigate to $g^*$. An attacker spoofs sensors data such that the fused sensor information show that the vehicle is at a state such that the  action associated to the state of the uncompromised sensors (i.e., the actual state of the system) follows the attack optimal policy $\pi^a$ toward $g^a$. The attacker is assumed to know the optimal mission policy $\pi^*$ and know the MDP model of the system.   
+
+%\NB{Check. not clear at all. What does this mean? The optimal policy is still running and the attacker is leveraging that.} \NB{where is the optimal policy represented? I see only the attack policy below. ME: The optimal policy $\pi^*$ formula is presented before. It would be redundant to write it again. I believe if we just mention at this point that the vehicle is moving accroding to optimal policy $\pi*$ it should be understandable}. We call $\pi^a$ the attack policy. The policy $\pi^a$ drives the agent towards the target destination $g^a$ as fast as possible while hiding the attack within the sensors noise profiles or the environment disturbance model \NB{Check how is this represented in the formula below?.  ME:It is not presented ... this is how the attacker spoofs the sensor. It is something different than how the compromised vehicle acts which what this is about}. At each state $s$, the policy $\pi^a$ is calculated according to:
+%\[ \pi^a(s) = \arg\!\max_{a\in A} Q^{\pi^a}(s,a,R^a)\]
+
+%where, $R^a$ has following form:
+%  \begin{equation}
+%    R^a(s)=\left\{
+%                \begin{array}{ll}
+%                  C\hspace{2em} s = g^a\\
+%                  -\epsilon\hspace{1.6em} s \ne g^a
+%                \end{array}
+%              \right.
+%  \end{equation}
+%Where $C$ and $\epsilon$ are positive constants, the value of $C$ is much larger than the value of $\epsilon$. This reward function gives a small negative penalty for each action the vehicle takes (which can model the vehicle battery charge loss for example) and it gives a very high reward if the vehicle reaches the goal.
+
+%\NB{what's a blue sensor and an orange sensor? Let's be more technical.}
+Formally, we are interested in solving the following problem:
+\begin{problem}\label{prob:p1}
+{ \bf Attacker Intention Inference and Recovery:} Consider a robot equipped with $N$ sensors, tasked to go to a goal $g^* \in \mathcal G$ following an optimal policy $\pi^*$ obtained by solving an MDP shown in \eqref{}. Assume that at an unknown time $t_a$, one or more sensors, up to $N-1$ are compromised by an attack whose intention is to steer the robot toward a goal $g^a \in \mathcal G$ with $g^a \neq g^*$. Given a super-set of observations $\mathcal{O}_{1:N} = \{\mathcal{O}_{1}, \mathcal{O}_{2}, ..., \mathcal{O}_{N}\}$, where $\mathcal{O}_{i} = \{(s_{i,t_d}, a_{t_d}), (s_{i,t_d+1}, a_{t_d+1}), ..., (s_{i,t_d+t}, a_{t_d+n})\}$ is the finite set of measurement-action pairs for each sensor $i=1 \ldots N$ which includes the history of sensor and actuator input data recorded over the period $\Delta t = [t_d, t_d+n ]$ with $n \in \Ne$ where the current time $t=t_d+n$, find a policy to predict the goal $g^a$ of the attacker, determine the set of compromised sensors $\mathcal{S}'$ and recover the vehicle from this type of attack by implementing the optimal policy $\pi^*$ on the set of uncompromised sensors $\mathcal S^u = \mathcal S \setminus \mathcal{S}^a$.
+
+% is the which is the time period between the attack detection time $t_d$ until the current time $t_c$. Assuming that the attacker's goal is to drive the vehicle towards a target goal $g^a \in \mathcal{G}$ and the attack vectors hide within the system uncertainty bounds, find a policy to predict the goal of the attacker, determine the set of compromised sensors $\mathcal{S}'$ and recover the vehicle from this type of attack.% \NB{problem still not formal enough. Correct $t_a$ and $t_d$}
+\end{problem}
+
+\section{Attacker Intention Inference}\label{sec:approach}
+We propose to cast Problem \ref{prob:p1} as a Bayesian Inverse Reinforcement Learning problem. 
+
+%\NB{next section can be included before the problem}Specifically, we consider that the autonomous vehicle follows an optimal mission policy $\pi^*$ to perform its navigation task to the desired goal. After the attacker starts his attack on the vehicle, we assume that the compromised vehicle acts as an agent that takes actions according to the attacker's desired policy $\pi^a$ \NB{Check. not clear at all. What does this mean? The optimal policy is still running and the attacker is leveraging that.} \NB{where is the optimal policy represented? I see only the attack policy below. ME: The optimal policy $\pi^*$ formula is presented before. It would be redundant to write it again. I believe if we just mention at this point that the vehicle is moving accroding to optimal policy $\pi*$ it should be understandable}. We call $\pi^a$ the attack policy. The policy $\pi^a$ drives the agent towards the target destination $g^a$ as fast as possible while hiding the attack within the sensors noise profiles or the environment disturbance model \NB{Check how is this represented in the formula below?.  ME:It is not presented ... this is how the attacker spoofs the sensor. It is something different than how the compromised vehicle acts which what this is about}. At each state $s$, the policy $\pi^a$ is calculated according to:
+%\[ \pi^a(s) = \arg\!\max_{a\in A} Q^{\pi^a}(s,a,R^a)\]
+%
+%Where, $R^a$ can take the following form:\NB{Check. Again, just go to the point. The reward function has the foll }. 
+%  \begin{equation}
+%    R^a(s)=\left\{
+%                \begin{array}{ll}
+%                  C\hspace{2em} s = g^a\\
+%                  -\epsilon\hspace{1.6em} s \ne g^a
+%                \end{array}
+%              \right.
+%  \end{equation}
+%Where $C$ and $\epsilon$ are positive constants, the value of $C$ is much larger than the value of $\epsilon$. This reward function gives a small negative penalty for each action the vehicle takes (which can model the vehicle battery charge loss for example) and it gives a very high reward if the vehicle reaches the goal.
+%\subsection{Bayesian Inference Reinforcement Learning}
+
+Given the super set of observations $\mathcal{\mathcal{O}}_{1:N,T}$, the goal is to infer the intention of the attacker by inferring the reward function $R^a (s)$ that the attacker is trying to maximize. To this end, we use the history of past actions/sensor measurements and consider and compare multiple optimal policies to potential undesired goals in the environment. For each sensor historic data and and actions we then search for the closest policy that match the sequence of recorded states/actions. If a match exists or is closer than a certain threshold then an attack is assumed inferred. Thus the goal is to find the subset of sensors that cause the vehicle to drift to a goal different from the desired one.
+
+
+
+%we use the history of past actions/sensor measurements to compare multiple optimal policies for each potential goals of the attacker to infer the intention. We propose a method that examines all the sensor readings and vehicle actions at the time the attack is detected $t_d$. The goal is to search for the subset of the compromised sensors $\mathcal{S}'$  that cause the vehicle to drift towards the bad goal. 
+
+The algorithm that we propose in this work to do such inference leverages the Bayesian Inverse Reinforcement Learning technique (BIRL) proposed in \cite{Ramachandran2007}. In a BIRL problem, the inference of the reward function posterior $Pr(R|\mathcal{O})$ is a function of the reward function prior $Pr(R)$ and the likelihood of the observations $Pr(\mathcal{O}|R)$ as follows:
 \begin{equation} 
     Pr(R|\mathcal{O}) = \frac{Pr(\mathcal{O}|R)Pr(R)}{Pr(\mathcal{O})}
 \end{equation}
-Where, $Pr(\mathcal{O})$ is the probability distribution of $\mathcal{O}$ over the entire space of reward function $R$. The normalization constant $Pr(\mathcal{O})$ is usually hard to compute as it requires performing multiple integral calculations which is usually not feasible to compute analytically. 
+where, $Pr(\mathcal{O})$ is the probability distribution of $\mathcal{O}$ over the entire space of reward function $R$. The normalization constant $Pr(\mathcal{O})$ is usually hard to compute as it requires performing multiple integral calculations which are usually not feasible to compute analytically. 
 
-To estimate the mean of posterior distribution while avoiding calculating $Pr(\mathcal{O})$, we leverage the MCMC sampling algorithm presented in \cite{andrieu2003introduction} that allows to estimate of the distribution of the posterior $Pr(\tilde{R}|\mathcal{O})$. Since this is an estimation problem, we are interested in finding the value of $R$ that minimizes the expected Least Square Error (LSE) of the estimate $E[(R-\tilde{R})^2]$. It was proven in \cite{Ramachandran2007} that the mean of the estimated posterior distribution is the optimal estimator that we can use.
+To estimate the mean of posterior distribution while avoiding calculating $Pr(\mathcal{O})$, we leverage the MCMC sampling algorithm presented in \cite{andrieu2003introduction} that allows to estimate the distribution of the posterior $Pr(\tilde{R}|\mathcal{O})$. Since this is an estimation problem, we are interested in finding the value of $R$ that minimizes the expected least square error (LSE) of the estimate $E[(R-\tilde{R})^2]$. It was proven in \cite{Ramachandran2007} that the mean of the estimated posterior distribution is the optimal estimator that we can use and thus we omit the proof here.
 
-In order to estimate the posterior $Pr(R|\mathcal{O})$ using MCMC algorithm, we need to compute two terms in each iteration. The first term is the prior $Pr(R)$ and the second one is the likelihood of the observations $Pr(\mathcal{O}|R)$.
-The prior can be initialized according to our previous knowledge of the posterior distribution. If we don't have a prior knowledge about the posterior distribution, we can assume that the prior has the form of a uniform distribution.
-In our case, we want to calculate ,for each sensor $i$, the likelihood of observing a set of sensor readings and actions taken during a period $T$ follow an optimal policy of the agent to go to a potential goal $g_j$. We can compute this calculation by comparing, at each observed sensor reading, the Q-function value of the action taken at this state with the Q-function value all possible actions that the agent can take at this state. Formally, we can calculate the likelihood of the observations as follows:
+In order to estimate the posterior $Pr(R|\mathcal{O})$ using MCMC algorithm, we need to compute two terms at each iteration: i) the prior $Pr(R)$ and ii) the likelihood of the observations $Pr(\mathcal{O}|R)$.
+The prior can be initialized according to a previous knowledge of the posterior distribution. If a prior knowledge about the posterior distribution is not available, then we can assume that the prior is drawn from a uniform distribution.
+In our case, we want to calculate ,for each sensor $i$, the likelihood of observing a set of sensor readings and actions taken during a period $\Delta t$ following an optimal policy of the agent to go to a potential goal $g_j \forall g_j \in \mathcal G$. We can compute this likelihood by comparing, at each observed sensor reading, the Q-function value of the action taken at the state observed by each sensor with the Q-function value of all possible actions that the agent can take at those states. Formally, we can calculate the likelihood of the observations as follows:
 \begin{equation}
 Pr(\mathcal{O}_{i,T} | g = g_j)  = \frac{e^{\alpha\sum_{T}{Q^*(s_{i,t},a_t,R_j)}}}{\sum_{b\in A}{}e^{\alpha\sum_{T}{}Q^*(s_{i,t},b,R_j)}}
-\label{eqn:likelihood}
+\label{eq:likelihood}
 \end{equation}
-where, $\alpha$ is a factor that indicates how much we are confident that the agent is acting optimally. This calculation requires solving an MDP problem to compute $Q^*$ for each state-action pair by performing Q-learning iterations as described in section \ref{sec:Preliminaries}.
+\NB{is this equation with $g^a$}
+where, $\alpha$ is a factor that indicates how confident we are that the agent is acting optimally. To solve \eqref{eq:likelihood} it is required to solve an MDP problem as in \eqref{} \NB{put a number on all equations in preliminaries and refer to the right equation}
+%to compute $Q^*$ for each state-action pair by performing Q-learning iterations as described in section \ref{sec:Preliminaries}.
 
 
 
@@ -292,22 +338,32 @@ where, $\alpha$ is a factor that indicates how much we are confident that the ag
 %\NB{here you have to show this algorithm or the math behind it with the notation used in our problems, otherwise this part makes little sense and the reviewer will be puzzled on how you are solving the problem if you don't show the math behind the approach} The output of MCMC is an estimate of the distribution of the posterior $Pr(\tilde{R}|O)$. Since this is an estimation problem, we are interested in finding the value of $R$ that minimizes the expected Least Square Error (LSE) of the estimate $E[(R-\tilde{R})^2]$. It was proven in \cite{Ramachandran2007} that the mean of the estimated posterior distribution is the optimal estimator in that case.
 
 
+%we assume, initially, that the prior for the target goal is uniformly distributed among all possible undesired goals. 
 
-In order to infer the target goal of the attacker $g_a$ and the set of the compromised sensors $\mathcal{S}'$, we assume, initially, that the prior for the target goal is uniformly distributed among all possible undesired goals. We run MCMC iterations in order to calculate the mean of the attacker's target goal posterior. The number of the MCMC iterations is determined by the parameter ${e}_{max}$. We obtain a sample $g_j$ from the prior distribution of the undesired goals set $\mathcal{G}$. Then, we iterate over all the observations $\mathcal{O}_{i,T}$ we observed over a period of time $T$ for the sensor $i$. We update the posterior of the potential sampled goal $g_j$ from each observation by calculating the likelihood of the taken actions. The likelihood of taking action $a_t$ at state $s_{i,t}$ to go to goal $g_j$ can be directly computed as the action-value function (Q-function) for taking this action from this state:
+In order to infer the attacker goal $g_a$ and the set of compromised sensors $\mathcal{S}^a$, we use the MCMC technique to iteratively calculate the mean of the attacker's goal posterior. \NB{here we need an equation for the MCMC}
+
+The number of MCMC iterations is determined by the parameter ${e}_{max}$ \NB{we can remove this infomration}. \NB{all this next sentence is super confusing. Is the following the MCMC algorithm? } We obtain a sample $g_j$ from the prior distribution of the undesired goals set $\mathcal{G}$. Then, we iterate over all the observations $\mathcal{O}_{i,T}$ we observed over a period of time $T$ for the sensor $i$. We update the posterior of the potential sampled goal $g_j$ from each observation by calculating the likelihood of the taken actions. The likelihood of taking action $a_t$ at state $s_{i,t}$ to go to goal $g_j$ can be directly computed as the action-value function (Q-function) for taking this action from this state:
 
 \begin{equation} Pr(a_t|s_{i,t},g_j) = Q^*(s_{t,k},a_t,R_j)
 \label{eqn:action_likelihood}
 \end{equation}
 
 Then, we compute the posterior that the goal $g_i$ is the target goal $g_a$ given the set of observations $\mathcal{O}_{i,t_2:t}$ as follows:
-\begin{equation} Pr(g=g_a|\mathcal{O}_{i,t_2:t}) \propto Pr(\mathcal{O}_{i,t_2:t} | g = g_a) \\ \times Pr(g=g_a|\mathcal{O}_{i,t_2:t-1})
+\begin{equation} Pr(g^a=g_j|\mathcal{O}_{i,t_2:t}) \propto Pr(\mathcal{O}_{i,t_2:t} | g^a = g_j) \\ \times Pr(g^a=g_j|\mathcal{O}_{i,t_2:t-1})
 \label{eqn:goal_posterior}
 \end{equation}
 
-The first term on the right hand side of the equation is the likelihood of the observations given that the goal $g$ is the target goal $g_a$ which can be computed according to \ref{eqn:likelihood}. The second term is the prior which is updated from the posterior calculated at the previous time $t-1$.
-After the MCMC iterations are done, we evaluate the level of confidence that the estimated posterior for a potential goal $g_t$ is the actual target goal $g_a$. We perform this by calculating the mean of the posterior. The higher the value of the posterior mean, the higher the confidence we have about our estimation. Algorithm \ref{alg:alg1} shows the steps we take to perform attacker's intention inference.
+The first term on the right hand side (rhs) of the equation represents the likelihood of the observations given that the goal $g^a=g_j$ which can be computed using \eqref{eq:likelihood}. The second term on the rhs represents the prior which is updated from the posterior calculated at the previous time $t-1$ and initialized in the beginning with a sample drawn from a uniform distribution.
+After the MCMC iterations is completed, we evaluate the level of confidence that $g^a = g_j$ by calculating the mean of the posterior. The higher the value of the posterior mean, the higher the confidence we have about the estimation. Algorithm \ref{alg:alg1} summarizes the steps taken to perform attacker's intention inference. \NB{the algorithm needs to be fixed. What is $g_m$}
+\NB{equation is latex are referred using slash eqref{eq: label} to create the parenthesis around the number }
 
-To start the recovery process, we compare the variance of posterior  to a threshold value $h$, and trigger the recover process if  it is less than the threshold value. The idea behind the trigger of the recovery process is that the readings we obtain from the uncompromised sensors will provide a posterior estimate of an undesired goal with high confidence which leads to low variance in the estimated posterior. Once the the set of the uncompromised sensors is determined, the rest of the sensors are considered to be compromised. The recovery process is performed by correctly estimating the state of the system by fusing the uncompromised sensors only and discarding the compromised ones. Once, the correct state of the system is estimated, the autonomous controller will be able correct the coarse of the vehicle to navigate toward its desired destination.
+A recovery procedure is triggered if there exists a sensor or a set of sensors that return a state $s_i$ such that the variance of the posterior probability $\nu_i \leq \tau$ where $\tau$ is a user selected threshold. The higher the threshold the sooner a recovery will be initiated but a less precise inference will be computed. Vice versa a small threshold may cause a delayed recovery. The sensors associated with such posterior probabilities are the compromised ones and thus a re removed from considerations during recovery.
+
+%... we are ... To start the recovery process, we compare the variance of posterior  to a threshold value $h$, and trigger the recover process if  it is less than the threshold value. The idea behind the trigger of the recovery process is that the readings we obtain from the uncompromised sensors will provide a posterior estimate of an undesired goal with high confidence which leads to low variance in the estimated posterior. 
+
+Once the set of the uncompromised sensors $\mathcal S^a \subset \mathcal S$ is determined, the optimal policy $\pi^a$ is considered to drive the vehicle back to its desired goal.
+
+%the rest of the sensors are considered to be compromised. The recovery process is performed by using only the uncompromised sensors correctly estimating the state of the system by fusing the uncompromised sensors only and discarding the compromised ones and considering the optimal policy. Once, the correct state of the system is estimated, the autonomous controller will be able correct the coarse of the vehicle to navigate toward its desired destination.
 \begin{algorithm}\label{alg:alg1}
     %\SetKwInOut{Input}{Input}
     %\SetKwInOut{Output}{Output}
@@ -338,9 +394,13 @@ To start the recovery process, we compare the variance of posterior  to a thresh
 \end{algorithm}
 
 \subsection{Active Exploration}
-The speed of convergence of the inference we perform in Algorithm \ref{alg:alg1} depends on which states the vehicle visited. If most of the states inside the the set of observations are associated with mission policy's actions similar to the attacker policy's actions, the convergence of the inference algorithm will be slower and the level of confidence of the inferred posterior may not reach the desired threshold value. We consider these states as insensitive states. On the other hand, the set of observations which contains mostly states in which there is a discrepancy between the action the vehicle takes according to the mission policy and the action the vehicle takes according to the attacker policy, will lead to faster convergence. We consider these states sensitive states. For Algorithm \ref{alg:alg1} to achieve convergence to the attacker's goal, it is clear that we want to collect a set of observations having as many sensitive states as possible.
+The speed of convergence of the inference approach described in the previous section depends on the states that the vehicle visited. If most of the states inside the the set of observations are associated with mission policy's actions similar to the attacker policy's actions, the convergence of the inference algorithm will be slower and the level of confidence of the inferred posterior may not reach the desired threshold value. In this case we consider these states as {\em insensitive states}. On the other hand, the set of observations that contain states in which there is a discrepancy between the mission actions and the attacker actions, will lead to a faster inference convergence. In this case we consider these states as {\em sensitive states}. Thus it is desired to obtain sensitive states as soon as an attack is detected.
 
- In most Inverse Reinforcement Learning problems, we don't have control over the optimal agent, and we are constrained by the set of observations we get by recording the agent acting optimally. Thus, in order to solve this problem in this work we propose an active learning policy in which we exploit the fact that the autonomous controller of the vehicle still has control of the vehicle while being under attack by the malicious attacker. This means that if we know which states are sensitive, we can make the vehicle explore more sensitive states by taking actions that lead towards sensitive states and not necessarily towards the desired goal. Knowing which states are sensitive and which are not is a hard problem. We propose an approach that, at each time step, searches for the action which moves the vehicle to a state that gives the highest discrepancy between the mission policy all potential attacker policies weighted by their posterior estimates.
+%For Algorithm \ref{alg:alg1} to achieve convergence to the attacker's goal, it is clear that we want to collect a set of observations having as many sensitive states as possible.
+
+In most IRL problems, we don't have control over the optimal agent, and we are constrained by the set of observations/actions that follow a precomputed optimal policy. To increase the convergence speed, in this work we propose an active learning policy in which we exploit the fact that the vehicle has control over its inputs even during an attack and thus perturb its motion from the optimal policy to lead the vehicle towards sensitive states. This idea is reminiscent of reinforcement learning in which ... 
+
+of the vehicle while being under attack by the malicious attacker. This means that if we know which states are sensitive, we can make the vehicle explore more sensitive states by taking actions that lead towards sensitive states and not necessarily towards the desired goal. Knowing which states are sensitive and which are not is a hard problem. We propose an approach that, at each time step, searches for the action which moves the vehicle to a state that gives the highest discrepancy between the mission policy all potential attacker policies weighted by their posterior estimates.
 
 We describe our Active Exploration approach in Algorithm \ref{alg:alg2}. At each time step $k$, the algorithm chooses the next action to apply $a^*$ by looking into each possible combination of sensor reading $s_i$, and next state $s'_i$. It picks the action that maximizes the probability of making an action different than the optimal action in the next state. A discrepancy factor  $W[a]$ for each <action, next state, goal> tuple is calculated based the transition probability $T$ to go this next state $s'_i$ from $s_i$, and estimated bad goal $g_m(i)$ for sensor $i$ at the current time step $k$, and how much we are confident that this estimate is the bad goal $g_v(i)$. The posterior estimate $g_m(i)$, and the variance $g_v(i)$ are calculated in Algorithm \ref{alg:alg1} in the same time step.
 
