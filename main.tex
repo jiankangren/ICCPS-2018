@@ -223,12 +223,20 @@ A finite state Markov Decision Process (MDP) \cite{puterman2014markov} consists 
 \end{itemize}
 Solving an MDP problem consists on finding an optimal policy of actions $\pi^*: S \mapsto A$ that maximizes the expected value of the discounted future rewards \cite{bezzo2016stochastic}.
 In order to find $\pi^*$, we need to define a value function for all state $s \in S$ given a reward function $R(s)$ and a policy $\pi$ as follows \NB{I cannot understand what's the difference between the two equations below}:
-\[ V^\pi(s,R) = R(s) + \sum_{s'}^{}\gamma\,T(s,\pi(s),s')\,V^\pi(s') \] \NB{Please use equation environment in latex. begin equation end equation notation}
+\begin{equation}
+V^\pi(s,R) = R(s) + \sum_{s'}\gamma\,T(s,\pi(s),s')\,V^\pi(s') 
+\end{equation}
+
 The value function of state $s$ is equal to the reward received in state $s$ plus the sum of the discounted expected value function for each neighbor state $s'$ when actions are taken according to the policy $\pi$.
 To evaluate the value of taking action $a$ for each state $s$, we define the state-action value function which is called the Q-function.
-\[Q^\pi(s,a,R) = R(s) + \sum_{s'}{} \gamma\,T(s,a,s')\,V^\pi(s') \]
+\begin{equation}
+Q^\pi(s,a,R) = R(s) + \sum_{s'} \gamma\,T(s,a,s')\,V^\pi(s')
+\end{equation}
+
 Finally, an optimal policy $\pi$ for each state $s \in S$ is chosen as follows:
-\[ \pi(s) = \arg\!\max_{a\in A} Q^\pi(s,a,R)\]
+\begin{equation}
+\pi(s) = \arg\!\max_{a\in A} Q^\pi(s,a,R)
+\end{equation}
 The optimal policy $\pi^*$ corresponds to a state value function $V^*$ and a state-action value function $Q^*$. \NB{why is the above formula not optimal, i.e., with the $^*$}
 
 \subsection{Reinforcement and Inverse Reinforcement Learning}
@@ -243,7 +251,7 @@ Where $\alpha$ is the learning rate, and $r_t$ is the reward observed at the cur
 In Inverse Reinforcement Learning (IRL), we consider an agent acting optimally or sub-optimally in an MDP environment. The agent is following an optimal or sub-optimal policy $\pi^a(s)$. The policy of the agent $\pi^a(s)$ can be observed as a set of state-action pairs $\{(s_1,a1),(s_2,a_2), ...,(s_N,a_N)\}$, where $N$ is the number of observations. The goal of IRL is to infer the reward function $R$ that is responsible for generating these observations.%\NB{Check.both this and the previous sections are too brief. Either we add some mathematical formulation that will be used next or we may have to remove or combine with another section}
 
 \section{Problem Formulation}\label{sec:problem}
-In this work we consider an autonomous vehicle that performs a navigation task to a desired goal $g^* \in \mathcal G$ in a stochastic environment. The vehicle is equipped with $N$ sensors. The readings from the sensors are fused together to estimate the state of the vehicle. We also consider a malicious attacker that can spoof a subset of sensors $\mathcal{S}^a \subset \mathcal{S}$. The goal of the attacker is to drive the vehicle towards a different undesired location $g^a \neq g^*$ while hiding its attack vector within the noise profile of the spoofed sensors and the disturbance model of the stochastic environment.  Fig. \ref{fig:sensor_spoofing} summarizes the situation in which a sensor spoofing attack stealthily begins at $t_a$. The attack remain stealthy until the noise margins of the spoofed sensors don't overlap anymore with the noise margins of the uncompromised sensor at $t_d$ as shown in Fig. \ref{fig:sensor_spoofing}. At $t_d$, the attack can be detected due to the difference in sensor readings. However at that time, it would be hard to distinguish between the compromised and uncompromoised sensors, since all sensor readings comply with the uncertainty and disturbance model of the vehicle dynamics and the environment. The problem that we are interested to solve in this work is to infere the intention of an attack by observing and comparing measurements data and control inputs, hence recognizing what sensor is misbehaving and finally recover the system. 
+In this work we consider an autonomous vehicle that performs a navigation task to a desired goal $g^* \in \mathcal G$ in a stochastic environment. The vehicle is equipped with $N$ sensors. The readings from the sensors are fused together to estimate the state of the vehicle. We also consider a malicious attacker that can spoof a subset of sensors $\mathcal{S}^a \subset \mathcal{S}$. The goal of the attacker is to drive the vehicle towards a different undesired location $g^a \neq g^*$ while hiding its attack vector within the noise profile of the spoofed sensors and the disturbance model of the stochastic environment.  Fig. \ref{fig:sensor_spoofing} summarizes the situation in which a sensor spoofing attack stealthily begins at $t_a$. The attack remains stealthy until the noise margins of the spoofed sensors don't overlap anymore with the noise margins of the uncompromised sensor at $t_d$ as shown in Fig. \ref{fig:sensor_spoofing}. At $t_d$, the attack can be detected due to the difference in sensor readings. However at that time, it would be hard to distinguish between the compromised and uncompromoised sensors, since all sensor readings comply with the uncertainty and disturbance model of the vehicle dynamics and the environment. The problem that we are interested to solve in this work is to infer the intention of an attack by observing and comparing measurements data and control inputs, hence recognizing what sensor is misbehaving and finally recover the system. 
 %Our proposed approach allows to deal with such problem by looking and comparing historic measurements and input data and 
 \begin{figure}[h]
 \centering
@@ -252,11 +260,15 @@ In this work we consider an autonomous vehicle that performs a navigation task t
  \label{fig:sensor_spoofing}
 \end{figure}
 %<<<<<<< HEAD
-Specifically, we consider that the autonomous vehicle follows an optimal mission policy $\pi^*$ to perform its navigation task to the desired goal. An attacker is lunched at a previously unknown time $t_a$ and by manipulating sensor data is acting such as the uncompromised sensor/actions follow the attacker policy $\pi^a$ as follows:
+Specifically, we consider that the autonomous vehicle follows an optimal mission policy $\pi^*$ to perform its navigation task to the desired goal. 
 \begin{equation}
-\pi^a(s) = \arg\!\max_{a\in A} Q^{\pi^a}(s,a,R^a)
+\pi^*(s) = \arg\!\max_{a\in A} Q^{\pi^*}(s,a,R)
 \end{equation}
-where, $R^a$ has following form:
+An attacker is lunched at a previously unknown time $t_a$ and by manipulating sensor data is acting such as the uncompromised sensor/actions follow the attacker policy $\pi^a$ as follows:
+\begin{equation}
+\pi^a(s) = \arg\!\max_{a\in A} Q^{\pi^a}(s,a,R)
+\end{equation}
+where, $R$ has the following form for bot mission and attack policy:
 %=======
 %%\NB{what's a blue sensor and an orange sensor? Let's be more technical.}
 %Formally, We are interested in solving the following problem:
@@ -271,19 +283,19 @@ where, $R^a$ has following form:
 %Where, $R^a$ can take the following form:\NB{Check. Again, just go to the point. The reward function has the foll }. 
 %>>>>>>> origin/master
   \begin{equation}
-    R^a(s)=\left\{
+    R(s)=\left\{
                 \begin{array}{ll}
-                  C\hspace{2em} s = g^a\\
-                  -\epsilon\hspace{1.6em} s \ne g^a
+                  C\hspace{2em} s = g^* \; \vee s = g^a \\
+                  -\epsilon\hspace{1.6em} s \ne g^* \ne g^a
                 \end{array}
               \right.
   \end{equation}
 with $C \in \Ne^+$  and $\epsilon << C \in \Ne^+ $. $\epsilon$ represents the cost to take an action and can be thought has the energy consumed by the agent to move from one state to another state.
 % This reward function gives a small negative penalty for each action the vehicle takes (which can model the vehicle battery charge loss for example) and it gives a very high reward if the vehicle reaches the goal.
 
-To summarize, the vehicle uses fused data from all sensors and an optimal policy $\pi^*$ to navigate to $g^*$. An attacker spoofs sensors data such that the fused sensor information show that the vehicle is at a state such that the  action associated to the state of the uncompromised sensors (i.e., the actual state of the system) follows the attack optimal policy $\pi^a$ toward $g^a$. The attacker is assumed to know the optimal mission policy $\pi^*$ and know the MDP model of the system.   
+To summarize, the vehicle uses fused data from all sensors and an optimal policy $\pi^*$ to navigate to $g^*$. An attacker spoofs sensors data such that the fused sensor information show that the vehicle is at a state such that the  action associated to the state of the uncompromised sensors (i.e., the actual state of the system) follows the attack optimal policy $\pi^a$ toward $g^a$. The attacker is assumed to know both the optimal mission policy $\pi^*$ and the MDP model of the system.   
 
-For the sake of simplicity here we consider that the sensors on board of the vehicles are measuring the state of the vehicle. 
+For the sake of simplicity here we consider that the sensors on board of the vehicles are measuring the state of the vehicle. \NB{I need to rephrase this}
 %\NB{Check. not clear at all. What does this mean? The optimal policy is still running and the attacker is leveraging that.} \NB{where is the optimal policy represented? I see only the attack policy below. ME: The optimal policy $\pi^*$ formula is presented before. It would be redundant to write it again. I believe if we just mention at this point that the vehicle is moving accroding to optimal policy $\pi*$ it should be understandable}. We call $\pi^a$ the attack policy. The policy $\pi^a$ drives the agent towards the target destination $g^a$ as fast as possible while hiding the attack within the sensors noise profiles or the environment disturbance model \NB{Check how is this represented in the formula below?.  ME:It is not presented ... this is how the attacker spoofs the sensor. It is something different than how the compromised vehicle acts which what this is about}. At each state $s$, the policy $\pi^a$ is calculated according to:
 %\[ \pi^a(s) = \arg\!\max_{a\in A} Q^{\pi^a}(s,a,R^a)\]
 
