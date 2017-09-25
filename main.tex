@@ -555,7 +555,8 @@ We use a $10m\times10m$ occupancy grid to conduct the simulations. We define fun
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.45\textwidth]{sim-env}
-\caption{The discretized environment used during experiments. The green cell represents the desired destination of the UAV with a reward value of 100. The penalty of moving from one cell to another is represented by a -3 reward. If the vehicle moves to the right, it has 0.8 chance of ending up in the desired cell. and 0.2 chance of ending up in an adjacent cell.}
+\caption{The discretized environment used during experiments. The green cell represents the desired destination of the UAV with a reward value of 100. The penalty of moving from one cell to another is represented by a -3 reward. Associated to each action there is a transition probability: specifically there is a 0.8 probability to reach the desired next state and 0.1 probability to reach each of the adjacent cells (due to noise and possible disturbance in the environment)}
+%f the vehicle moves to the right, it has 0.8 chance of ending up in the desired cell. and 0.2 chance of ending up in an adjacent cell.}
  \label{fig:sim-env}
 \end{figure}
 \subsubsection{Sensor Spoofing Attack}
@@ -564,7 +565,7 @@ We use a $10m\times10m$ occupancy grid to conduct the simulations. We define fun
 	\subfigure[] {\includegraphics[width=0.23\textwidth]{fig/good-goal-policy}}
 	\subfigure[] {\includegraphics[width=0.23\textwidth]{fig/bad-goal-policy}}
 	%\vspace{-5pt}
-	\caption{(a) Optimal actions to go to the desired destination (b) Optimal actions to go to the attacker's desired destination}
+	\caption{(a) Optimal mission policy (b) Optimal attacker's policy}
 	\label{fig:policies}
 %	\vspace{-1pt}
 \end{figure}
@@ -621,15 +622,17 @@ We show how the Attacker Intention Inference algorithm works as follows: We appl
 %%	\vspace{-1pt}
 %\end{figure*}
 \section{Conclusions \& Future Work}\label{sec:conclusion}
-\NB{I didn't touch this yet} 
 In this paper we have presented a IRL-based technique to infer the malicious intention of an attacker on an autonomous CPS operation. Using our approach we can reconstruct the compromised sensors even if their behavior is stealthy hiding within the noice profile and the expected uncertainties of the system. If an attacker is operating optimally, then we it is possible to recover the system before reaching undesired states in the environment. We also demonstrated an active exploration technique to speed up inference convergence.
 
 We notice that considering optimal MDP policies as discussed in this paper brings already a good level of security into the system. In fact, an attacker that is trying to hide within the system dynamics and noise will have to behave as expected by the model (i.e., the transition probabilities) of the system limiting the possible action that he/she can perform. Also, an attacker will have to perform a highly coordinated attack and have large resources to create the attacks described in the paper and even if successful, our proposed approach will be able to detect and infer the intention thus securing the system.
 
 We believe that the proposed approach could be deployed in any autonomous CPS to check for sensor/action consistency during run-time. This technique could be used also to detect and recover from failure in the system.
 
-Our current and future work is toward expanding this framework to deal also with the prediction of malicious intention of vehicle not under our control, like AUVs entering restricted airspace.
+Our current and future work is toward expanding this framework to deal also with the prediction of malicious intention of vehicles not under our control, like AUVs entering restricted airspace.
 We are also working on improving computation complexity of the proposed framework by expanding the idea proposed in Section IV.B to bring the problem into the continuous time domain.
+
+We are also working on experiments on real quadrotor UAVs that we plan to include in future contributions.
+
 
 
 %
