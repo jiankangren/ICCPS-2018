@@ -533,8 +533,8 @@ More details, including a complete mathematical formulation, can be found in \ci
 \subsection{UAV Control}
 The controller is derived by linearizing the equations of motion and motor models at an operating point that corresponds to the nominal hover state ${\bm p} = \{x, y, z\}$, $\theta = 0$, $\phi = 0$, $\psi = \psi_0$, ${\dot{\bm p} = 0}$ and $\dot{\phi} = \dot{\theta} = \dot{\psi} = 0$ with roll and pitch angles small. The nominal values for the inputs at hover are $u_1 = mg$, $u_2 = u_3 = u_4 = 0$.
 
-In order to control the quadrotor to follow a desired trajectory, we use the architecture in Fig.~\ref{fig:quadcon}.
-
+In order to control the quadrotor to follow a desired trajectory, we use a cascade of PID controllers.
+%the architecture in Fig.~\ref{fig:quadcon}.
 %\begin{figure}[ht!]
 %\centering
 %\includegraphics[width=0.48 \textwidth]{figs/quad_dia6.png}
@@ -542,8 +542,7 @@ In order to control the quadrotor to follow a desired trajectory, we use the arc
 %\caption{\label{fig:quadcon} Diagram of the overall controller used on a quadrotor for ROMDP operations.}
 %%\vspace{-5pt}
 %\end{figure}
-
-The position control is used to track a desired trajectory $\xi$ characterized by ${\bm {p}}_\xi(t)$ and $\psi_\xi(t)$. Using a PID feedback controller on the error $e_k=(\bm {p}_{k,\xi}-\bm {p}_k)$ we can control the position and velocity of the quadrotor to maintain a desired trajectory.
+A position control is used to track a desired trajectory $\xi$ characterized by ${\bm {p}}_\xi(t)$ and $\psi_\xi(t)$. Using a PID feedback controller on the error $e_k=(\bm {p}_{k,\xi}-\bm {p}_k)$ we can control the position and velocity of the quadrotor to maintain a desired trajectory.
 After linearization, we can obtain the relationship between desired roll and pitch angles and desired accelerations as follows
 \begin{gather}
 \begin{align}
