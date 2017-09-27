@@ -582,9 +582,9 @@ k_{p,\psi}(\psi^{\textrm{des}} - \psi) + k_{d,\psi}(r^{\textrm{des}} - r)
 
 \subsection{Simulation Environment}
  We represent the discretized state space of the environment as an occupancy grid which maps the environment to a 2-D matrix of cells. Each cell represents a state and holds a probability value that indicates the probability of the vehicle reaching this cell by taking a certain action.
-In normal operation conditions (No attack detected), the UAV takes an action at each cell according to its mission optimal policy $\pi*$. The set of actions $A$ that the UAV can take at any cell is defined as follows:
+In normal operation conditions (No attack detected), the UAV takes an action at each cell according to its mission optimal policy $\pi^*$. The set of actions $A$ that the UAV can take at any cell is defined as follows:
 $A =$ \textit{\{move forwards \{F\}, move backwards \{B\}, move right \{R\}, move left \{L\}\}}.
-Each action is mapped to an altitude and position control input to the UAV to make it move from one cell to the next desired cell. As the environment is stochastic, we define the transition probability function $T(s,s',a)$ that maps the disturbances in the environment to a probability associated with taking each action $a$ to go to state $s'$ from state $s$.
+Each action is mapped to an altitude and position control input to the UAV to make it move from one cell to the next desired cell. Specifically, {F, B} are mapped to $u_3$ and {L, R} are mapped to $u_2$ control inputs. As we consider a stochastic environment, we define the transition probability function $T(s,s',a)$ that maps the disturbances in the environment to a probability associated with taking each action $a$ to go from state $s$ to state $s'$.
 \subsection{Simulation Results}
 \subsubsection{Simulation Setup}
 We use a $10m\times10m$ occupancy grid to conduct the simulations. We define function $R$ as a function of the cell (state) only. $R(s) = 100$ for the desired destination and $R(s) = -3$ for any other cell. Figure. \ref{fig:sim-env} illustrates how we define the reward function for each state and the transition probability function for each state-action pair. The UAV uses two sensors to estimate its state. State estimation is done by a kalman filter that fuses the two sensor readings and provides the state estimate to the controller. The controller calculates the optimal action that maximizes the UAV's expected future rewards, driving it to the desired goal.
@@ -612,7 +612,7 @@ As shown in Figures \ref{fig:successful-attack} (a-h), the sequence of the compr
 \subsubsection{Attacker Intention Inference}
 We show how the Attacker Intention Inference algorithm works as follows: We apply the same attack we illustrated in the previous section. As shown in Figures \ref{fig:recovered-attack}, the attack gets detected at snapshot (a) and the Attacker Intention Inference algorithms starts to run. We assume in this environment that the set of all undesired goals is the set of all boarder cells of the grid. We assume we don't have any initial knowledge about where the attacker's goal is, which means the prior takes the form of a uniform distribution initially. Snapshots (b-e) show the convergence of the posterior to the region of the attacker's goal. At snapshot (f), the variance of the estimated mean of the posterior of the attacker's goal goes below the threshold value which activates the recovery process. The compromised sensor is identified and is discarded from the calculations of the state estimation.
 \subsubsection{Active Exploration}
-In this simulation, we show the improvement we gained in predicting the goal of the attacker and the set of the compromised sensors. As shown in \ref{fig:active-exploration}, the UAV doesn't take the optimal action to go to mission's goal. Instead if computes the controller action based on the method described in seciton \ref{}. The UAV explore more states in the state space that create higher discrepancy between the mission goal and the predicted attacker's goal. 
+In this simulation, we show the improvement we gained in predicting the goal of the attacker and the set of the compromised sensors. As shown in Figure. \ref{fig:active-exploration}, the UAV doesn't take the optimal action to go to mission's goal. Instead if computes the controller action using \textit{Active Exploration} algorithm. The UAV explores more sensitive states in the environment before it gets closer to the attacker's goal. The convergence of the estimated attacker's goal and the trigger of the recovery process occur before the UAV gets closer to the undesired regions. 
 \begin{figure*}[]
 	\centering
 	\subfigure[] {\includegraphics[height=2.67cm,width=0.15\textwidth]{fig/attack_successfull/1}}
@@ -655,8 +655,8 @@ In this simulation, we show the improvement we gained in predicting the goal of 
 	\subfigure[] {\includegraphics[height=2.67cm,width=0.15\textwidth]{fig/active_exploration/Picture5}}
 	\subfigure[] {\includegraphics[height=2.67cm,width=0.15\textwidth]{fig/active_exploration/Picture6}}
 	\vspace{-5pt}
-	\caption{Sensor attack sequence is applied as in Figure. \ref{fig:active-exploration}. (a-e) Sequence updates of attack intention inference for the compromised sensor. (f-h) The inference confidence level exceeds the threshold, the compromised sensor is discarded and the UAV recovers from the attack.}
-	\label{fig:recovered-attack}
+	\caption{Sensor attack sequence is applied as in Figure. \ref{fig:successful-attack}. (a-c) \textit{Active Exploration} algorithm picks actions to explore the sensitive neighbor states. (d) The inference confidence level exceeds the threshold before UAV gets closer to the undesired regions. The compromised sensor is discarded, and the UAV recovers from the attack. (e-f) The UAV reaches it's desired goal by applying the optimal policy safely.}
+	\label{fig:active-exploration}
 %	\vspace{-1pt}
 \end{figure*}
 %\begin{figure*}[]
