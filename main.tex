@@ -105,11 +105,11 @@
 %Email: \{mae3tb,nbezzo\}@virginia.edu}}
 
 
-\author{Mahmoud Elnaggar$^{1}$ and Nicola Bezzo$^{1,2}$% <-this % stops a space
+\author{Mahmoud Elnaggar and Nicola Bezzo <-this % stops a space
 %\thanks{*This work was not supported by any organization}% <-this % stops a space
-\thanks{$^{1}$Department of Electrical and Computer Engineering}
-\thanks{$^{2}$Department of Systems and Information Engineering
-        {\tt\small  \{mae3tb, nbezzo\}@virginia.edu}}%
+\thanks{Department of Electrical and Computer Engineering}
+\thanks{University of Virginia \newline
+        {\tt\small  \{mae3tb, nbezzo\}@virginia.edu}}
 }
 
 
@@ -120,7 +120,7 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{abstract}
-Modern autonomous cyber-physical systems have been demonstrated to be vulnerable to cyber-attacks like sensor spoofing in which an attacker compromises sensor readings while remaining stealthy to hijack the system toward undesired possibly dangerous states. The majority of security techniques developed today are however reactive and concerned with detection and interdiction of attacks without considering the intention of the attack. To deal with such problem, in this paper we propose a Bayesian Inverse Reinforcement Learning technique that leverages the history of sensor data and control inputs to predict the goal of the attacker and determine which sensors are compromised. We also propose an active exploration framework to speed-up the intention inference convergence before reaching undesired states of the system. The proposed solutions are validated with simulation results on a quadrotor unmanned aerial vehicle navigation case study. \NB{I rewrote the abstract but we may have to change it again and add more details about the approach that you are using} 
+Modern autonomous cyber-physical systems have been demonstrated to be vulnerable to cyber-attacks like sensor spoofing in which an attacker compromises sensor readings while remaining stealthy to hijack the system toward undesired, and possibly dangerous states. The majority of security techniques developed today are, however, reactive and concerned with detection and interdiction of attacks without considering the intention of the attack. To deal with such problem, in this paper we propose a Bayesian Inverse Reinforcement Learning technique that leverages the history of sensor data and control inputs to predict the goal of the attacker and determine which sensors are compromised. We also propose an active exploration framework to speed-up the intention inference convergence before reaching undesired states of the system. The proposed solutions are validated with simulation results on a quadrotor unmanned aerial vehicle navigation case study.% \NB{I rewrote the abstract but we may have to change it again and add more details about the approach that you are using} 
 %
 %In this paper we propose 
 % without considering the intention of the attack.
@@ -178,7 +178,7 @@ To this end we leverage sensor redundancy and the theory of Inverse Reinforcemen
     \item Recover the correct state of the vehicle and counteract to continue its desired objective. 
 \end{itemize}
 
-To help the inference and avoid reaching states too close to the undesired ones, we also propose an active exploration framework in which non-optimal control actions are taken to drive the system toward states in which it would be easier to learn the intention of the attacker. \NB{may need to expand more on this thoughts}
+To speed up the convergence of the inference algorithm, the vehicle needs to visit sensitive states which may not be the case when the vehicle only applies the control actions according to the optimal policy of its mission. We propose an active exploration framework in which non-optimal control actions are taken to drive the vehicle towards more sensitive states. By doing so, the vehicle avoids reaching states too close to the undesired regions.% we also propose \NB{may need to expand more on this thoughts}
 
 %\NB{Check.you need to add the approach that we are using and contribution here.}
 %Once the vehicle state is estimated correctly, the controller can drive the vehicle back on its coarse navigating towards the desired destination.
