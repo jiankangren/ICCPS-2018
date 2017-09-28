@@ -413,7 +413,7 @@ The number of MCMC iterations is determined by the parameter ${e}_{max}$ \NB{we 
 
 
 Then, we compute the posterior that the potential goal $g_j$ is a target goal $g$ given the set of observations $\mathcal{O}_{i,t_d:t}$ as follows:\NB{need to be fixed}
-\begin{equation} Pr(g_j|\mathcal{O}_{i,t_d:t}) \propto Pr(\mathcal{O}_{i,t_d:t} | g_j) \\ \times Pr(g_j|\mathcal{O}_{i,t_d:t-1})
+\begin{equation} Pr(g_j|\mathcal{O}_{i,t_d:t}) \propto Pr(\mathcal{O}_{i,t_d:t} | g_j) \\ Pr(g_j|\mathcal{O}_{i,t_d:t-1})
 \label{eqn:goal_posterior}
 \end{equation}
 
@@ -458,7 +458,7 @@ Once the set of the uncompromised sensors $\mathcal S' \subset \mathcal S$ is de
 \end{algorithm}
 
 \subsection{Active Exploration Inference}\label{sec:approach2}
-The speed of convergence of the inference approach described in the previous section depends on the states that the vehicle visited. If most of the states inside the the set of observations are associated with mission policy's actions similar to the attacker policy's actions, the convergence of the inference algorithm will be slower and the level of confidence of the inferred posterior may not reach the desired threshold value. In this case we consider these states as {\em insensitive states}. On the other hand, the set of observations that contain states in which there is a discrepancy between the mission actions and the attacker actions, will lead to a faster inference convergence. In this case we consider these states as {\em sensitive states}. Thus it is desired to obtain sensitive states as soon as an attack is detected.
+The speed of convergence of the inference approach described in the previous section depends on the states that the vehicle visited. If most of the states inside the set of observations are associated with mission policy's actions similar to the attacker policy's actions, the convergence of the inference algorithm will be slower and the level of confidence of the inferred posterior may not reach the desired threshold value. In this case we consider these states as {\em insensitive states}. On the other hand, the set of observations that contain states in which there is a discrepancy between the mission actions and the attacker actions, will lead to a faster inference convergence. In this case we consider these states as {\em sensitive states}. Thus it is desired to obtain sensitive states as soon as an attack is detected.
 
 %For Algorithm \ref{alg:alg1} to achieve convergence to the attacker's goal, it is clear that we want to collect a set of observations having as many sensitive states as possible.
 
@@ -468,18 +468,21 @@ In most IRL problems, we don't have control over the optimal agent, and we are c
 %... The goal is to go from a situation where the system is mostly exploring the environment to a situation where it is mostly exploiting the accumulated knowledge. To converge faster to an optimal policy we will leverage active learning policies to steer the system toward states in the environment in which we can learn faster the optimal policy of the attacker. Active learning is an area of semi-supervised machine learning where the learning algorithm queries the user for information about observations. This idea can be applied to Inverse Reinforcement Learning where the IRL algorithm queries the agent for their behavior in a selected state. In the context of autonomous vehicle operations, we could actively attempt to influence the states experienced by the agent in order to observe its response. Note that such perturbation of the vehicle?s state may hasten or delay the vehicle?s arrival at a state.
 
 %of the vehicle while being under attack by the malicious attacker. This means that if we know which states are sensitive, we can make the vehicle explore more sensitive states by taking actions that lead towards sensitive states and not necessarily towards the desired goal. 
-Knowing which states are sensitive and which are not is a hard problem. We propose an algorithm that we call \textit{Active Exploration} which performs a local search in the state neighbors at each time step to choose the action that will maximize the discrepancy in mission policy and all the weighted estimates of attacker's polices.
-\textit{Active Exploration} works as follows: At each time step $t$, the algorithm chooses the next action to apply $a^*$ by looking into each possible combination of sensor reading $s_i$, and next state $s'_i$. It picks the action that maximizes the probability of choosing an action different than the optimal action in the next state. A discrepancy factor $W_a$ for each (action, next state, goal) tuple is calculated based the transition probability $T$ to go this next state $s'_i$ from $s_i$ as follows:
+Knowing which states are sensitive and which are not is a hard problem. We propose an \textit{Active Exploration} framework that performs a local search in the state neighbors at each time step to choose the action that will maximize the discrepancy in mission policy and all the weighted estimates of attacker's polices.
+Active Exploration works as follows. At each time step $t$, next action $a^*$ is chosen by looking into each possible combination between the current sensor reading $s_i$, and next reachable states $s'_i$. The current action is selected by maximizing the probability of obtaining an action different from the optimal action in the next step. A discrepancy factor $W_a$ for each $\{action, next\,state, goal\}$ tuple is calculated based on the transition probability $T$ to reach next state $s'_i$ from $s_i$ as follows:
 
 \begin{equation}  W_a \leftarrow W_a +
-                \nu_i\times T(s_i, a, s'_i)
+                \nu_i T(s_i, a, s'_i)
 \label{eqn:active_exlporation}
 \end{equation}
-We only update $W_a$ if $\pi^{\mu_i}(s'_i) \ne \pi^*(s'_i)$, where $\pi^{\mu_i}$ is the policy to go to the estimated attacker's goal at the current time step, and $\pi^*$ is the mission's policy. The posterior estimate $\mu_i$, and the variance $\nu_i$ are calculated in Algorithm \ref{alg:alg1} in the same time step $t$. Finally, we pick the action to apply $a^*$ according to:
+We only update $W_a$ if $\pi^{\mu_i}(s'_i) \ne \pi^*(s'_i)$, where $\pi^{\mu_i}$ is the policy used to reach the estimated attacker's goal at the current time step. The posterior estimate $\mu_i$, and the variance $\nu_i$ are calculated as in Algorithm \ref{alg:alg1}. Finally, we pick the action to apply $a^*$ according to:
 \begin{equation}  a^*=\arg\!\max_{a\in A}W
 \label{eqn:picked_action}
 \end{equation}
-Where, $W = \{W_1, W_2, ..., W_{|A|}\}$ is the set of weights for all the possible actions. We apply $a^*$ at each time step with a probability $\delta, 0 < \delta < 1$ that decreases over time. The exploration factor $\delta$ indicates how much the inference algorithm will apply an action according to Active Exploration algorithm than applying an action according to the mission policy. The goal of doing Active Exploration is to make Attacker Intention Inference algorithm converge to the attacker's goal before the vehicle gets close to the attacker's desired region.
+Where, $W = \{W_1, W_2, ..., W_{|A|}\}$ is the set of weights for all the possible actions. We apply $a^*$ at each time step with a probability $\delta, 0 < \delta < 1$ that decreases over time. 
+As before, also this procedure will terminate once $\nu_i\leq\tau_i$ and a recovery procedure will start at that time.
+%This $\delta$ factor indicates how much the inference algorithm will apply an action according to Active Exploration algorithm than applying an action according to the mission policy. 
+%The goal of doing Active Exploration is to make Attacker Intention Inference algorithm converge to the attacker's goal before the vehicle gets close to the attacker's desired region.
 %\begin{algorithm}\label{alg:alg2}
     %\SetKwInOut{Input}{Input}
     %\SetKwInOut{Output}{Output}
