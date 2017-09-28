@@ -405,7 +405,7 @@ where, $\beta$ is a factor that indicates how confident we are that the agent is
 
 %we assume, initially, that the prior for the target goal is uniformly distributed among all possible undesired goals. 
 
-<<<<<<< HEAD
+
 In order to infer the attacker goal $g^a$ and the set of compromised sensors $\mathcal{S}^a$, we use the following MCMC iteration to calculate the mean of the attacker's goal posterior: %\NB{here we need an equation for the MCMC}
 %The number of MCMC iterations is determined by a parameter ${e}_{max}$ \NB{we can remove this infomration}. \NB{all this next sentence is super confusing. Is the following the MCMC algorithm? } 
 first we obtain a sample $g_j$ from the prior distribution of the undesired goals set $\mathcal{G}$, ii) then, we iterate over all the observations $\mathcal{O}_{i,T}$ we observed over a period of time $T$ for the sensor $i$. We update the posterior of the potential sampled goal $g_j$ from each observation by calculating the likelihood of the taken actions. The likelihood of taking action $a_t$ at state $s_{i,t}$ to go to goal $g_j$ can be directly computed as the action-value function (Q-function) for taking this action from this state:
