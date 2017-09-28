@@ -405,9 +405,9 @@ where, $\beta$ is a factor that indicates how confident we are that the agent is
 
 %we assume, initially, that the prior for the target goal is uniformly distributed among all possible undesired goals. 
 
-In order to infer the attacker goal $g^a$ and the set of compromised sensors $\mathcal{S}^a$, we use the MCMC technique to iteratively calculate the mean of the attacker's goal posterior. \NB{here we need an equation for the MCMC}
-
-The number of MCMC iterations is determined by the parameter ${e}_{max}$ \NB{we can remove this infomration}. \NB{all this next sentence is super confusing. Is the following the MCMC algorithm? } We obtain a sample $g_j$ from the prior distribution of the undesired goals set $\mathcal{G}$. Then, we iterate over all the observations $\mathcal{O}_{i,T}$ we observed over a period of time $T$ for the sensor $i$. We update the posterior of the potential sampled goal $g_j$ from each observation by calculating the likelihood of the taken actions. The likelihood of taking action $a_t$ at state $s_{i,t}$ to go to goal $g_j$ can be directly computed as the action-value function (Q-function) for taking this action from this state:
+In order to infer the attacker goal $g^a$ and the set of compromised sensors $\mathcal{S}^a$, we use the following MCMC iteration to calculate the mean of the attacker's goal posterior: %\NB{here we need an equation for the MCMC}
+%The number of MCMC iterations is determined by a parameter ${e}_{max}$ \NB{we can remove this infomration}. \NB{all this next sentence is super confusing. Is the following the MCMC algorithm? } 
+first we obtain a sample $g_j$ from the prior distribution of the undesired goals set $\mathcal{G}$, ii) then, we iterate over all the observations $\mathcal{O}_{i,T}$ we observed over a period of time $T$ for the sensor $i$. We update the posterior of the potential sampled goal $g_j$ from each observation by calculating the likelihood of the taken actions. The likelihood of taking action $a_t$ at state $s_{i,t}$ to go to goal $g_j$ can be directly computed as the action-value function (Q-function) for taking this action from this state:
 
 \begin{equation} Pr(a_t|s_{i,t},g_j) = Q^*(s_{i,t},a_t,R_j)
 \label{eqn:action_likelihood}
@@ -713,7 +713,6 @@ We believe that the proposed approach could be deployed in any autonomous CPS to
 
 Our current and future work is toward expanding this framework to deal also with the prediction of malicious intention of vehicles not under our control, like AUVs entering restricted airspace. We plan also to extend the current framework to deal with the problem of {\em checkpoinitng} and {\em recovery}, specifically to consider the inference to retrieve the point in past time where an attack started.
 We are finally working on improving computation complexity of the proposed framework by expanding the idea proposed in Section IV.B to bring the problem into the continuous time domain.
-
 We are also working on experiments on real quadrotor UAVs that we plan to include in future contributions.
 %\NB{maybe we can add that a drawback is that there are a lot of parameters to tune to have that teh proposed technique works}
 
