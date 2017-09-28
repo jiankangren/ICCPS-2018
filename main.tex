@@ -391,8 +391,9 @@ In our case, we want to calculate ,for each sensor $i$, the likelihood of observ
 \begin{equation}\label{eq:likelihood}
 Pr(\mathcal{O}_{i,\Delta t} | g = g_j)  = \frac{e^{\beta\sum_{T}{Q^*(s_{i,t},a_t,R_j)}}}{\sum_{b\in A}{}e^{\beta\sum_{T}{}Q^*(s_{i,t},b,R_j)}}
 \end{equation}
-\NB{is this equation with $g^a$}
-where, $\beta$ is a factor that indicates how confident we are that the agent is acting optimally. To solve \eqref{eq:likelihood} it is required to solve an MDP problem as in \eqref{eq:qlearn} \NB{put a number on all equations in preliminaries and refer to the right equation}
+%\NB{is this equation with $g^a$}
+where, $\beta$ is a factor that indicates how confident we are that the agent is acting optimally. To solve \eqref{eq:likelihood} it is required to solve an MDP problem as in \eqref{eq:qlearn} 
+%\NB{put a number on all equations in preliminaries and refer to the right equation}
 %to compute $Q^*$ for each state-action pair by performing Q-learning iterations as described in section \ref{sec:Preliminaries}.
 
 
@@ -415,14 +416,15 @@ first we obtain a sample $g_j$ from the prior distribution of the undesired goal
 \end{equation}
 
 
-Then, we compute the posterior that the potential goal $g_j$ is a target goal $g$ given the set of observations $\mathcal{O}_{i,t_d:t}$ as follows:\NB{need to be fixed}
+Then, we compute the posterior probability for each goal $g_j$ (i.e., the probability  that the goal is $g_j$) given the set of observations $\mathcal{O}_{i,t_d:t}$ as follows: %\NB{need to be fixed}
 \begin{equation} Pr(g_j|\mathcal{O}_{i,t_d:t}) \propto Pr(\mathcal{O}_{i,t_d:t} | g_j) \\ Pr(g_j|\mathcal{O}_{i,t_d:t-1})
 \label{eqn:goal_posterior}
 \end{equation}
 
-The first term on the right hand side (rhs) of the equation represents the likelihood of the observations given that the goal $g^a=g_j$ which can be computed using \eqref{eq:likelihood}. The second term on the rhs represents the prior which is updated from the posterior calculated at the previous time $t-1$ and initialized in the beginning with a sample drawn from a uniform distribution.
-After the MCMC iterations is completed, we evaluate the level of confidence that $g = g_j$ by calculating the mean of the posterior. The higher the value of the posterior mean $\mu_i$, the higher the confidence we have about the estimation. Algorithm \ref{alg:alg1} summarizes the steps taken to perform attacker's intention inference. \NB{the algorithm needs to be fixed. What is $g_m$}
-\NB{equation is latex are referred using slash eqref{eq: label} to create the parenthesis around the number }
+The first term on the right hand side (rhs) of the equation represents the likelihood of the observations given that the goal is $g_j$ which can be computed using \eqref{eq:likelihood}. The second term on the rhs represents the prior which is updated from the posterior calculated at the previous time $t-1$ and initialized in the beginning with a sample drawn from a uniform distribution.
+After the MCMC iterations is completed, we evaluate the level of confidence that $g = g_j$ by calculating the mean of the posterior. The higher the value of the posterior mean $\mu_i$, the higher the confidence we have about the estimation. Algorithm \ref{alg:alg1} summarizes the steps taken to perform attacker's intention inference.
+% \NB{the algorithm needs to be fixed. What is $g_m$}
+%\NB{equation is latex are referred using slash eqref{eq: label} to create the parenthesis around the number }
 
 A recovery procedure is triggered if there exists a sensor or a set of sensors that return a state $s_i$ such that the variance of the posterior probability $\nu_i \leq \tau$ where $\tau$ is a user selected threshold. The higher the threshold the sooner a recovery will be initiated but a less precise inference will be computed. Vice versa a small threshold may cause a delayed recovery. The sensors associated with such posterior probabilities are the compromised ones and thus a re removed from considerations during recovery.
 
