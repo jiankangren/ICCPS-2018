@@ -349,7 +349,8 @@ Formally, we are interested in solving the following problem:
 
 %Note that here we consider that our proposed approach begins as soon as an attack is detected at time $t_d$ however the technique that we will describe in the next section works at any time since it compare different sensor readings. \NB{added, may remove if I feel it's creating more confusion}
 \section{Attacker Intention Inference}\label{sec:approach}
-We propose to cast Problem \ref{prob:p1} as a Bayesian Inverse Reinforcement Learning problem. 
+\subsection{Bayesian Inverse Reinforcement Learning Intention Prediction}\label{sec:approach1}
+We propose to cast Problem \ref{prob:p1} as a Bayesian Inverse Reinforcement Learning problem as follows. 
 
 %\NB{next section can be included before the problem}Specifically, we consider that the autonomous vehicle follows an optimal mission policy $\pi^*$ to perform its navigation task to the desired goal. After the attacker starts his attack on the vehicle, we assume that the compromised vehicle acts as an agent that takes actions according to the attacker's desired policy $\pi^a$ \NB{Check. not clear at all. What does this mean? The optimal policy is still running and the attacker is leveraging that.} \NB{where is the optimal policy represented? I see only the attack policy below. ME: The optimal policy $\pi^*$ formula is presented before. It would be redundant to write it again. I believe if we just mention at this point that the vehicle is moving accroding to optimal policy $\pi*$ it should be understandable}. We call $\pi^a$ the attack policy. The policy $\pi^a$ drives the agent towards the target destination $g^a$ as fast as possible while hiding the attack within the sensors noise profiles or the environment disturbance model \NB{Check how is this represented in the formula below?.  ME:It is not presented ... this is how the attacker spoofs the sensor. It is something different than how the compromised vehicle acts which what this is about}. At each state $s$, the policy $\pi^a$ is calculated according to:
 %\[ \pi^a(s) = \arg\!\max_{a\in A} Q^{\pi^a}(s,a,R^a)\]
@@ -409,7 +410,7 @@ The number of MCMC iterations is determined by the parameter ${e}_{max}$ \NB{we 
 \end{equation}
 
 
-Then, we compute the posterior that the potential goal $g_j$ is a target goal $g$ given the set of observations $\mathcal{O}_{i,t_d:t}$ as follows:
+Then, we compute the posterior that the potential goal $g_j$ is a target goal $g$ given the set of observations $\mathcal{O}_{i,t_d:t}$ as follows:\NB{need to be fixed}
 \begin{equation} Pr(g=g_j|\mathcal{O}_{i,t_d:t}) \propto Pr(\mathcal{O}_{i,t_d:t} | g = g_j) \\ \times Pr(g=g_j|\mathcal{O}_{i,t_d:t-1})
 \label{eqn:goal_posterior}
 \end{equation}
@@ -454,7 +455,7 @@ Once the set of the uncompromised sensors $\mathcal S' \subset \mathcal S$ is de
     \caption{Attacker Intention Prediction}
 \end{algorithm}
 
-\subsection{Active Exploration}
+\subsection{Active Exploration Inference}\label{sec:approach2}
 The speed of convergence of the inference approach described in the previous section depends on the states that the vehicle visited. If most of the states inside the the set of observations are associated with mission policy's actions similar to the attacker policy's actions, the convergence of the inference algorithm will be slower and the level of confidence of the inferred posterior may not reach the desired threshold value. In this case we consider these states as {\em insensitive states}. On the other hand, the set of observations that contain states in which there is a discrepancy between the mission actions and the attacker actions, will lead to a faster inference convergence. In this case we consider these states as {\em sensitive states}. Thus it is desired to obtain sensitive states as soon as an attack is detected.
 
 %For Algorithm \ref{alg:alg1} to achieve convergence to the attacker's goal, it is clear that we want to collect a set of observations having as many sensitive states as possible.
@@ -506,14 +507,20 @@ Where, $W = \{W_1, W_2, ..., W_{|A|}\}$ is the set of weights for all the possib
  Pr(a_t|s_{i,t},g_j) \propto e^{-\alpha \lVert a_t - a_{CL} \rVert_{2}}
 \end{equation}
 Where $a_{CL}$ is the action given by the system's closed loop controller to go from state $s_{i,t}$ to goal $g_j$.
+
 \section{Simulations}\label{sec:simulations}
-We perform a set of simulations having an Unmanned Aerial Vehicle (UAV) navigating in a 2-D stochastic environment to a desired location. The goal of the simulation is to show the following:
+In this section we present simulation results for a UAV navigation case study in a stochastic environment.
+%We perform a set of simulations having an Unmanned Aerial Vehicle (UAV) navigating in a 2-D stochastic environment to a desired location. 
+The goal of the following simulations is to show the following behaviors:
 \begin{itemize}
-    \item An attacker can lead an autonomous vehicle to an undesired destination by spoofing its sensors while hiding the attack vectors within the noise profiles the sensors or the environment uncertainty model.
-    \item Algorithm \ref{alg:alg1} manages to infer the intention of the attacker and the set of compromised sensors.
-    \item The effect of applying Active Exploration approach to Algorithm \ref{alg:alg1}
+    \item An attacker can hijack the vehicle to an undesired destination by spoofing its sensors while hiding the attack vectors within the noise profiles of the sensors and the UAV model uncertainties.
+    \item Our technique for intent inference presented in Section \ref{sec:approach1} can infer the intention of the attacker and the set of compromised sensors.
+    \item The Active Exploration approach presented in Section \ref{sec:approach2} can accelerate the intention prediction.
 \end{itemize}
-\subsection{UAV Model}
+
+\subsection{Quadrotor Modeling and Control}
+Here we present the quadrotor UAV model used during the simulations.
+
 A quadrotor is a non-linear system of the form 
 \begin{equation}
 \dot{\bm{x}} = f(\bm{x}, \bm{u})
@@ -537,7 +544,7 @@ The system can be linearized around a point $\left(\bm{x}^{*}, \bm{u}^{*}\right)
 where $\bm{d} = [d_x \; d_y \; d_z]^{T}$ is the wind disturbance. 
 More details, including a complete mathematical formulation, can be found in \cite{bezzo2016online,bezzo2014cooperative, michael2010grasp, shoukry2015secure}.
 
-\subsection{UAV Control}
+%\subsection{UAV Control}
 The controller is derived by linearizing the equations of motion and motor models at an operating point that corresponds to the nominal hover state ${\bm p} = \{x, y, z\}$, $\theta = 0$, $\phi = 0$, $\psi = \psi_0$, ${\dot{\bm p} = 0}$ and $\dot{\phi} = \dot{\theta} = \dot{\psi} = 0$ with roll and pitch angles small. The nominal values for the inputs at hover are $u_1 = mg$, $u_2 = u_3 = u_4 = 0$.
 
 In order to control the quadrotor to follow a desired trajectory, we use a cascade of PID controllers.
@@ -582,16 +589,20 @@ k_{p,\psi}(\psi^{\textrm{des}} - \psi) + k_{d,\psi}(r^{\textrm{des}} - r)
 
 \subsection{Simulation Environment}
  We represent the discretized state space of the environment as an occupancy grid which maps the environment to a 2-D matrix of cells. Each cell represents a state and holds a probability value that indicates the probability of the vehicle reaching this cell by taking a certain action.
-In normal operation conditions (No attack detected), the UAV takes an action at each cell according to its mission optimal policy $\pi^*$. The set of actions $A$ that the UAV can take at any cell is defined as follows:
+In normal operation conditions (i.e., with no attack), the UAV takes an action at each cell according to its mission optimal policy $\pi^*$. The set of actions $A$ that the UAV can take at any cell is defined as follows:
 $A =$ \textit{\{move forwards \{F\}, move backwards \{B\}, move right \{R\}, move left \{L\}\}}.
-Each action is mapped to an altitude and position control input to the UAV to make it move from one cell to the next desired cell. Specifically, {F, B} are mapped to $u_3$ and {L, R} are mapped to $u_2$ control inputs. As we consider a stochastic environment, we define the transition probability function $T(s,s',a)$ that maps the disturbances in the environment to a probability associated with taking each action $a$ to go from state $s$ to state $s'$.
+Each action is mapped to an altitude and position control input to the UAV to make it move from one cell to the next desired cell. Specifically, $\{F, B\}$ are mapped to $u_3$ and $\{L, R\}$ are mapped to $u_2$ control inputs in \eqref{eq:att}. 
+%Since we consider a stochastic environment, we define the transition probability function $T(s,s',a)$ that maps the disturbances in the environment to a probability associated with taking each action $a$ to go from state $s$ to state $s'$.
 \subsection{Simulation Results}
 \subsubsection{Simulation Setup}
-We use a $10m\times10m$ occupancy grid to conduct the simulations. We define function $R$ as a function of the cell (state) only. $R(s) = 100$ for the desired destination and $R(s) = -3$ for any other cell. Figure. \ref{fig:sim-env} illustrates how we define the reward function for each state and the transition probability function for each state-action pair. The UAV uses two sensors to estimate its state. State estimation is done by a kalman filter that fuses the two sensor readings and provides the state estimate to the controller. The controller calculates the optimal action that maximizes the UAV's expected future rewards, driving it to the desired goal.
+In the simulations that follow, we consider a $10\times10$ square cells environment with each cell having 1m side. $R(s) = 100$ for the desired goal, $R(s) = -100$ on undesired goals located on the perimeter of the environment and $R(s) = -3$ on the remaining cells.  The UAV has two noisy sensors measuring the position state. State estimation is performed with a kalman filter from which the output is passed to the position controller that calculates the optimal action to perform following the optimal policy $\pi^*$ to the desired goal. Noise and uncertainties associated with the motion of the UAV are captured through the transition probability. Specifically here we consider that given any of the actions described in the previous section there will be a 0.8 probability to reach the desired next state and 0.1 probability to reach each of the adjacent cells in the environment. Fig.~\ref{fig:sim-env} illustrates the situation.
+%
+%Fig.~\ref{fig:sim-env} illustrates how we define the reward function for each state and the transition probability function for each state-action pair.
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.45\textwidth]{sim-env}
-\caption{The discretized environment used during experiments. The green cell represents the desired destination of the UAV with a reward value of 100. The penalty of moving from one cell to another is represented by a -3 reward. Associated to each action there is a transition probability: specifically there is a 0.8 probability to reach the desired next state and 0.1 probability to reach each of the adjacent cells (due to noise and possible disturbance in the environment)}
+\caption{The discretized environment used during experiments with the reward and transition probability models.} 
+%The green cell represents the desired destination of the UAV with a reward value of 100. The penalty of moving from one cell to another is represented by a -3 reward. Associated to each action there is a transition probability: specifically there is a 0.8 probability to reach the desired next state and 0.1 probability to reach each of the adjacent cells (due to noise and possible disturbance in the environment)}
 %f the vehicle moves to the right, it has 0.8 chance of ending up in the desired cell. and 0.2 chance of ending up in an adjacent cell.}
  \label{fig:sim-env}
 \end{figure}
