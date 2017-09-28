@@ -587,15 +587,16 @@ k_{p,\psi}(\psi^{\textrm{des}} - \psi) + k_{d,\psi}(r^{\textrm{des}} - r)
 \end{equation}
 
 
-\subsection{Simulation Environment}
- We represent the discretized state space of the environment as an occupancy grid which maps the environment to a 2-D matrix of cells. Each cell represents a state and holds a probability value that indicates the probability of the vehicle reaching this cell by taking a certain action.
-In normal operation conditions (i.e., with no attack), the UAV takes an action at each cell according to its mission optimal policy $\pi^*$. The set of actions $A$ that the UAV can take at any cell is defined as follows:
+%\subsection{Simulation Environment}
+The environment where the UAV operate is discretized with a 2-D grid composed of a finite number of cells that represent the discrete states that the UAV can assume during a mission.
+%We represent the discretized state space of the environment as an occupancy grid which maps the environment to a 2-D matrix of cells. Each cell represents a state and holds a probability value that indicates the probability of the vehicle reaching this cell by taking a certain action.
+In normal operation conditions (i.e., with no attack), the UAV takes an action at each cell according to its mission optimal policy $\pi^*$ in \eqref{eq:pistar}. The set of actions $A$ that the UAV can take at any cell is defined as follows:
 $A =$ \textit{\{move forwards \{F\}, move backwards \{B\}, move right \{R\}, move left \{L\}\}}.
-Each action is mapped to an altitude and position control input to the UAV to make it move from one cell to the next desired cell. Specifically, $\{F, B\}$ are mapped to $u_3$ and $\{L, R\}$ are mapped to $u_2$ control inputs in \eqref{eq:att}. 
+Each action is mapped to a roll or pitch command as follows: $\{F, B\}$ are mapped to $u_3$ and $\{L, R\}$ are mapped to $u_2$ control inputs in \eqref{eq:att}. 
 %Since we consider a stochastic environment, we define the transition probability function $T(s,s',a)$ that maps the disturbances in the environment to a probability associated with taking each action $a$ to go from state $s$ to state $s'$.
 \subsection{Simulation Results}
 \subsubsection{Simulation Setup}
-In the simulations that follow, we consider a $10\times10$ square cells environment with each cell having 1m side. $R(s) = 100$ for the desired goal, $R(s) = -100$ on undesired goals located on the perimeter of the environment and $R(s) = -3$ on the remaining cells.  The UAV has two noisy sensors measuring the position state. State estimation is performed with a kalman filter from which the output is passed to the position controller that calculates the optimal action to perform following the optimal policy $\pi^*$ to the desired goal. Noise and uncertainties associated with the motion of the UAV are captured through the transition probability. Specifically here we consider that given any of the actions described in the previous section there will be a 0.8 probability to reach the desired next state and 0.1 probability to reach each of the adjacent cells in the environment. Fig.~\ref{fig:sim-env} illustrates the situation.
+In the simulations that follow, we consider a $10\times10$ square cells environment with each cell having 1m side length. $R(s) = 100$ for the desired goal, $R(s) = -100$ on undesired goals located on the perimeter of the environment and $R(s) = -3$ on the remaining cells.  The UAV has two noisy sensors measuring the position state. State estimation is performed with a kalman filter from which the output is passed to the position controller that calculates the optimal action to perform following the optimal policy $\pi^*$ to the desired goal. Noise and uncertainties associated with the motion of the UAV are captured through the transition probability. Specifically here we consider that given any of the actions described in the previous section there will be a 0.8 probability to reach the desired next state and 0.1 probability to reach each of the adjacent cells in the environment. Fig.~\ref{fig:sim-env} illustrates the situation.
 %
 %Fig.~\ref{fig:sim-env} illustrates how we define the reward function for each state and the transition probability function for each state-action pair.
 \begin{figure}[h]
