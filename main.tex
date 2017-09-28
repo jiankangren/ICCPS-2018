@@ -189,7 +189,7 @@ To speed up the convergence of the inference algorithm, the vehicle needs to vis
 
 The literature on CPS cyber-security has been growing substantially in the last few years. 
 %Various efforts have been made by members of the cyber-physical systems research community to guarantee the safety of cyber-physical systems under sensor attacks. Pajic2017
-Among the earliest work on this domain we find \cite{Fawzi2014, Ivanov2014, Pajic2014, bezzo2014attack} in which resilient state estimators (RSEs) were developed leveraging redundancy in sensor data and knowledge about the CPS dynamics. One of the most significant result obtained in \cite{Fawzi2014, Pajic2014} show that by means of such RSEs it is possible to correctly reconstruct the state of the system if the number of attacked sensors is bounded.
+Among the earliest work on this domain we find \cite{Fawzi2014, Ivanov2014, pajic2014robustness, bezzo2014attack} in which resilient state estimators (RSEs) were developed leveraging redundancy in sensor data and knowledge about the CPS dynamics. One of the most significant result obtained in \cite{Fawzi2014, pajic2014robustness} show that by means of such RSEs it is possible to correctly reconstruct the state of the system if the number of attacked sensors is bounded.
 More recently in \cite{kim2017attack} the authors dealt with a similar problem of attack resilient estimation for switched nonlinear systems subject to stochastic noise, by designing a bank of attack-resilient state, attack vector, and mode estimators. Still from a control point of view, in \cite{rana2017attack} a convex optimization algorithm is proposed to minimize estimation error and control an electric vehicle in which communication is not reliable due to a malicious cyber-attack. 
 
 In \cite{shoukry2015secure} a satisfiability modulo theory-based approach is presented to detect and estimate the state of an unmanned aerial vehicle (UAV) under sensor attack. Remaining on UAV applications, authors in \cite{yoon2017virtualdrone} present a software architecture that allows a UAV to operate with compromised system components by virtualizing sensor, actuators, and communication channels and switching to a safe behavior once an attack is detected. 
@@ -405,9 +405,15 @@ where, $\beta$ is a factor that indicates how confident we are that the agent is
 
 %we assume, initially, that the prior for the target goal is uniformly distributed among all possible undesired goals. 
 
+<<<<<<< HEAD
 In order to infer the attacker goal $g^a$ and the set of compromised sensors $\mathcal{S}^a$, we use the following MCMC iteration to calculate the mean of the attacker's goal posterior: %\NB{here we need an equation for the MCMC}
 %The number of MCMC iterations is determined by a parameter ${e}_{max}$ \NB{we can remove this infomration}. \NB{all this next sentence is super confusing. Is the following the MCMC algorithm? } 
 first we obtain a sample $g_j$ from the prior distribution of the undesired goals set $\mathcal{G}$, ii) then, we iterate over all the observations $\mathcal{O}_{i,T}$ we observed over a period of time $T$ for the sensor $i$. We update the posterior of the potential sampled goal $g_j$ from each observation by calculating the likelihood of the taken actions. The likelihood of taking action $a_t$ at state $s_{i,t}$ to go to goal $g_j$ can be directly computed as the action-value function (Q-function) for taking this action from this state:
+=======
+In order to infer the attacker goal $g^a$ and the set of compromised sensors $\mathcal{S}'$, we use the MCMC technique to iteratively calculate the mean of the attacker's goal posterior. \NB{here we need an equation for the MCMC}
+
+The number of MCMC iterations is determined by the parameter ${e}_{max}$ \NB{we can remove this infomration}. \NB{all this next sentence is super confusing. Is the following the MCMC algorithm? } We obtain a sample $g_j$ from the prior distribution of the undesired goals set $\mathcal{G}$. Then, we iterate over all the observations $\mathcal{O}_{i,T}$ we observed over a period of time $T$ for the sensor $i$. We update the posterior of the potential sampled goal $g_j$ from each observation by calculating the likelihood of the taken actions. The likelihood of taking action $a_t$ at state $s_{i,t}$ to go to goal $g_j$ can be directly computed as the action-value function (Q-function) for taking this action from this state:
+>>>>>>> origin/master
 
 \begin{equation} Pr(a_t|s_{i,t},g_j) = Q^*(s_{i,t},a_t,R_j)
 \label{eqn:action_likelihood}
