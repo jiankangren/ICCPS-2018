@@ -607,6 +607,7 @@ In the simulations that follow, we consider a $10\times10$ square cells environm
 %f the vehicle moves to the right, it has 0.8 chance of ending up in the desired cell. and 0.2 chance of ending up in an adjacent cell.}
  \label{fig:sim-env}
 \end{figure}
+
 \subsubsection{Sensor Spoofing Attack}
 \begin{figure}[]
 	\centering
@@ -617,6 +618,7 @@ In the simulations that follow, we consider a $10\times10$ square cells environm
 	\label{fig:policies}
 %	\vspace{-1pt}
 \end{figure}
+In Fig.~\ref{fig:policies}
 We simulate the case where the an attacker is spoofing one of the two sensor the UAV has. We assume the attacker has full knowledge of the system and exploits the uncertainty in the system model to hide the attack vectors which means that both sensor readings will comply the system model and we cannot determine which sensor is compromised by just comparing the sequence of sensor readings to the dynamical model of the system. The goal of the attack is to make the UAV navigate towards the attacker's desired goal optimally. Figure. \ref{fig:policies} illustrates the difference between the mission policy of the UAV and the attacker policy. The arrow at each cell present the optimal action associated with that cell.
 
 As shown in Figures \ref{fig:successful-attack} (a-h), the sequence of the compromised sensor readings comply with the system model and it drags the estimated state of the UAV towards the cells associated with optimal actions that lead towards the attacker's goal instead of the mission's goal. The UAV can detect from the divergence of the two sensor readings that one of them is compromised but it cannot determine which one is being spoofed and ends up navigating to the attacker's goal.
