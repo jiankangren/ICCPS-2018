@@ -90,6 +90,7 @@
 \newcommand\NB[1]{$\spadesuit$\footnote{NB: #1}}
 \newcommand\JL[1]{$\diamondsuit$\footnote{MH: #1}}
 \newcommand\ME[1]{$\spadesuit$\footnote{ME: #1}}
+\renewcommand{\baselinestretch}{0.95}
 
 
 \begin{document}
@@ -648,7 +649,7 @@ In the simulation depicted in Fig.~\ref{fig:active-exploration}, we show the imp
 	\subfigure[] {\includegraphics[width=0.15\textwidth]{fig/attack_successfull/12}}
 	\subfigure[] {\includegraphics[width=0.15\textwidth]{fig/attack_successfull/14}}
 	\vspace{-5pt}
-	\caption{Red cells represent the readings from the compromised sensor. Yellow cells represent estimated states (a) UAV is not under attack. (b-g) Attack is being applied hiding the attack vector within the system uncertainty bounds. (h) The UAV eventually reaches the undesired destination.}
+	\caption{Simulation of a UAV navigation case study under attack with no protection mechanisms. Red colored cells represent the readings from the compromised sensor, green cells show the uncompromised sensor readings while yellow cells represent the estimated states fusing both sensors. In (a) the UAV is not under attack. (b-f) Attack is being applied hiding within the system uncertainty bounds. (h) The UAV eventually reaches the undesired destination in (f).}
 	\label{fig:successful-attack}
 %	\vspace{-1pt}
 \end{figure*}
@@ -663,7 +664,7 @@ In the simulation depicted in Fig.~\ref{fig:active-exploration}, we show the imp
 	\subfigure[] {\includegraphics[height=2.67cm,width=0.15\textwidth]{fig/attack_recovery/5}}
 	\subfigure[] {\includegraphics[height=2.67cm,width=0.15\textwidth]{fig/attack_recovery/6}}
 	\vspace{-5pt}
-	\caption{Sensor attack sequence is applied as in Figure. \ref{fig:successful-attack}. (a-e) Sequence updates of attack intention inference for the compromised sensor. (f-h) The inference confidence level exceeds the threshold, the compromised sensor is discarded and the UAV recovers from the attack.}
+	\caption{Simulation of intent inference with the same attack depicted in Fig.\ref{fig:successful-attack}. The gradient color map in (a-d) shows the likelihood of each possible goal on the perimeter of the environment with blue= low probability and yellow=high probability. In (d) the inference confidence level exceeds a given threshold, the compromised sensor is discarded, and the UAV is recovered from the attack in (e-f).}
 	\label{fig:recovered-attack}
 %	\vspace{-1pt}
 \end{figure*}
@@ -679,7 +680,7 @@ In the simulation depicted in Fig.~\ref{fig:active-exploration}, we show the imp
 	\subfigure[] {\includegraphics[height=2.67cm,width=0.15\textwidth]{fig/active_exploration/Picture5}}
 	\subfigure[] {\includegraphics[height=2.67cm,width=0.15\textwidth]{fig/active_exploration/Picture6}}
 	\vspace{-5pt}
-	\caption{Sensor attack sequence is applied as in Figure. \ref{fig:successful-attack}. (a-c) \textit{Active Exploration} algorithm picks actions to explore the sensitive neighbor states. (d) The inference confidence level exceeds the threshold before UAV gets closer to the undesired regions. The compromised sensor is discarded, and the UAV recovers from the attack. (e-f) The UAV reaches it's desired goal by applying the optimal policy safely.}
+	\caption{Simulation of intent inference with active exploration. In (b) active exploration is activated driving the system sub-optimally to infer more the attack intention and before reaching regions in the environment too close to the undesired state. Differently from the previous simulation the intention is estimated farther away from the undesired goal and as before in (e-f) we show the recovery operation without the compromised sensor.}
 	\label{fig:active-exploration}
 %	\vspace{-1pt}
 \end{figure*}
@@ -720,6 +721,7 @@ We are also working on experiments on real quadrotor UAVs that we plan to includ
 % use section* for acknowledgment
 %\vspace{-15pt}
 \section*{Acknowledgment}
+This work is based on research sponsored by ONR under agreement number N000141712012.
 % trigger a \newpage just before the given reference
 % number - used to balance the columns on the last page
 % adjust value as needed - may need to be readjusted if
