@@ -157,8 +157,7 @@ For example, it is believed that GPS spoofing led to the capturing of a Sentinel
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.4\textwidth]{problem}
-\caption{Pictorial representation of the situation envisioned in this work in which a malicious attacker spoofs a sensor like a GPS on a UAV to hijack it to an undesired destination (red goal) from the desired route (green trajectory)}
- \label{fig:problem}
+\caption{Pictorial representation of the situation envisioned in this work in which a malicious attacker spoofs a sensor like a GPS on a UAV to hijack it to an undesired destination (red goal) from the desired route (green trajectory)}.\label{fig:problem}
 \end{figure}
 
 
@@ -613,7 +612,7 @@ In the simulations that follow, we consider a $10\times10$ square cells environm
 	\subfigure[] {\includegraphics[width=0.23\textwidth]{fig/good-goal-policy}}
 	\subfigure[] {\includegraphics[width=0.23\textwidth]{fig/bad-goal-policy}}
 	%\vspace{-5pt}
-	\caption{(a) Optimal mission policy (b) Optimal attacker's policy}
+	\caption{(a) Optimal mission policy. (b) Optimal attacker's policy.}
 	\label{fig:policies}
 %	\vspace{-1pt}
 \end{figure}
@@ -643,7 +642,7 @@ In the simulations that follow, we consider a $10\times10$ square cells environm
 	\subfigure[] {\includegraphics[height=2.67cm,width=0.15\textwidth]{fig/attack_recovery/5}}
 	\subfigure[] {\includegraphics[height=2.67cm,width=0.15\textwidth]{fig/attack_recovery/6}}
 	\vspace{-5pt}
-	\caption{Simulation of intent inference with the same attack depicted in Fig.\ref{fig:successful-attack}. The gradient color map in (a-d) shows the likelihood of each possible goal on the perimeter of the environment with blue= low probability and yellow=high probability. In (d) the inference confidence level exceeds a given threshold, the compromised sensor is discarded, and the UAV is recovered from the attack in (e-f).}
+	\caption{Simulation of intent inference with the same attack depicted in Fig.\ref{fig:successful-attack}. The gradient color map in (a-d) shows the likelihood of each possible goal on the perimeter of the environment with blue=low probability and yellow=high probability. In (d) the inference confidence level exceeds a given threshold, the compromised sensor is discarded, and the UAV is recovered from the attack in (e-f).}
 	\label{fig:recovered-attack}
 %	\vspace{-1pt}
 \end{figure*}
@@ -687,8 +686,13 @@ In Fig. \ref{fig:successful-attack}, we show a sequence of snapshots in which an
 
 \subsubsection{Attacker Intention Inference}
 In the simulation shown in Fig.~\ref{fig:recovered-attack} we deploy our intent inference approach. Here we apply the same attack illustrated in the previous section. 
+<<<<<<< HEAD
 %As shown in Fig. \ref{fig:recovered-attack}, the attack is detected at snapshot (a) and the Attacker Intention Inference algorithm starts to run. 
 As mentioned before the border cells on the grid (with exception of the desired goal) represent possible attacker's goal locations. We also assume that the UAV doesn't have any prior knowledge about the attacker's intention and thus the prior discussed in Section \ref{sec:approach1} is drawn from a uniform distribution. The color gradient on the sequence of snapshots in Fig.~\ref{fig:recovered-attack} shows the convergence of the posterior estimate toward the region where the attacker's goal is located. In Fig.~\ref{fig:recovered-attack}(d) the variance of the estimated mean of the posterior of the attacker's goal goes below a threshold value. At that point, the compromised sensor is identified and discarded from the state estimation. Also, a recovery process is triggered as shown in Fig.~\ref{fig:recovered-attack}(e-f) driving the system back toward the desired goal. 
+=======
+As shown in Fig. \ref{fig:recovered-attack}, the attack gets detected at snapshot (a) and the Attacker Intention Inference algorithm starts to run. 
+As mentioned before the border cells on the grid (with exception of the desired goal) represent the possible goals of the attacker. We also assume that the UAV doesn't have any prior knowledge about the attacker's intention and thus the prior discussed in Section \ref{sec:approach1} is drawn from a uniform distribution. The color gradient on the sequence of snapshots in Fig.~\ref{fig:recovered-attack} shows the convergence of the posterior estimate toward the region where the attacker's goal is located. In Fig.~\ref{fig:recovered-attack}(d) the variance of the estimated mean of the posterior of the attacker's goal goes below a threshold value. At that point, the compromised sensor is identified and discarded from the state estimation. Also, a recovery process is triggered as shown in Fig.~\ref{fig:recovered-attack}(e-f) driving the system back toward the desired goal. 
+>>>>>>> origin/master
 %During recovery the compromised sensor obtained from the intention prediction is removed f
 
 %set of undesired goals is We assume in this environment that the set of all undesired goals is the set of all boarder cells of the grid. We assume we don't have any initial knowledge about where the attacker's goal is, which means the prior takes the form of a uniform distribution initially. Snapshots (b-e) show the convergence of the posterior to the region of the attacker's goal. At snapshot (f), the variance of the estimated mean of the posterior of the attacker's goal goes below the threshold value which activates the recovery process. The compromised sensor is identified and is discarded from the calculations of the state estimation.
@@ -697,13 +701,13 @@ In the simulation depicted in Fig.~\ref{fig:active-exploration}, we show the imp
 %The convergence of the estimated attacker's goal and the trigger of the recovery process occur before the UAV gets closer to the undesired regions. 
 
 \section{Conclusions \& Future Work}\label{sec:conclusion}
-In this paper, we have presented an IRL-based technique to infer the malicious intention of an attacker on an autonomous CPS operation. Using our approach we can reconstruct the compromised sensors even if their behavior is stealthy hiding within the noise profile and the expected uncertainties of the system. If an attacker is operating optimally, then we it is possible to recover the system before reaching undesired states in the environment. We also demonstrated an active exploration technique to speed up inference convergence.
+In this paper, we have presented an IRL-based technique to infer the malicious intention of an attacker on an autonomous CPS operation. Using our approach we can reconstruct the compromised sensors even if their behavior is stealthy hiding within the noise profile and the expected uncertainties of the system. If an attacker is operating optimally, then it is possible to recover the system before reaching undesired states in the environment. We also demonstrated an active exploration technique to speed up inference convergence.
 
 We notice that considering optimal MDP policies as discussed in this paper brings already a good level of security into the system. In fact, an attacker that is trying to hide within the system dynamics and noise will have to behave as expected by the model (i.e., the transition probabilities) of the system limiting the possible action that he/she can perform. Also, an attacker will have to perform a highly coordinated attack and have large resources to create the attacks described in the paper and even if successful, our proposed approach will be able to detect and infer the intention thus securing the system.
 
-We believe that the proposed approach could be deployed in any autonomous CPS to check for sensor/action consistency during run-time. This technique could be used also to detect and recover from a given failure in the system. A drawback of our approach and of any machine learning technique is that there are a lot of parameters to tune such as reward values, transition probabilities, thresholds, which are up to a designer. An incorrect choice of parameters could delay the inference. 
+We believe that the proposed approach could be deployed in any autonomous CPS to check for sensor/action consistency during run-time. This technique could also be used to detect and recover from a given failure in the system. A drawback of our approach and of any machine learning technique is that there are a lot of parameters to tune such as reward values, transition probabilities, thresholds, which are up to a designer. An incorrect choice of parameters could delay the inference. 
 
-Our current and future work are toward expanding this framework to deal also with the prediction of malicious intention of vehicles not under our control, like AUVs entering restricted airspace. We plan also to extend the current framework to deal with the problem of {\em checkpointing} and {\em recovery}, specifically to consider the inference to retrieve the point in past time where an attack started.
+Our current and future work are toward expanding this framework to deal also with the prediction of malicious intention of vehicles not under our control, like UAVs entering restricted airspace. We plan also to extend the current framework to deal with the problem of {\em checkpointing} and {\em recovery}, specifically to consider the inference to retrieve the point in past time where an attack started.
 We are finally working on improving computation complexity of the proposed framework by expanding the idea proposed in Section IV.B to bring the problem into the continuous time domain.
 We are also working on experiments on real quadrotor UAVs that we plan to include in future contributions.
 %\NB{maybe we can add that a drawback is that there are a lot of parameters to tune to have that teh proposed technique works}
