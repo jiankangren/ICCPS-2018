@@ -238,7 +238,7 @@ A finite state Markov Decision Process (MDP) \cite{puterman2014markov} consists 
 \begin{itemize}
     \item $S$ is the set of all the states.
     \item $A$ is the set of all possible actions.
-    \item $T : S\times A\times S \mapsto [0,1]$ is the transition probabilities function. $T(s,a,s')$ is the probability of moving to state $s'$ from state $s$ after taking action $a$.
+    \item $T : S\times A\times S \mapsto [0,1]$ is the transition probability function. $T(s,a,s')$ is the probability of moving to state $s'$ from state $s$ after taking action $a$.
     \item $R$ is the reward function which in our case is a function of the state $R(s)$
 %    can be a function of the state only $R(s)$, a function of states and actions $R(s,a)$, or a function of the states, actions, and the next states $R(s,a,s')$. For the rest of the paper, we will use $R(s)$ to denote the reward function without loss of generality. \NB{what are we using on this paper? 1, 2, or 3? }
     \item $\gamma$ is a discount factor with $0\leq\gamma\leq1$.
@@ -263,9 +263,9 @@ Finally, the optimal policy $\pi^*$ for each state $s \in S$ is chosen as follow
 %The optimal policy $\pi^*$ corresponds to a state value function $V^*$ and a state-action value function $Q^*$. \NB{why is the above formula not optimal, i.e., with the $^*$}
 
 \subsection{Reinforcement and Inverse Reinforcement Learning}
-Reinforcement Learning deals with the problem of finding the optimal policy for an agent navigating an unknown environment. 
+Reinforcement Learning (RL) deals with the problem of finding the optimal policy for an agent navigating an unknown environment. 
 %considers the case\NB{Mahmoud, RL doesn't provide a concept or a notion. Let's be formal. This sentence is like you are writing that RL provides the dream of...} of an agent that can transition from a state $s$ to state $s'$ in MDP environment by taking and an action $a \in A$. The agent receives a reward $R(s)$ \NB{why is the reward lower case?} after reaching state $s'$. 
-The task of Reinforcement Learning algorithms is to learn the optimal policy $\pi^*$ that maximizes the future expected rewards for the agent from its history of interaction with the environment. 
+The task of RL algorithms is to learn the optimal policy $\pi^*$ that maximizes the future expected rewards for the agent from its history of interactions with the environment. 
 %The history of the interactions can be formulated as a set of the tuple $\big \langle s,a,R(s),s' \big \rangle$. \NB{add a citation here}
 
 Q-learning is a model-free reinforcement learning technique. It relies on learning the state-action value function (Q-function) for each state-action pair. By doing so, the optimal policy can be constructed by choosing at each state the action that is associated with the largest Q-function value. The core part of the iterative method of Q-learning performs state-action value iteration updates as follows:%\NB{Check. this sentence is very confusing. Rewrite}:
@@ -276,7 +276,7 @@ Q-learning is a model-free reinforcement learning technique. It relies on learni
 where $\alpha$ is a learning rate factor.
 %, and $r_t$ is the reward observed at the current state.
 
-In Inverse Reinforcement Learning (IRL), we consider an agent acting optimally or sub-optimally in an MDP environment. The agent is following an optimal or sub-optimal policy $\pi^a(s)$. The policy of the agent $\pi^a(s)$ can be observed as a set of state-action pairs $\{(s_1,a_1),(s_2,a_2), ...,(s_N,a_N)\}$, where $N$ is the number of observations. The goal of IRL is to infer the reward function $R$ that is responsible for generating these observations \cite{ng2000algorithms}.%\NB{Add a citation here} 
+In Inverse Reinforcement Learning (IRL), we consider an agent acting optimally or sub-optimally in an MDP environment. The agent is following an optimal or sub-optimal policy $\pi^u(s)$. The policy of the agent $\pi^u(s)$ can be observed as a set of state-action pairs $\{(s_1,a_1),(s_2,a_2), ...,(s_N,a_N)\}$, where $N$ is the number of observations. The goal of IRL is to infer the reward function $R$ that is responsible for generating these observations \cite{ng2000algorithms}.%\NB{Add a citation here} 
 %\NB{Check.both this and the previous sections are too brief. Either we add some mathematical formulation that will be used next or we may have to remove or combine with another section}
 
 \section{Problem Formulation}\label{sec:problem}
