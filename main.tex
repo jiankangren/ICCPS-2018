@@ -389,7 +389,7 @@ In order to approximate the posterior $Pr(R|\mathcal{O})$ using MCMC algorithm, 
 The prior can be initialized according to a previous knowledge of the posterior distribution. If a prior knowledge about the posterior distribution is not available, then we can assume that the prior is drawn from a uniform distribution.
 For our problem, in order to infer the attacker goal $g^a$ and the set of compromised sensors $\mathcal{S}^a$, we apply the following MCMC iterative algorithm for each sensor $i$ to calculate the mean of the attacker's goal posterior estimate and determine the subset of the compromised sensors: %\NB{here we need an equation for the MCMC}
 %The number of MCMC iterations is determined by a parameter ${e}_{max}$ \NB{we can remove this infomration}. \NB{all this next sentence is super confusing. Is the following the MCMC algorithm? } 
-i) We draw a sample $g_j$ from the prior distribution of the undesired goals set $\mathcal{G}$, ii) then, we compute the likelihood of observing the set of sensor readings and actions taken during a period $t_d:t$ following an optimal policy of the agent to go to a potential goal $g_j$, $\forall g_j \in \mathcal G$ as follows:
+First, we draw a sample $g_j$ from the prior distribution of the undesired goals set $\mathcal{G}$. Then, we compute the likelihood of observing the set of sensor readings and actions taken during a period $t_d:t$ following an optimal policy of the agent to go to a potential goal $g_j$, $\forall g_j \in \mathcal G$ as follows:
 \begin{equation}\label{eq:likelihood}
 Pr(\mathcal{O}_{i,t_d:t} | g = g_j)  = \frac{e^{\beta\sum_{t_k = t_d}^{t}{ Pr(a_{t_k}|s_{i,t_k},g_j)}}}{\sum_{b\in A}{}e^{\beta\sum_{t_k=t_d}^{t} Pr(b|s_{i,t_k},g_j)}}
 \end{equation}
@@ -398,7 +398,7 @@ where, $\beta$ is a factor that indicates how confident we are that the agent is
 \begin{equation} Pr(a_t|s_{i,t},g_j) = Q^*(s_{i,t},a_t,R_j)
 \label{eqn:action_likelihood}
 \end{equation}
-To obtain $Q^*$, we need to solve an MDP problem as described \eqref{eq:qlearn}.%\NB{put a number on all equations in preliminaries and refer to the right equation}
+To obtain $Q^*$, we need to solve an MDP problem as described in \eqref{eq:qlearn}.%\NB{put a number on all equations in preliminaries and refer to the right equation}
 %to compute $Q^*$ for each state-action pair by performing Q-learning iterations as described in section \ref{sec:Preliminaries}.
 
 
@@ -410,7 +410,7 @@ To obtain $Q^*$, we need to solve an MDP problem as described \eqref{eq:qlearn}.
 
 
 %we assume, initially, that the prior for the target goal is uniformly distributed among all possible undesired goals. 
-iii) We compute the posterior probability for each goal $g_j$ (i.e., the probability  that the goal is $g_j$) given the set of observations $\mathcal{O}_{i,t_d:t}$ as follows: %\NB{need to be fixed}
+Finally, we compute the posterior probability for each goal $g_j$ (i.e., the probability  that the goal is $g_j$) given the set of observations $\mathcal{O}_{i,t_d:t}$ as follows: %\NB{need to be fixed}
 \begin{equation} Pr(g_j|\mathcal{O}_{i,t_d:t}) \propto Pr(\mathcal{O}_{i,t_d:t} | g_j) \\ Pr(g_j|\mathcal{O}_{i,t_d:t-1})
 \label{eqn:goal_posterior}
 \end{equation}
