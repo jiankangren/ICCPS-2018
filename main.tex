@@ -387,13 +387,18 @@ We leverage the MCMC sampling algorithm presented in \cite{andrieu2003introducti
 
 In order to approximate the posterior $Pr(R|\mathcal{O})$ using MCMC algorithm, we need to compute two terms at each iteration: i) the prior $Pr(R)$ and ii) the likelihood of the observations $Pr(\mathcal{O}|R)$.
 The prior can be initialized according to a previous knowledge of the posterior distribution. If a prior knowledge about the posterior distribution is not available, then we can assume that the prior is drawn from a uniform distribution.
-In our case, we want to calculate ,for each sensor $i$, the likelihood of observing a set of sensor readings and actions taken during a period $\Delta t$ following an optimal policy of the agent to go to a potential goal $g_j$, $\forall g_j \in \mathcal G$. We can compute this likelihood by comparing, at each observed sensor reading, the Q-function value of the action taken at the state observed by each sensor with the Q-function value of all possible actions that the agent can take at those states. Formally, we can calculate the likelihood for each observation, given that the goal that we are aiming to $g$  is $g_j$ as follows:
+For our problem, in order to infer the attacker goal $g^a$ and the set of compromised sensors $\mathcal{S}^a$, we apply the following MCMC iterative algorithm for each sensor $i$ to calculate the mean of the attacker's goal posterior estimate and determine the subset of the compromised sensors: %\NB{here we need an equation for the MCMC}
+%The number of MCMC iterations is determined by a parameter ${e}_{max}$ \NB{we can remove this infomration}. \NB{all this next sentence is super confusing. Is the following the MCMC algorithm? } 
+i) We draw a sample $g_j$ from the prior distribution of the undesired goals set $\mathcal{G}$, ii) then, we compute the likelihood of observing the set of sensor readings and actions taken during a period $t_d:t$ following an optimal policy of the agent to go to a potential goal $g_j$, $\forall g_j \in \mathcal G$ as follows:
 \begin{equation}\label{eq:likelihood}
-Pr(\mathcal{O}_{i,\Delta t} | g = g_j)  = \frac{e^{\beta\sum_{T}{Q^*(s_{i,t},a_t,R_j)}}}{\sum_{b\in A}{}e^{\beta\sum_{T}{}Q^*(s_{i,t},b,R_j)}}
+Pr(\mathcal{O}_{i,t_d:t} | g = g_j)  = \frac{e^{\beta\sum_{t_k = t_d}^{t}{ Pr(a_{t_k}|s_{i,t_k},g_j)}}}{\sum_{b\in A}{}e^{\beta\sum_{t_k=t_d}^{t} Pr(b|s_{i,t_k},g_j)}}
 \end{equation}
 %\NB{is this equation with $g^a$}
-where, $\beta$ is a factor that indicates how confident we are that the agent is acting optimally. To solve \eqref{eq:likelihood} it is required to solve an MDP problem as in \eqref{eq:qlearn} 
-%\NB{put a number on all equations in preliminaries and refer to the right equation}
+where, $\beta$ is a factor that indicates how confident we are that the agent is acting optimally. To calculate $Pr(a_t|s_{i,t},g_j)$,  we need to calculate the likelihood of taking the action $a_t$ at state $s_{i,t}$ to go to goal $g_j$ which is equivalent to calculating the action-value function (Q-function) of this action as follows:
+\begin{equation} Pr(a_t|s_{i,t},g_j) = Q^*(s_{i,t},a_t,R_j)
+\label{eqn:action_likelihood}
+\end{equation}
+To obtain $Q^*$, we need to solve an MDP problem as described \eqref{eq:qlearn}.%\NB{put a number on all equations in preliminaries and refer to the right equation}
 %to compute $Q^*$ for each state-action pair by performing Q-learning iterations as described in section \ref{sec:Preliminaries}.
 
 
@@ -405,23 +410,12 @@ where, $\beta$ is a factor that indicates how confident we are that the agent is
 
 
 %we assume, initially, that the prior for the target goal is uniformly distributed among all possible undesired goals. 
-
-
-In order to infer the attacker goal $g^a$ and the set of compromised sensors $\mathcal{S}^a$, we use the following MCMC iteration to calculate the mean of the attacker's goal posterior: %\NB{here we need an equation for the MCMC}
-%The number of MCMC iterations is determined by a parameter ${e}_{max}$ \NB{we can remove this infomration}. \NB{all this next sentence is super confusing. Is the following the MCMC algorithm? } 
-first we obtain a sample $g_j$ from the prior distribution of the undesired goals set $\mathcal{G}$, ii) then, we iterate over all the observations $\mathcal{O}_{i,T}$ we observed over a period of time $T$ for the sensor $i$. We update the posterior of the potential sampled goal $g_j$ from each observation by calculating the likelihood of the taken actions. The likelihood of taking action $a_t$ at state $s_{i,t}$ to go to goal $g_j$ can be directly computed as the action-value function (Q-function) for taking this action from this state:
-
-\begin{equation} Pr(a_t|s_{i,t},g_j) = Q^*(s_{i,t},a_t,R_j)
-\label{eqn:action_likelihood}
-\end{equation}
-
-
-Then, we compute the posterior probability for each goal $g_j$ (i.e., the probability  that the goal is $g_j$) given the set of observations $\mathcal{O}_{i,t_d:t}$ as follows: %\NB{need to be fixed}
+iii) We compute the posterior probability for each goal $g_j$ (i.e., the probability  that the goal is $g_j$) given the set of observations $\mathcal{O}_{i,t_d:t}$ as follows: %\NB{need to be fixed}
 \begin{equation} Pr(g_j|\mathcal{O}_{i,t_d:t}) \propto Pr(\mathcal{O}_{i,t_d:t} | g_j) \\ Pr(g_j|\mathcal{O}_{i,t_d:t-1})
 \label{eqn:goal_posterior}
 \end{equation}
 
-The first term on the right hand side (rhs) of the equation represents the likelihood of the observations given that the goal is $g_j$ which can be computed using \eqref{eq:likelihood}. The second term on the rhs represents the prior which is updated from the posterior calculated at the previous time $t-1$ and initialized in the beginning with a sample drawn from a uniform distribution.
+The first term on the right hand side (rhs) of the equation represents the likelihood of the observations given that the goal is $g_j$ which is computed using \eqref{eq:likelihood}. The second term on the rhs represents the prior which is updated from the posterior calculated at the previous time $t-1$ and initialized in the beginning with a sample drawn from a uniform distribution.
 After the MCMC iterations is completed, we evaluate the level of confidence that $g = g_j$ by calculating the mean of the posterior. The higher the value of the posterior mean $\mu_i$, the higher the confidence we have about the estimation. Algorithm \ref{alg:alg1} summarizes the steps taken to perform attacker's intention inference.
 % \NB{the algorithm needs to be fixed. What is $g_m$}
 %\NB{equation is latex are referred using slash eqref{eq: label} to create the parenthesis around the number }
@@ -430,7 +424,7 @@ A recovery procedure is triggered if there exists a sensor or a set of sensors t
 
 %... we are ... To start the recovery process, we compare the variance of posterior  to a threshold value $h$, and trigger the recover process if  it is less than the threshold value. The idea behind the trigger of the recovery process is that the readings we obtain from the uncompromised sensors will provide a posterior estimate of an undesired goal with high confidence which leads to low variance in the estimated posterior. 
 
-Once the set of the uncompromised sensors $\mathcal S' \subset \mathcal S$ is determined, the optimal policy $\pi^a$ is considered to drive the vehicle back to its desired goal.
+Once the set of the uncompromised sensors $\mathcal{S}^a \subset \mathcal S$ is determined, the optimal policy $\pi^a$ is considered to drive the vehicle back to its desired goal.
 
 %the rest of the sensors are considered to be compromised. The recovery process is performed by using only the uncompromised sensors correctly estimating the state of the system by fusing the uncompromised sensors only and discarding the compromised ones and considering the optimal policy. Once, the correct state of the system is estimated, the autonomous controller will be able correct the coarse of the vehicle to navigate toward its desired destination.
 \begin{algorithm}\label{alg:alg1}
@@ -444,19 +438,16 @@ Once the set of the uncompromised sensors $\mathcal S' \subset \mathcal S$ is de
         \While{iteration $e < e_{max}$}
         {
             Sample goal $g_j \in \mathcal{G}$\;
-            \ForEach{Observation $(s_{i,t}, a_t) \in \mathcal{O}_i$}
-            { 
-                $Pr(a_t|s_{i,t},g_j) \leftarrow Q^*(s_{i,t},a_t,R_j)$\;
-            }
-            $Pr(\mathcal{O}_{i,T}|g=g_j) \leftarrow$  from \eqref{eq:likelihood}\;
-            $Pr(g=g_j|\mathcal{O}_{i,T}) \leftarrow$ from \eqref{eqn:goal_posterior}\;
+            $Pr(a_t|s_{i,t},g_j) \leftarrow Q^*(s_{i,t},a_t,R_j)$\;
+            $Pr(\mathcal{O}_{i,t_d:t}|g=g_j) \leftarrow$  from \eqref{eq:likelihood}\;
+            $Pr(g=g_j|\mathcal{O}_{i,t_d:t}) \leftarrow$ from \eqref{eqn:goal_posterior}\;
         }
-        $\mu_i \leftarrow mean(Pr(g=g_j|\mathcal{O}_i))$\;
-        $\nu_i \leftarrow  var(Pr(g=g_j|\mathcal{O}_i))$\;
+        $\mu_i \leftarrow mean(Pr(g=g_j|\mathcal{O}_{i,t_d:t}))$\;
+        $\nu_i \leftarrow  var(Pr(g=g_j|\mathcal{O}_{i,t_d:t}))$\;
         \If{$\nu_i < \tau$}
         {
             $g_a \leftarrow \mu_i$\;
-            $i \in \mathcal{S}'$\;
+            $i \in \mathcal{S}^a$\;
         }
     }
     \caption{Attacker Intention Prediction}
