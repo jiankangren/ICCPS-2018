@@ -419,7 +419,7 @@ After the MCMC iterations are completed, we evaluate the level of confidence tha
 % \NB{the algorithm needs to be fixed. What is $g_m$}
 %\NB{equation is latex are referred using slash eqref{eq: label} to create the parenthesis around the number }
 
-A recovery procedure is triggered if there exists a sensor or a set of sensors that returns a state $s_i$ such that the variance of the posterior probability $\nu_i \leq \tau$ where $\tau$ is a user-selected threshold. The higher the threshold the sooner a recovery will be initiated but a less precise inference will be computed. Vice versa a small threshold may cause a delayed recovery. The sensors associated with such posterior probabilities are the compromised ones and thus are removed from considerations during recovery.
+A recovery procedure is triggered if there exists a sensor or a set of sensors that returns a state $s_i$ such that the variance of the posterior probability $\nu_i \leq \tau$ where $\tau$ is a user-selected threshold. The higher the threshold the sooner a recovery will be initiated but a less precise inference will be computed. On the other hand, a small threshold may cause a delayed recovery. The sensors associated with such posterior probabilities are the compromised ones and thus are removed from considerations during recovery.
 
 %... we are ... To start the recovery process, we compare the variance of posterior  to a threshold value $h$, and trigger the recover process if  it is less than the threshold value. The idea behind the trigger of the recovery process is that the readings we obtain from the uncompromised sensors will provide a posterior estimate of an undesired goal with high confidence which leads to low variance in the estimated posterior. 
 
