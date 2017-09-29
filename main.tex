@@ -244,7 +244,7 @@ A finite state Markov Decision Process (MDP) \cite{puterman2014markov} consists 
     \item $\gamma$ is a discount factor with $0\leq\gamma\leq1$.
 \end{itemize}
 Solving an MDP problem translates to finding an optimal policy of actions $\pi^*: S \mapsto A$ that maximizes the expected value of the discounted future rewards \cite{bezzo2016stochastic}.
-In order to find $\pi^*$, we need to define a value function for all state $s \in S$ given a reward function $R(s)$ and a policy $\pi$ as follows 
+In order to find $\pi^*$, we need to define a value function for all state $s \in S$ given a reward function $R(s)$ and a policy $\pi$ as follows:
 %\NB{I cannot understand what's the difference between the two equations below}:
 \begin{equation}
 V^\pi(s,R) = R(s) + \sum_{s'}\gamma\,T(s,\pi(s),s')\,V^\pi(s') 
@@ -555,7 +555,7 @@ In order to control the quadrotor to follow a desired trajectory, we use a casca
 %%\vspace{-5pt}
 %\end{figure}
 A position control is used to track a desired trajectory $\xi$ characterized by ${\bm {p}}_\xi(t)$ and $\psi_\xi(t)$. Using a PID feedback controller on the error $e_k=(\bm {p}_{k,\xi}-\bm {p}_k)$ we can control the position and velocity of the quadrotor to maintain a desired trajectory.
-After linearization, we can obtain the relationship between desired roll and pitch angles and desired accelerations as follows
+After linearization, we can obtain the relationship between desired roll and pitch angles and desired accelerations as follows:
 \begin{gather}
 \begin{align}
 \phi^{\textrm{des}} &= \frac{1}{g}\left(\ddot{x}^{\textrm{des}}\sin(\psi_\xi) - \ddot{y}^{\textrm{des}}\cos(\psi_\xi)\right)\\
