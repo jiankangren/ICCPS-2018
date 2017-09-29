@@ -414,12 +414,12 @@ Finally, we compute the posterior probability for each goal $g_j$ (i.e., the pro
 \label{eqn:goal_posterior}
 \end{equation}
 
-The first term on the right-hand side (RHS) of the equation represents the likelihood of the observations given that the goal is $g_j$ which is computed using \eqref{eq:likelihood}. The second term on the RHS represents the prior which is updated from the posterior calculated at the previous time $t-1$ and initialized in the beginning with a sample drawn from a uniform distribution.
+The first term on the right-hand side (RHS) of the equation represents the likelihood of the observations given that the goal is $g_j$, which is computed using \eqref{eq:likelihood}. The second term on the RHS represents the prior which is updated from the posterior calculated at the previous time $t-1$ and initialized in the beginning with a sample drawn from a uniform distribution.
 After the MCMC iterations are completed, we evaluate the level of confidence that $g = g_j$ by calculating the mean of the posterior. The higher the value of the posterior mean $\mu_i$, the higher the confidence we have in the estimation. Algorithm \ref{alg:alg1} summarizes the steps taken to perform attacker's intention inference.
 % \NB{the algorithm needs to be fixed. What is $g_m$}
 %\NB{equation is latex are referred using slash eqref{eq: label} to create the parenthesis around the number }
 
-A recovery procedure is triggered if there exists a sensor or a set of sensors that return a state $s_i$ such that the variance of the posterior probability $\nu_i \leq \tau$ where $\tau$ is a user-selected threshold. The higher the threshold the sooner a recovery will be initiated but a less precise inference will be computed. Vice versa a small threshold may cause a delayed recovery. The sensors associated with such posterior probabilities are the compromised ones and thus a re removed from considerations during recovery.
+A recovery procedure is triggered if there exists a sensor or a set of sensors that return a state $s_i$ such that the variance of the posterior probability $\nu_i \leq \tau$ where $\tau$ is a user-selected threshold. The higher the threshold the sooner a recovery will be initiated but a less precise inference will be computed. Vice versa a small threshold may cause a delayed recovery. The sensors associated with such posterior probabilities are the compromised ones and thus are removed from considerations during recovery.
 
 %... we are ... To start the recovery process, we compare the variance of posterior  to a threshold value $h$, and trigger the recover process if  it is less than the threshold value. The idea behind the trigger of the recovery process is that the readings we obtain from the uncompromised sensors will provide a posterior estimate of an undesired goal with high confidence which leads to low variance in the estimated posterior. 
 
