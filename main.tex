@@ -90,7 +90,7 @@
 \newcommand\NB[1]{$\spadesuit$\footnote{NB: #1}}
 \newcommand\JL[1]{$\diamondsuit$\footnote{MH: #1}}
 \newcommand\ME[1]{$\spadesuit$\footnote{ME: #1}}
-\renewcommand{\baselinestretch}{0.957}
+\renewcommand{\baselinestretch}{0.960}
 
 
 \begin{document}
@@ -121,7 +121,7 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{abstract}
-Modern autonomous cyber-physical systems have been demonstrated to be vulnerable to cyber-attacks like sensor spoofing in which an attacker compromises sensor readings while remaining stealthy to hijack the system toward undesired and possibly dangerous states. The majority of security techniques developed today are, however, reactive and concerned with detection and interdiction of attacks without considering predicting the intention of the attack. To deal with such problem, we propose a Bayesian Inverse Reinforcement Learning technique that leverages the history of sensor data and control inputs to predict the goal of sensor spoofing attacks, determine which sensors are compromised, and recover the system. We also propose an active exploration framework to improve the intention inference convergence before reaching undesired states of the system. The proposed approach is validated with simulation results on a quadrotor unmanned aerial vehicle navigation case study.% \NB{I rewrote the abstract but we may have to change it again and add more details about the approach that you are using} 
+Modern autonomous cyber-physical systems have been demonstrated to be vulnerable to cyber-attacks like se in which an attacker stealthily compromises sensor readings to hijack the system toward undesired and possibly dangerous states. The majority of security techniques developed today are, however, reactive and concerned with detection and interdiction of attacks without considering predicting the intention of the attack. To deal with such problem, we propose a Bayesian Inverse Reinforcement Learning technique that leverages the history of sensor data and control inputs to predict the goal of sensor spoofing attacks, determine which sensors are compromised, and recover the system. We also propose an active exploration framework to improve the intention inference convergence before reaching undesired states of the system. The proposed approach is validated with simulation results on a quadrotor unmanned aerial vehicle navigation case study.% \NB{I rewrote the abstract but we may have to change it again and add more details about the approach that you are using} 
 %
 %In this paper we propose 
 % without considering the intention of the attack.
@@ -164,10 +164,10 @@ For example, it is believed that GPS spoofing led to the capturing of a Sentinel
 In this paper, we are interested in addressing similar problems as the one illustrated in Fig.\ref{fig:problem}. We consider the case where an autonomous vehicle, equipped with multiple sensors, is tasked to perform a go-to-goal navigation. 
 %The state estimator of the autonomous vehicle uses a number of sensors to estimate its position. 
 %We assume that the vehicle has at least one sensor that is not vulnerable to spoofing attacks or in other words, the attacker is not able to spoof at least one sensor. 
-A malicious attacker performs a coordinated attack by spoofing one or more of the sensors on the vehicle. The goal of the attacker is to hijack the vehicle to an undesired goal (not known a priori) while hiding within the sensor and actuator noise profile and disturbance model of the system. 
+A malicious attacker performs a coordinated attack by spoofing one or more of the sensors on the vehicle. The goal of the attacker is to hijack the vehicle to an undesired goal (not known beforehand) while hiding within the sensor and actuator noise profile and disturbance model of the system. 
 %The attacker's desired destination can be a hostile territory to the vehicle, or an obstacle that will make the vehicle crash if it hits it. 
 %We consider a smart attacker who hides his sensor attack vectors within the noise profiles of the attacked sensors or within the environment disturbance model.
-Our goal is to develop a technique to infer the intention of the attacker and recover the system before reaching the undesired state. 
+Our goal is to develop a technique to infer the intention of the attacker and recover the system before the system reaches the undesired state. 
 
 %The idea is that if we are able to determine which set of sensors are under attack before the vehicle arrives to the undesired destination, we can correctly reconstruct the state of the vehicle using the remaining uncompromised set of sensors.
 
@@ -175,7 +175,7 @@ To this end, we leverage sensor redundancy and the theory of Inverse Reinforceme
 \begin{itemize}
     \item Predict the intention of the attacker.
     \item Determine the set of compromised sensors.
-    \item Recover the uncompromised state of the vehicle and counteract to continue its desired objective. 
+    \item Recover the uncompromised state of the vehicle to continue its desired objective. 
 \end{itemize}
 
 %To speed up the convergence of the inference algorithm, the vehicle needs to visit sensitive states which may not be the case when the vehicle only applies the control actions according to the optimal policy of its mission. We propose an active exploration framework in which non-optimal control actions are taken to drive the vehicle towards more sensitive states. By doing so, the vehicle can start the attack recovery process before reaching states too close to the undesired regions.% we also propose \NB{may need to expand more on this thoughts}
@@ -188,7 +188,7 @@ To this end, we leverage sensor redundancy and the theory of Inverse Reinforceme
 
 The literature on CPS cybersecurity has been growing substantially in the last few years. 
 %Various efforts have been made by members of the cyber-physical systems research community to guarantee the safety of cyber-physical systems under sensor attacks. Pajic2017
-Among the earliest work on this domain we find \cite{fawzi2014secure, ivanov2014attack, pajic2014robustness, bezzo2014attack} in which resilient state estimators (RSEs) were developed leveraging redundancy in sensor data and knowledge about the CPS dynamics. One of the most significant results obtained in \cite{fawzi2014secure, pajic2014robustness} shows that by means of such RSEs it is possible to correctly reconstruct the state of the system if the number of attacked sensors is bounded.
+Among the earliest work on this domain we find \cite{fawzi2014secure, ivanov2014attack, pajic2014robustness, bezzo2014attack} in which resilient state estimators (RSEs) were developed to leverage redundancy in sensor data and knowledge about the CPS dynamics. One of the most significant results obtained in \cite{fawzi2014secure, pajic2014robustness} shows that by means of such RSEs it is possible to correctly reconstruct the state of the system if the number of attacked sensors is bounded.
 Still, from a control point of view, in \cite{rana2017attack} a convex optimization algorithm was proposed to minimize estimation error and control an electric vehicle in which communication is not reliable due to a malicious cyber-attack.
 
 %In \cite{shoukry2015secure} a satisfiability modulo theory-based approach was presented to detect and estimate the state of an unmanned aerial vehicle (UAV) under sensor attack. Remaining on UAV applications, authors in \cite{yoon2017virtualdrone} presented a software architecture that allows a UAV to operate with compromised system components by virtualizing sensor, actuators, and communication channels and switching to a safe behavior once an attack is detected.
@@ -199,13 +199,13 @@ Still, from a control point of view, in \cite{rana2017attack} a convex optimizat
 
 
 %\NB{as mentioned before, we need to expand more this part and show other works on CPS cybersecurity}
-From a machine learning perspective, in \cite{paridari2017framework} the authors researched the problem of attack detection and reconfiguration on industrial control systems by proposing a data-driven machine learning approach to detect anomalies in sensor readings.%,  adopting a novel security metric dedicated to measuring cybersecurity in industrial systems, and deploying a virtual sensing mechanism to mitigate attacks. 
+Taking a machine learning perspective, in \cite{paridari2017framework} the authors researched the problem of attack detection and reconfiguration on industrial control systems by proposing a data-driven machine learning approach to detect anomalies in sensor readings.%,  adopting a novel security metric dedicated to measuring cybersecurity in industrial systems, and deploying a virtual sensing mechanism to mitigate attacks. 
 %The problem of performing motion planning for autonomous vehicles under sensor attacks is addressed in 
-In our previous work \cite{bezzo2016stochastic} we introduced a Redundant Observable Markov Decision Process (ROMDP) approach to deal with sensor attacks on stochastic environment and select the optimal policy to use to minimize the probability of reaching undesired states in the environment. 
+In our previous work \cite{bezzo2016stochastic} we introduced a Redundant Observable Markov Decision Process (ROMDP) approach to deal with sensor attacks in a stochastic environment. ROMDP then select the optimal policy to use in order to minimize the probability of reaching undesired states in the environment. 
 %Resiliency against attacks is acheieved by properly selecting the reward function thus avoiding actions that could lead to hijacking the vehicle to undesired regions in the state space.
 
-All of the aforementioned works are concerned with detecting an attack, estimating the state of the system, and recover. Instead, in this work, we are concerned with the problem of inferring the intention of an attack, a problem that to the best of our knowledge has not been investigated in the current CPS-security literature.
-To this end, we leverage Inverse Reinforcement Learning (IRL) techniques to predict the intended goal of an attacker that is spoofing one or more sensors to hijack a UAV off its desired route.
+All of the aforementioned works are concerned with detecting an attack, estimating the state of the system, and recovering the system. Instead, in this work, we are concerned with the problem of inferring the intention of an attack, a problem that to the best of our knowledge has not been investigated in the current CPS-security literature.
+To this end, we leverage Inverse Reinforcement Learning (IRL) techniques to predict the intended goal of an attacker that is spoofing one or more sensors to hijack a UAV from its desired route.
 %
 %we assume that the attacker hides his attack vectors within the noise profiles of the system sensors, which means we need to develop a new technique to detect which set of sensors are under attack after we detect that an attack is happening. We leverage state-of-the-art Inverse Reinforcement Learning (IRL) techniques to infer the desired destination of the attacker and at the same time detect which sensors are compromised.
 
@@ -215,7 +215,7 @@ Inverse Reinforcement Learning technique was first introduced in \cite{ng2000alg
 %IRL problem was cast as a Bayesian inference problem in  \cite{Ramachandran2007}. It was shown that there Bayesian Inverse Reinforcement Learning (BIRL) algorithm can be used for reward learning and also policy learning. 
 %Policy walk algorithm was also introduced which is based on Monte Carlo Marcov Chain (MCMC) algorithm. Michini et al. \cite{Michini2015,Michini2013,Michini2012} extended BIRL algorithm to deal with continuous state and action spaces and introduced the Non-Parametric Bayesian Inverse Reinforcement Learning (BNIRL) algorithm. They  showed that by observing a UAV performing different maneuvers in a continuous 3D space. The BNIRL algorithm was able to infer what are the intermediate goals and the final goal that the observed UAV was trying to reach. They used this predicted information to make another UAV perform the same observed maneuvers.
 
-In \cite{best2015bayesian}, the authors used Bayesian Inference to predict the intention of an agent navigating in a partially occluded environment. The intention of the agent is represented by the goal that the agent is trying to reach based on the assumption that it will most likely take the shortest path to the goal position, with some uncertainty in its transition model.
+In \cite{best2015bayesian}, the authors used Bayesian Inference to predict the intention of an agent navigating in a partially occluded environment. The intention of the agent is represented by the end-point goal that the agent is trying to reach, and it is assumed that it will most likely take the shortest path to the goal position, with some uncertainty in its transition model.
 %The previous works considered the case where we can observe a moving agent completing its desired trajectory from source to destination. In other applications, we may want to observe the agent navigating in the environment and try to predict its future trajectory and its desired destination. In this case, we have partial set of observation. This problem was studied in \cite{Best2015} where they used Bayesian Inference to predict the intention of an agent navigating in a partially occluded environment. The intention of the agent was represented by the goal the agent is trying to reach based on the assumption that the agent will most likely take the shortest path to the goal position, with some uncertainty in its transition model.
 
 In this work, we contribute to the literature on CPS cybersecurity by proposing a Bayesian Inverse Reinforcement Learning approach to infer the intention of an attacker that spoofs some of the sensors onboard a vehicle to hijack it off route toward undesired states in the environment. We also propose an active exploration method to gain more information by forcing the system to follow sub-optimal policies toward states in which malicious intention inference will be more visible.
@@ -279,7 +279,7 @@ In Inverse Reinforcement Learning (IRL), we consider an agent acting optimally o
 %\NB{Check.both this and the previous sections are too brief. Either we add some mathematical formulation that will be used next or we may have to remove or combine with another section}
 
 \section{Problem Formulation}\label{sec:problem}
-We consider an autonomous vehicle that performs a navigation task to a desired goal $g^* \in \mathcal G$ in a stochastic environment. The vehicle is equipped with $N$ sensors. The readings from the sensors are fused together to estimate the state of the vehicle. We also consider a malicious attacker that can spoof a subset of sensors $\mathcal{S}^a \subset \mathcal{S}$. The goal of the attacker is to drive the vehicle towards a different undesired location $g^a \neq g^*$ while hiding its attack vector within the noise profile of the spoofed sensors and the disturbance model of the stochastic environment.  Fig. \ref{fig:sensor_spoofing} summarizes the situation in which a sensor spoofing attack stealthily begins at $t_a$. The attack remains stealthy until the noise margins of the spoofed sensors don't overlap anymore with the noise margins of the uncompromised sensor at $t_d$. At $t_d$, an attack can be detected due to the differences between sensor readings. However, at that point, it is not obvious how to distinguish between the compromised and uncompromoised sensors, since all sensor readings comply with the uncertainty and disturbance model of the vehicle dynamics and the environment. We are interested in solving the problem of inferring the intention of an attack by observing and comparing measurements data and control inputs, hence recognize which sensors are compromised and finally recover the system.%Our proposed approach allows to deal with such problem by looking and comparing historic measurements and input data and 
+We consider an autonomous vehicle that performs a navigation task to a desired goal $g^* \in \mathcal G$ in a stochastic environment. The vehicle is equipped with $N$ sensors. The readings from the sensors are fused together to estimate the state of the vehicle. We also consider a malicious attacker that can spoof a subset of sensors $\mathcal{S}^a \subset \mathcal{S}$. The goal of the attacker is to drive the vehicle towards a different undesired location $g^a \neq g^*$ while hiding its attack vector within the noise profile of the spoofed sensors and the disturbance model of the stochastic environment.  Fig. \ref{fig:sensor_spoofing} summarizes the situation in which a sensor spoofing attack stealthily begins at $t_a$. The attack remains stealthy until $t_d$, when the noise margins of the spoofed sensors don't overlap anymore with the noise margins of the uncompromised sensor. At $t_d$, an attack can be detected due to the differences between sensor readings. However, at that point, it is not obvious how to distinguish between the compromised and uncompromoised sensors, since all sensor readings comply with the uncertainty and disturbance model of the vehicle dynamics and the environment. We are interested in solving the problem of inferring the intention of an attack by observing and comparing measurements data and control inputs, hence recognizing which sensors are compromised and finally recovering the system.%Our proposed approach allows to deal with such problem by looking and comparing historic measurements and input data and 
 
 \begin{figure}[ht!]
 \centering
@@ -325,7 +325,7 @@ with $C \in \Ne^+$  and $\epsilon << C \in \Ne^+ $. The term $\epsilon$ represen
 
 To summarize, the vehicle uses fused data from all sensors and navigates to $g^*$ according to an optimal policy $\pi^*$. An attacker spoofs sensors data such that the fused sensor information indicates that the vehicle is in a different state in which the vehicle will take an action that follows the attack optimal policy $\pi^a$ that leads the vehicle towards $g^a$. The attacker is assumed to know both the optimal mission policy $\pi^*$ and the MDP parameters of the system.   
 
-For the sake of simplicity, we consider that the sensors on board of the vehicles are providing the state of the vehicle. Specifically for the case studies investigated in this paper we consider position states.
+For the sake of simplicity, we consider that the sensors on board of the vehicles are providing an accurate state of the vehicle. Specifically for the case studies investigated in this paper we consider position states.
 %\NB{I need to rephrase this}
 %\NB{Check. not clear at all. What does this mean? The optimal policy is still running and the attacker is leveraging that.} \NB{where is the optimal policy represented? I see only the attack policy below. ME: The optimal policy $\pi^*$ formula is presented before. It would be redundant to write it again. I believe if we just mention at this point that the vehicle is moving accroding to optimal policy $\pi*$ it should be understandable}. We call $\pi^a$ the attack policy. The policy $\pi^a$ drives the agent towards the target destination $g^a$ as fast as possible while hiding the attack within the sensors noise profiles or the environment disturbance model \NB{Check how is this represented in the formula below?.  ME:It is not presented ... this is how the attacker spoofs the sensor. It is something different than how the compromised vehicle acts which what this is about}. At each state $s$, the policy $\pi^a$ is calculated according to:
 %\[ \pi^a(s) = \arg\!\max_{a\in A} Q^{\pi^a}(s,a,R^a)\]
@@ -457,11 +457,11 @@ The time the inference algorithm takes to converge depends on the states that th
 
 %For Algorithm \ref{alg:alg1} to achieve convergence to the attacker's goal, it is clear that we want to collect a set of observations having as many sensitive states as possible.
 
-To solve this problem, we propose an active exploration policy in which the vehicle perturbs its motion from the optimal policy to visit more sensitive states. This idea is reminiscent of reinforcement learning in which the environment is explored to learn the optimal policy given a certain reward.
+To solve this problem, we propose an \textit{active exploration} policy in which the vehicle perturbs its motion from the optimal policy to visit more sensitive states. This idea is reminiscent of reinforcement learning in which the environment is explored to learn the optimal policy given a certain reward.
 %... The goal is to go from a situation where the system is mostly exploring the environment to a situation where it is mostly exploiting the accumulated knowledge. To converge faster to an optimal policy we will leverage active learning policies to steer the system toward states in the environment in which we can learn faster the optimal policy of the attacker. Active learning is an area of semi-supervised machine learning where the learning algorithm queries the user for information about observations. This idea can be applied to Inverse Reinforcement Learning where the IRL algorithm queries the agent for their behavior in a selected state. In the context of autonomous vehicle operations, we could actively attempt to influence the states experienced by the agent in order to observe its response. Note that such perturbation of the vehicle?s state may hasten or delay the vehicle?s arrival at a state.
 
 %of the vehicle while being under attack by the malicious attacker. This means that if we know which states are sensitive, we can make the vehicle explore more sensitive states by taking actions that lead towards sensitive states and not necessarily towards the desired goal. 
-Knowing which states are sensitive and which are not is a hard problem. We propose an \textit{Active Exploration} framework that performs a local search in the state neighbors at each time step to choose the action that will maximize the discrepancy in mission policy and all the weighted estimates of attacker's polices.
+The idea is to perform a local search in the neighbor states at each time step to choose the action that will maximize the discrepancy in mission policy and all the weighted estimates of attacker's polices.
 \textit{Active Exploration} works as follows. At each time step $t$, next action $a^*$ is chosen by looking into each possible combination between the current sensor reading $s_i$, and next reachable states $s'_i$. The current action is selected by maximizing the probability of obtaining an action different from the optimal action in the next step. A discrepancy factor $W_a$ for each $\{action, next\,state, goal\}$ tuple is calculated based on the transition probability $T$ to reach next state $s'_i$ from $s_i$ as follows:
 
 \begin{equation}  W_a \leftarrow W_a +
@@ -527,7 +527,7 @@ $A =$ \textit{\{move forwards \{F\}, move backwards \{B\}, move right \{R\}, mov
 %Since we consider a stochastic environment, we define the transition probability function $T(s,s',a)$ that maps the disturbances in the environment to a probability associated with taking each action $a$ to go from state $s$ to state $s'$.
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.26\textwidth]{sim-env}
+\includegraphics[width=0.24\textwidth]{sim-env}
 \caption{The discretized environment used during simulations with the reward and transition probability models.} 
 %The green cell represents the desired destination of the UAV with a reward value of 100. The penalty of moving from one cell to another is represented by a -3 reward. Associated to each action there is a transition probability: specifically there is a 0.8 probability to reach the desired next state and 0.1 probability to reach each of the adjacent cells (due to noise and possible disturbance in the environment)}
 %f the vehicle moves to the right, it has 0.8 chance of ending up in the desired cell. and 0.2 chance of ending up in an adjacent cell.}
@@ -541,8 +541,8 @@ $A =$ \textit{\{move forwards \{F\}, move backwards \{B\}, move right \{R\}, mov
 \subsubsection{Sensor Spoofing Attack}
 \begin{figure}[]
 	\centering
-	\subfigure[] {\includegraphics[width=0.16\textwidth]{fig/good-goal-policy}}
-	\subfigure[] {\includegraphics[width=0.16\textwidth]{fig/bad-goal-policy}}
+	\subfigure[] {\includegraphics[width=0.14\textwidth]{fig/good-goal-policy}}
+	\subfigure[] {\includegraphics[width=0.14\textwidth]{fig/bad-goal-policy}}
 	%\vspace{-5pt}
 	\caption{(a) Optimal mission policy. (b) Optimal attacker's policy.}
 	\label{fig:policies}
@@ -631,7 +631,7 @@ In the simulation depicted in Fig.~\ref{fig:active-exploration}, we show the imp
 \section{Conclusions \& Future Work}\label{sec:conclusion}
 We have presented an IRL-based technique to infer the malicious intention of an attacker on an autonomous CPS operation. Using our approach we can reconstruct the compromised sensors even if their behavior is stealthy hiding within the noise profile and the expected uncertainties of the system. If an attacker is operating optimally, then it is possible to recover the system before reaching undesired states in the environment. We also demonstrated an active exploration technique to speed up inference convergence.
 
-We notice that considering optimal MDP policies as discussed in this paper brings already a good level of security into the system. In fact, an attacker that is trying to hide within the system dynamics and noise will have to behave as expected by the model (i.e., the transition probabilities) of the system limiting the possible action that he/she can perform. Also, an attacker will have to perform a highly coordinated attack and have large resources to create the attacks described in the paper and even if successful, our proposed approach will be able to detect and infer the intention thus securing the system.
+We notice that considering optimal MDP policies as discussed in this paper brings already a good level of security into the system. In fact, an attacker will have to perform a highly coordinated attack and have large resources to create the attacks described in the paper and even if successful, our proposed approach will be able to detect and infer the intention thus securing the system.
 
 %We believe that the proposed approach could be deployed in any autonomous CPS to check for sensor/action consistency during run-time. This technique could also be used to detect and recover from a given failure in the system. A drawback of our approach and of any machine learning technique is that there are a lot of parameters to tune such as reward values, transition probabilities, thresholds, which are up to a designer. An incorrect choice of parameters could delay the inference. 
 
