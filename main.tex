@@ -156,7 +156,7 @@ For example, it is believed that GPS spoofing led to the capturing of a Sentinel
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.35\textwidth]{problem}
+\includegraphics[width=0.45\textwidth]{problem}
 \caption{Pictorial representation of the situation envisioned in this work in which a malicious attacker spoofs a sensor like a GPS on a UAV to hijack it to an undesired destination (red goal) from the desired route (green trajectory)}.\label{fig:problem}
 \end{figure}
 
@@ -219,6 +219,8 @@ In \cite{best2015bayesian}, the authors used Bayesian Inference to predict the i
 %The previous works considered the case where we can observe a moving agent completing its desired trajectory from source to destination. In other applications, we may want to observe the agent navigating in the environment and try to predict its future trajectory and its desired destination. In this case, we have partial set of observation. This problem was studied in \cite{Best2015} where they used Bayesian Inference to predict the intention of an agent navigating in a partially occluded environment. The intention of the agent was represented by the goal the agent is trying to reach based on the assumption that the agent will most likely take the shortest path to the goal position, with some uncertainty in its transition model.
 
 In this work, we contribute to the literature on CPS cybersecurity by proposing a Bayesian Inverse Reinforcement Learning approach to infer the intention of an attacker that spoofs some of the sensors onboard a vehicle to hijack it off route toward undesired states in the environment. We also propose an active exploration method to gain more information by forcing the system to follow sub-optimal policies toward states in which malicious intention inference will be more visible.
+
+\NB{shrink related work. We should have at most 15 references}
 %To the best of our knowledge an inverse reinforcement learning approach to deal with the problem of CPS cybersecurity and especially malicious intention inference has never been proposed before.
 %
 %In the cyber-physical literature, to our knowledge, no research has been done so far that uses IRL to predict the intention of an attacker.
@@ -277,13 +279,14 @@ where $\alpha$ is a learning rate factor.
 
 In Inverse Reinforcement Learning (IRL), we consider an agent acting optimally or sub-optimally in an MDP environment. The agent is following an optimal or sub-optimal policy $\pi^u(s)$. The policy of the agent $\pi^u(s)$ can be observed as a set of state-action pairs $\{(s_1,a_1),(s_2,a_2), ...,(s_N,a_N)\}$, where $N$ is the number of observations. The goal of IRL is to infer the reward function $R$ that is responsible for generating these observations \cite{ng2000algorithms}.%\NB{Add a citation here} 
 %\NB{Check.both this and the previous sections are too brief. Either we add some mathematical formulation that will be used next or we may have to remove or combine with another section}
+\NB{shrink preliminaries}
 
 \section{Problem Formulation}\label{sec:problem}
 We consider an autonomous vehicle that performs a navigation task to a desired goal $g^* \in \mathcal G$ in a stochastic environment. The vehicle is equipped with $N$ sensors. The readings from the sensors are fused together to estimate the state of the vehicle. We also consider a malicious attacker that can spoof a subset of sensors $\mathcal{S}^a \subset \mathcal{S}$. The goal of the attacker is to drive the vehicle towards a different undesired location $g^a \neq g^*$ while hiding its attack vector within the noise profile of the spoofed sensors and the disturbance model of the stochastic environment.  Fig. \ref{fig:sensor_spoofing} summarizes the situation in which a sensor spoofing attack stealthily begins at $t_a$. The attack remains stealthy until $t_d$, when the noise margins of the spoofed sensors don't overlap anymore with the noise margins of the uncompromised sensor. At $t_d$, an attack can be detected due to the differences between sensor readings. However, at that point, it is not obvious how to distinguish between the compromised and uncompromoised sensors, since all sensor readings comply with the uncertainty and disturbance model of the vehicle dynamics and the environment. We are interested in solving the problem of inferring the intention of an attack by observing and comparing measurements data and control inputs, hence recognizing which sensors are compromised and finally recovering the system.%Our proposed approach allows to deal with such problem by looking and comparing historic measurements and input data and 
 
 \begin{figure}[ht!]
 \centering
-\includegraphics[width=0.4\textwidth]{sensor_spoofing}
+\includegraphics[width=0.45\textwidth]{sensor_spoofing}
 \caption{An attack on sensor 1 (blue) starts at $t_a$ while sensor 2 (orange) remains uncompromised. The attack can be detected at $t_d$ since the two sensor readings don't overlap anymore.}
  \label{fig:sensor_spoofing}
 \end{figure}
@@ -451,6 +454,7 @@ Once the set of the uncompromised sensors $\mathcal{S}^a$ is removed, the vehicl
     }
     \caption{Attacker Intention Prediction}
 \end{algorithm}
+\NB{remove the algorithm. It's not useful}
 
 \subsection{Active Exploration Inference}\label{sec:approach2}
 The time the inference algorithm takes to converge depends on the states that the vehicle visits. If the majority of the visited states are associated with mission policy's actions that are similar to the attacker policy's actions, the inferred posterior may not reach the desired threshold value. In this case, we consider these states as {\em insensitive states}. On the other hand, the set of observations that contains states at which there is a discrepancy between the mission policy actions and the attacker policy actions, will lead to a faster convergence. In that case, we name these states as {\em sensitive states}. It is desired to visit sensitive states as soon as an attack is detected.
@@ -505,6 +509,7 @@ In this work, we assume a discretized  environment, state-space, and actions. It
  Pr(a_{i,t}|s_{i,t},g_j) \propto e^{-\beta \lVert a_t - a_{cl} \rVert_{2}}
 \end{equation}
 %Where $a_{CL}$ is the action given by the system's closed loop controller to go from state $s_{i,t}$ to goal $g_j$.
+\NB{this section about continuous time could be removed completely. It's anyway incomplete and can be placed in the future work}
 
 \section{Simulations}\label{sec:simulations}
 In this section, we present simulation results for a UAV navigation case study in a stochastic environment.
@@ -527,7 +532,7 @@ $A =$ \textit{\{move forwards \{F\}, move backwards \{B\}, move right \{R\}, mov
 %Since we consider a stochastic environment, we define the transition probability function $T(s,s',a)$ that maps the disturbances in the environment to a probability associated with taking each action $a$ to go from state $s$ to state $s'$.
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.24\textwidth]{sim-env}
+\includegraphics[width=0.45\textwidth]{sim-env}
 \caption{The discretized environment used during simulations with the reward and transition probability models.} 
 %The green cell represents the desired destination of the UAV with a reward value of 100. The penalty of moving from one cell to another is represented by a -3 reward. Associated to each action there is a transition probability: specifically there is a 0.8 probability to reach the desired next state and 0.1 probability to reach each of the adjacent cells (due to noise and possible disturbance in the environment)}
 %f the vehicle moves to the right, it has 0.8 chance of ending up in the desired cell. and 0.2 chance of ending up in an adjacent cell.}
@@ -541,8 +546,8 @@ $A =$ \textit{\{move forwards \{F\}, move backwards \{B\}, move right \{R\}, mov
 \subsubsection{Sensor Spoofing Attack}
 \begin{figure}[]
 	\centering
-	\subfigure[] {\includegraphics[width=0.14\textwidth]{fig/good-goal-policy}}
-	\subfigure[] {\includegraphics[width=0.14\textwidth]{fig/bad-goal-policy}}
+	\subfigure[] {\includegraphics[width=0.22\textwidth]{fig/good-goal-policy}}
+	\subfigure[] {\includegraphics[width=0.22\textwidth]{fig/bad-goal-policy}}
 	%\vspace{-5pt}
 	\caption{(a) Optimal mission policy. (b) Optimal attacker's policy.}
 	\label{fig:policies}
@@ -550,50 +555,51 @@ $A =$ \textit{\{move forwards \{F\}, move backwards \{B\}, move right \{R\}, mov
 \end{figure}
 \begin{figure*}[]
 	\centering
-	\subfigure[] {\includegraphics[height=2.136cm,width=0.125\textwidth]{fig/attack_successfull/1}}
+	\subfigure[] {\includegraphics[height=2.67cm,width=0.15\textwidth]{fig/attack_successfull/1}}
 %	\subfigure[] {\includegraphics[width=0.15\textwidth]{fig/attack_successfull/2}}
-	\subfigure[] {\includegraphics[height=2.136cm,width=0.125\textwidth]{fig/attack_successfull/3}}
-	\subfigure[] {\includegraphics[height=2.136cm,width=0.125\textwidth]{fig/attack_successfull/6}}
-	\subfigure[] {\includegraphics[height=2.136cm,width=0.125\textwidth]{fig/attack_successfull/9}}
+	\subfigure[] {\includegraphics[width=0.15\textwidth]{fig/attack_successfull/3}}
+	\subfigure[] {\includegraphics[width=0.15\textwidth]{fig/attack_successfull/6}}
+	\subfigure[] {\includegraphics[width=0.15\textwidth]{fig/attack_successfull/9}}
 %	\subfigure[] {\includegraphics[width=0.15\textwidth]{fig/attack_successfull/10}}
-	\subfigure[] {\includegraphics[height=2.136cm,width=0.125\textwidth]{fig/attack_successfull/12}}
-	\subfigure[] {\includegraphics[height=2.136cm,width=0.125\textwidth]{fig/attack_successfull/14}}
+	\subfigure[] {\includegraphics[width=0.15\textwidth]{fig/attack_successfull/12}}
+	\subfigure[] {\includegraphics[width=0.15\textwidth]{fig/attack_successfull/14}}
 	\vspace{-5pt}
-	\caption{Simulation of a UAV navigation case study under attack with no protection mechanisms. Red colored cells represent the readings from the compromised sensor, green cells show the uncompromised sensor readings while yellow cells represent the estimated states fusing both sensors. In (a) the UAV is not under attack. (b-f) Attack is being applied. (h) The UAV eventually reaches the undesired destination in (f).}
+	\caption{Simulation of a UAV navigation case study under attack with no protection mechanisms. Red colored cells represent the readings from the compromised sensor, green cells show the uncompromised sensor readings while yellow cells represent the estimated states fusing both sensors. In (a) the UAV is not under attack. (b-f) Attack is being applied hiding within the system uncertainty bounds. (h) The UAV eventually reaches the undesired destination in (f).}
 	\label{fig:successful-attack}
 %	\vspace{-1pt}
 \end{figure*}
 \begin{figure*}[]
 	\centering
-	\subfigure[] {\includegraphics[height=2.136cm,width=0.125\textwidth]{fig/attack_recovery/1}}
+	\subfigure[] {\includegraphics[height=2.67cm,width=0.15\textwidth]{fig/attack_recovery/1}}
 %	\subfigure[] {\includegraphics[width=0.125\textwidth]{fig/attack_recovery/2}}
-	\subfigure[] {\includegraphics[height=2.136cm,width=0.125\textwidth]{fig/attack_recovery/2}}
+	\subfigure[] {\includegraphics[height=2.67cm,width=0.15\textwidth]{fig/attack_recovery/2}}
 %	\subfigure[] {\includegraphics[width=0.125\textwidth]{fig/attack_recovery/4}}
-	\subfigure[] {\includegraphics[height=2.136cm,width=0.125\textwidth]{fig/attack_recovery/3}}
-	\subfigure[] {\includegraphics[height=2.136cm,width=0.125\textwidth]{fig/attack_recovery/4}}
-	\subfigure[] {\includegraphics[height=2.136cm,width=0.125\textwidth]{fig/attack_recovery/5}}
-	\subfigure[] {\includegraphics[height=2.136cm,width=0.125\textwidth]{fig/attack_recovery/6}}
+	\subfigure[] {\includegraphics[height=2.67cm,width=0.15\textwidth]{fig/attack_recovery/3}}
+	\subfigure[] {\includegraphics[height=2.67cm,width=0.15\textwidth]{fig/attack_recovery/4}}
+	\subfigure[] {\includegraphics[height=2.67cm,width=0.15\textwidth]{fig/attack_recovery/5}}
+	\subfigure[] {\includegraphics[height=2.67cm,width=0.15\textwidth]{fig/attack_recovery/6}}
 	\vspace{-5pt}
-	\caption{Simulation of intent inference with the same attack depicted in Fig.\ref{fig:successful-attack}. The gradient color map in (a-d) shows the likelihood of each possible goal on the perimeter of the environment with blue=low probability and yellow=high probability. In (d) the compromised sensor is identified, discarded, and the UAV is recovered from the attack in (e-f).}
+	\caption{Simulation of intent inference with the same attack depicted in Fig.\ref{fig:successful-attack}. The gradient color map in (a-d) shows the likelihood of each possible goal on the perimeter of the environment with blue=low probability and yellow=high probability. In (d) the inference confidence level exceeds a given threshold, the compromised sensor is discarded, and the UAV is recovered from the attack in (e-f).}
 	\label{fig:recovered-attack}
 %	\vspace{-1pt}
 \end{figure*}
 
 \begin{figure*}[]
 	\centering
-    	\subfigure[] {\includegraphics[height=2.136cm,width=0.125\textwidth]{fig/active_exploration/Picture1}}
+    	\subfigure[] {\includegraphics[height=2.67cm,width=0.15\textwidth]{fig/active_exploration/Picture1}}
 %	\subfigure[] {\includegraphics[width=0.125\textwidth]{fig/attack_recovery/2}}
-	\subfigure[] {\includegraphics[height=2.136cm,width=0.125\textwidth]{fig/active_exploration/Picture2}}
+	\subfigure[] {\includegraphics[height=2.67cm,width=0.15\textwidth]{fig/active_exploration/Picture2}}
 %	\subfigure[] {\includegraphics[width=0.125\textwidth]{fig/attack_recovery/4}}
-	\subfigure[] {\includegraphics[height=2.136cm,width=0.125\textwidth]{fig/active_exploration/Picture3}}
-	\subfigure[] {\includegraphics[height=2.136cm,width=0.125\textwidth]{fig/active_exploration/Picture4}}
-	\subfigure[] {\includegraphics[height=2.136cm,width=0.125\textwidth]{fig/active_exploration/Picture5}}
-	\subfigure[] {\includegraphics[height=2.136cm,width=0.125\textwidth]{fig/active_exploration/Picture6}}
+	\subfigure[] {\includegraphics[height=2.67cm,width=0.15\textwidth]{fig/active_exploration/Picture3}}
+	\subfigure[] {\includegraphics[height=2.67cm,width=0.15\textwidth]{fig/active_exploration/Picture4}}
+	\subfigure[] {\includegraphics[height=2.67cm,width=0.15\textwidth]{fig/active_exploration/Picture5}}
+	\subfigure[] {\includegraphics[height=2.67cm,width=0.15\textwidth]{fig/active_exploration/Picture6}}
 	\vspace{-5pt}
-	\caption{Simulation of intent inference with active exploration. In (b) active exploration is activated. In (e-f) we show the recovery operation while discarding the compromised sensor readings.}
+	\caption{Simulation of intent inference with active exploration. In (b) active exploration is activated driving the system sub-optimally to infer more the attack intention and before reaching regions in the environment too close to the undesired state. Differently from the previous simulation the intention is estimated farther away from the undesired goal and as before in (e-f) we show the recovery operation while discarding the compromised sensor readings.}
 	\label{fig:active-exploration}
 %	\vspace{-1pt}
 \end{figure*}
+
 %\begin{figure*}[]
 %	\centering
 %	\subfigure[] {\includegraphics[width=0.125\textwidth]{fig/attack_recovery/1}}
@@ -627,6 +633,7 @@ The border cells of the grid (with exception of the desired goal) represent poss
 \subsubsection{Active Exploration}
 In the simulation depicted in Fig.~\ref{fig:active-exploration}, we show the improvement that we gain by using the active exploration technique described in Section \ref{sec:approach2}. Differently from Fig.~\ref{fig:recovered-attack}, in Fig. \ref{fig:active-exploration}, the UAV doesn't take always the optimal action from $\pi^*$. Instead it computes the controller action using \eqref{eqn:picked_action}. The UAV explores more sensitive states in the environment before getting too close to the attacker's goal. Although the UAV ends up taking a longer path, with this approach we avoided reaching states too close to the undesired regions. Before switching to recovery, the estimated posterior mean value for the undesired goal for the active exploration case was recorded $\mu=0.0319$ against $\mu=0.0239$ calculated in the same state by using inference without exploration, hence, showing that the active exploration was also able to increase the level of confidence about the inference.
 %The convergence of the estimated attacker's goal and the trigger of the recovery process occur before the UAV gets closer to the undesired regions. 
+\NB{simulations can also be reduced. Fig.5 can be reduced if we are still over the limit}
 
 \section{Conclusions \& Future Work}\label{sec:conclusion}
 We have presented an IRL-based technique to infer the malicious intention of an attacker on an autonomous CPS operation. Using our approach we can reconstruct the compromised sensors even if their behavior is stealthy hiding within the noise profile and the expected uncertainties of the system. If an attacker is operating optimally, then it is possible to recover the system before reaching undesired states in the environment. We also demonstrated an active exploration technique to speed up inference convergence.
