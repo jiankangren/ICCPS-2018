@@ -159,6 +159,7 @@ For example, it is believed that GPS spoofing led to the capturing of a Sentinel
 \centering
 \includegraphics[width=0.45\textwidth]{problem}
 \caption{Pictorial representation of the situation envisioned in this work in which a malicious attacker spoofs a sensor like a GPS on a UAV to hijack it to an undesired destination (red goal) from the desired route (green trajectory)}.\label{fig:problem}
+\vspace{-15pt}
 \end{figure}
 
 
@@ -172,12 +173,12 @@ Our goal is to develop a technique to infer the intention of the attacker and re
 
 %The idea is that if we are able to determine which set of sensors are under attack before the vehicle arrives to the undesired destination, we can correctly reconstruct the state of the vehicle using the remaining uncompromised set of sensors.
 
-To this end, we leverage sensor redundancy and the theory of Inverse Reinforcement Learning to:
-\begin{itemize}
-    \item Predict the intention of the attacker.
-    \item Determine the set of compromised sensors.
-    \item Recover the uncompromised state of the vehicle to continue its desired objective. 
-\end{itemize}
+To this end, we leverage sensor redundancy and the theory of Inverse Reinforcement Learning to: i) predict the intention of the attacker ii) determine the set of compromised sensors and iii) recover the uncompromised state of the vehicle to continue its desired objective.
+%\begin{itemize}
+%    \item Predict the intention of the attacker.
+%    \item Determine the set of compromised sensors.
+%    \item Recover the uncompromised state of the vehicle to continue its desired objective. 
+%\end{itemize}
 
 %To speed up the convergence of the inference algorithm, the vehicle needs to visit sensitive states which may not be the case when the vehicle only applies the control actions according to the optimal policy of its mission. We propose an active exploration framework in which non-optimal control actions are taken to drive the vehicle towards more sensitive states. By doing so, the vehicle can start the attack recovery process before reaching states too close to the undesired regions.% we also propose \NB{may need to expand more on this thoughts}
 
@@ -283,6 +284,7 @@ We consider an autonomous vehicle that performs a navigation task to a desired g
 
 \begin{figure}[ht!]
 \centering
+\vspace{-5pt}
 \includegraphics[width=0.45\textwidth]{sensor_spoofing}
 \caption{An attack on sensor 1 (blue) starts at $t_a$ while sensor 2 (orange) remains uncompromised. The attack can be detected at $t_d$ since the two sensor readings don't overlap anymore.}
  \label{fig:sensor_spoofing}
@@ -532,6 +534,7 @@ $A =$ \textit{\{move forwards \{F\}, move backwards \{B\}, move right \{R\}, mov
 %The green cell represents the desired destination of the UAV with a reward value of 100. The penalty of moving from one cell to another is represented by a -3 reward. Associated to each action there is a transition probability: specifically there is a 0.8 probability to reach the desired next state and 0.1 probability to reach each of the adjacent cells (due to noise and possible disturbance in the environment)}
 %f the vehicle moves to the right, it has 0.8 chance of ending up in the desired cell. and 0.2 chance of ending up in an adjacent cell.}
  \label{fig:sim-env}
+ \vspace{-5pt}
 \end{figure}
 \subsection{Simulation Results}
 %
@@ -539,7 +542,9 @@ $A =$ \textit{\{move forwards \{F\}, move backwards \{B\}, move right \{R\}, mov
 
 
 \subsubsection{Sensor Spoofing Attack}
+
 \begin{figure}[]
+\vspace{-15pt}
 	\centering
 	\subfigure[] {\includegraphics[width=0.22\textwidth]{fig/good-goal-policy}}
 	\subfigure[] {\includegraphics[width=0.22\textwidth]{fig/bad-goal-policy}}
@@ -561,7 +566,7 @@ $A =$ \textit{\{move forwards \{F\}, move backwards \{B\}, move right \{R\}, mov
 	\vspace{-5pt}
 	\caption{Simulation of a UAV navigation case study under attack with no protection mechanisms. Red colored cells represent the readings from the compromised sensor, green cells show the uncompromised sensor readings while yellow cells represent the estimated states fusing both sensors. In (a) the UAV is not under attack. (b-f) Attack is being applied hiding within the system uncertainty bounds. (h) The UAV eventually reaches the undesired destination in (f).}
 	\label{fig:successful-attack}
-%	\vspace{-1pt}
+	\vspace{-10pt}
 \end{figure*}
 \begin{figure*}[]
 	\centering
@@ -576,7 +581,7 @@ $A =$ \textit{\{move forwards \{F\}, move backwards \{B\}, move right \{R\}, mov
 	\vspace{-5pt}
 	\caption{Simulation of intent inference with the same attack depicted in Fig.\ref{fig:successful-attack}. The gradient color map in (a-d) shows the likelihood of each possible goal on the perimeter of the environment with blue=low probability and yellow=high probability. In (d) the inference confidence level exceeds a given threshold, the compromised sensor is discarded, and the UAV is recovered from the attack in (e-f).}
 	\label{fig:recovered-attack}
-%	\vspace{-1pt}
+	\vspace{-10pt}
 \end{figure*}
 
 \begin{figure*}[]
@@ -592,7 +597,7 @@ $A =$ \textit{\{move forwards \{F\}, move backwards \{B\}, move right \{R\}, mov
 	\vspace{-5pt}
 	\caption{Simulation of intent inference with active exploration. In (b) active exploration is activated driving the system sub-optimally to infer more the attack intention and before reaching regions in the environment too close to the undesired state. Differently from the previous simulation the intention is estimated farther away from the undesired goal and as before in (e-f) we show the recovery operation while discarding the compromised sensor readings.}
 	\label{fig:active-exploration}
-%	\vspace{-1pt}
+	\vspace{-10pt}
 \end{figure*}
 
 %\begin{figure*}[]
@@ -649,8 +654,9 @@ Our current and future work are toward expanding this framework to deal with con
 %We showed that, for cyber physical systems under sensor spoofing attacks, using Inverse Reinforcement Learning based method can predict both the intention of the attacker and the spoofed sensors. Our simulation results show that applying our proposed method is able to predict the goal of an attacker that hides his attack within the uncertainty bounds of the physical system before the system reaches the attacker's desired state, and uses this prediction information to recover the system from such an attack.
 % conference papers do not normally have an appendix
 % use section* for acknowledgment
-%\vspace{-15pt}
+\vspace{-5pt}
 \section*{Acknowledgment}
+\vspace{-2pt}
 This work is based on research sponsored by ONR under agreement number N000141712012.
 % trigger a \newpage just before the given reference
 % number - used to balance the columns on the last page
