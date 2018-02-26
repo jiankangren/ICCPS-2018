@@ -96,7 +96,7 @@
 \begin{document}
 
 %\title{Sensor Attack Intention Prediction and Recovery of Autonomous Cyber-Physical Systems}
-\title{An IRL approach for cyber-physical attack intention prediction and recovery}
+\title{An IRL Approach for Cyber-physical Attack Intention Prediction and Recovery}
 
 %\author{\IEEEauthorblockN{Mahmoud Elnaggar\affmark[1],
 % and Nicola Bezzo\affmark[1,2]}
@@ -210,7 +210,7 @@ To this end, we leverage Inverse Reinforcement Learning (IRL) techniques to pred
 %
 %we assume that the attacker hides his attack vectors within the noise profiles of the system sensors, which means we need to develop a new technique to detect which set of sensors are under attack after we detect that an attack is happening. We leverage state-of-the-art Inverse Reinforcement Learning (IRL) techniques to infer the desired destination of the attacker and at the same time detect which sensors are compromised.
 Inverse Reinforcement Learning technique was first introduced in \cite{ng2000algorithms}. % An algorithm for apprenticeship learning via IRL was presented in \cite{abbeel2004apprenticeship} where the authors considered the case in which the reward function is expressible as a linear combination of known features. 
- Authors in \cite{ramachandran2007bayesian} introduced the Bayesian Inverse Reinforcement Learning (BIRL) algorithm for reward and policy learning. This work on BIRL was extended in \cite{michini2015bayesian} to deal with continuous state and action spaces leveraging the Monte Carlo Markov Chain (MCMC) policy algorithm.% Specifically, the authors showed that by observing a UAV performing different maneuvers in a continuous 3D space their BIRL-based algorithm was able to infer the UAV final goal. 
+ Authors in \cite{ramachandran2007bayesian} introduced the Bayesian Inverse Reinforcement Learning (BIRL) algorithm for reward and policy learning. This work on BIRL was extended in \cite{michini2015bayesian} to deal with continuous state and action spaces leveraging the Monte Carlo Markov Chain (MCMC) policy algorithm. % Specifically, the authors showed that by observing a UAV performing different maneuvers in a continuous 3D space their BIRL-based algorithm was able to infer the UAV final goal. 
 %IRL problem was cast as a Bayesian inference problem in  \cite{Ramachandran2007}. It was shown that there Bayesian Inverse Reinforcement Learning (BIRL) algorithm can be used for reward learning and also policy learning. 
 %Policy walk algorithm was also introduced which is based on Monte Carlo Marcov Chain (MCMC) algorithm. Michini et al. \cite{Michini2015,Michini2013,Michini2012} extended BIRL algorithm to deal with continuous state and action spaces and introduced the Non-Parametric Bayesian Inverse Reinforcement Learning (BNIRL) algorithm. They  showed that by observing a UAV performing different maneuvers in a continuous 3D space. The BNIRL algorithm was able to infer what are the intermediate goals and the final goal that the observed UAV was trying to reach. They used this predicted information to make another UAV perform the same observed maneuvers.
 In \cite{best2015bayesian}, the authors used Bayesian Inference to predict the intention of an agent navigating in a partially occluded environment. Intention is represented by the end-point goal that the agent is trying to reach and is assumed that the agent will most likely take the shortest path to the goal, with some uncertainty in its transition model.
@@ -529,7 +529,7 @@ $A =$ \textit{\{move forwards \{F\}, move backwards \{B\}, move right \{R\}, mov
 %Since we consider a stochastic environment, we define the transition probability function $T(s,s',a)$ that maps the disturbances in the environment to a probability associated with taking each action $a$ to go from state $s$ to state $s'$.
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.4\textwidth]{sim-env}
+\includegraphics[width=0.38\textwidth]{sim-env}
 \caption{The discretized environment used during simulations with the reward and transition probability models.} 
 %The green cell represents the desired destination of the UAV with a reward value of 100. The penalty of moving from one cell to another is represented by a -3 reward. Associated to each action there is a transition probability: specifically there is a 0.8 probability to reach the desired next state and 0.1 probability to reach each of the adjacent cells (due to noise and possible disturbance in the environment)}
 %f the vehicle moves to the right, it has 0.8 chance of ending up in the desired cell. and 0.2 chance of ending up in an adjacent cell.}
@@ -618,7 +618,7 @@ $A =$ \textit{\{move forwards \{F\}, move backwards \{B\}, move right \{R\}, mov
 In this section, we demonstrate the case in which an attacker is spoofing one of the two sensors on the UAV an no protection mechanisms are deployed. We assume that the attacker has full knowledge of the system and exploits the uncertainty in the system model to hide the attack vectors. The goal of the attack is to hijack the UAV towards a different goal from the desired one. In other words, the attacker wants the UAV to follow a different policy $\pi^a$ as depicted in Fig.~\ref{fig:policies} where the arrows on each cell represent the optimal actions associated with each policy.
 % illustrates the difference between the mission policy of the UAV and the attacker policy. The arrow at each cell represent the optimal actions associated with action associated with that cell.
 
-In Fig.~\ref{fig:successful-attack}, we show a sequence of snapshots in which an attacker spoofs one of the two sensors (red colored cells). Based on the state estimate (yellow shaded cells) obtained by fusing the compromised measurement with the uncompromised measurement (green shaded cells), the attacker is able to hijack the UAV to the undesired state.
+In Fig.~\ref{fig:successful-attack}, we show a sequence of snapshots in which an attacker spoofs one of the two sensors. Based on the state estimate obtained by fusing the compromised measurement with the uncompromised measurement, the attacker is able to hijack the UAV to the undesired state.
 
 %the sequence of the compromised sensor readings comply with the system model and it drags the estimated state of the UAV towards the cells associated with optimal actions that lead towards the attacker's goal instead of the mission's goal. The UAV can detect from the divergence of the two sensor readings that one of them is compromised but it cannot determine which one is being spoofed and ends up navigating to the attacker's goal.
 
