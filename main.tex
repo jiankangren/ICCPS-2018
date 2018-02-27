@@ -163,7 +163,7 @@ For example, it is believed that GPS spoofing led to the capturing of a Sentinel
 \end{figure}
 
 
-In this paper, we are interested in addressing similar problems as the one illustrated in Fig.\ref{fig:problem}. We consider the case where an autonomous vehicle, equipped with multiple sensors, is tasked to perform a go-to-goal navigation. 
+In this paper, we are interested in addressing similar problems as the one illustrated in Fig.~\ref{fig:problem}. We consider the case where an autonomous vehicle, equipped with multiple sensors, is tasked to perform a go-to-goal navigation. 
 %The state estimator of the autonomous vehicle uses a number of sensors to estimate its position. 
 %We assume that the vehicle has at least one sensor that is not vulnerable to spoofing attacks or in other words, the attacker is not able to spoof at least one sensor. 
 A malicious attacker performs a coordinated attack by spoofing one or more of the sensors on the vehicle. The goal of the attacker is to hijack the vehicle to an undesired goal (not known beforehand) while hiding within the sensor and actuator noise profile and disturbance model of the system. 
@@ -251,11 +251,13 @@ V^\pi(s,R) = R(s) + \sum_{s'}\gamma\,T(s,\pi(s),s')\,V^\pi(s')
 
 The value function of state $s$ is equal to the reward received in state $s$ plus the sum of the discounted expected value function for each neighbor state $s'$ when actions are taken according to the policy $\pi$.
 To evaluate the value of taking action $a$ for each state $s$, we define the state-action value function which is called the Q-function.
+\vspace{-5pt}
 \begin{equation}
 Q^\pi(s,a,R) = R(s) + \sum_{s'} \gamma\,T(s,a,s')\,V^\pi(s'), %\;\; \forall a \in A
 \end{equation}
 
 Finally, the optimal policy $\pi^*$ for each state $s \in S$ is chosen as follows:
+\vspace{-5pt}
 \begin{equation}
 \pi^*(s) = \arg\!\max_{a\in A} Q^\pi(s,a,R)
 \end{equation}
@@ -460,7 +462,7 @@ The time that the inference algorithm takes to converge depends on the states th
 
 %For Algorithm \ref{alg:alg1} to achieve convergence to the attacker's goal, it is clear that we want to collect a set of observations having as many sensitive states as possible.
 
-To solve this problem, we propose an \textit{active exploration} policy in which the vehicle perturbs its motion from the optimal policy to visit more sensitive states. This idea is reminiscent of reinforcement learning in which the environment is explored to learn the optimal policy given a certain reward.
+To solve this problem, we propose an \textit{active exploration} policy in which the vehicle perturbs its motion from the optimal policy to visit more sensitive states. This idea is reminiscent of reinforcement learning in which the environment is explored to learn the optimal policy.% given a certain reward.
 %... The goal is to go from a situation where the system is mostly exploring the environment to a situation where it is mostly exploiting the accumulated knowledge. To converge faster to an optimal policy we will leverage active learning policies to steer the system toward states in the environment in which we can learn faster the optimal policy of the attacker. Active learning is an area of semi-supervised machine learning where the learning algorithm queries the user for information about observations. This idea can be applied to Inverse Reinforcement Learning where the IRL algorithm queries the agent for their behavior in a selected state. In the context of autonomous vehicle operations, we could actively attempt to influence the states experienced by the agent in order to observe its response. Note that such perturbation of the vehicle?s state may hasten or delay the vehicle?s arrival at a state.
 
 %of the vehicle while being under attack by the malicious attacker. This means that if we know which states are sensitive, we can make the vehicle explore more sensitive states by taking actions that lead towards sensitive states and not necessarily towards the desired goal. 
@@ -564,7 +566,7 @@ $A =$ \textit{\{move forwards \{F\}, move backwards \{B\}, move right \{R\}, mov
 	\subfigure[] {\includegraphics[width=0.15\textwidth]{fig/attack_successfull/12}}
 	\subfigure[] {\includegraphics[width=0.15\textwidth]{fig/attack_successfull/14}}
 	\vspace{-5pt}
-	\caption{Simulation of a UAV navigation case study under attack with no protection mechanisms. Red colored cells represent the readings from the compromised sensor, green cells show the uncompromised sensor readings while yellow cells represent the estimated states fusing both sensors. In (a) the UAV is not under attack. (b-f) Attack is being applied hiding within the system uncertainty bounds. (h) The UAV eventually reaches the undesired destination in (f).}
+	\caption{Simulation of a UAV navigation case study under attack with no resiliency mechanisms. Red colored cells represent the readings from the compromised sensor, green cells show the uncompromised sensor readings while yellow cells represent the estimated states fusing both sensors. In (a) the UAV is not under attack. In (b-f) the attack is applied hiding within the system uncertainty.The UAV eventually reaches the undesired destination in (f).}
 	\label{fig:successful-attack}
 	\vspace{-10pt}
 \end{figure*}
@@ -579,7 +581,7 @@ $A =$ \textit{\{move forwards \{F\}, move backwards \{B\}, move right \{R\}, mov
 	\subfigure[] {\includegraphics[height=2.67cm,width=0.15\textwidth]{fig/attack_recovery/5}}
 	\subfigure[] {\includegraphics[height=2.67cm,width=0.15\textwidth]{fig/attack_recovery/6}}
 	\vspace{-5pt}
-	\caption{Simulation of intent inference with the same attack depicted in Fig.\ref{fig:successful-attack}. The gradient color map in (a-d) shows the likelihood of each possible goal on the perimeter of the environment with blue=low probability and yellow=high probability. In (d) the inference confidence level exceeds a given threshold, the compromised sensor is discarded, and the UAV is recovered from the attack in (e-f).}
+	\caption{Simulation of intent inference with the same attack depicted in Fig~.\ref{fig:successful-attack}. The gradient color map in (a-d) shows the likelihood of each possible goal on the perimeter of the environment with blue=low probability and yellow=high probability. In (d) the inference confidence level exceeds a given threshold, the compromised sensor is discarded, and the UAV is recovered from the attack in (e-f).}
 	\label{fig:recovered-attack}
 	\vspace{-10pt}
 \end{figure*}
@@ -597,7 +599,7 @@ $A =$ \textit{\{move forwards \{F\}, move backwards \{B\}, move right \{R\}, mov
 	\vspace{-5pt}
 	\caption{Simulation of intent inference with active exploration. In (b) active exploration is activated driving the system sub-optimally to infer more the attack intention and before reaching regions in the environment too close to the undesired state. Differently from the previous simulation the intention is estimated farther away from the undesired goal and as before in (e-f) we show the recovery operation while discarding the compromised sensor readings.}
 	\label{fig:active-exploration}
-	\vspace{-10pt}
+	\vspace{-20pt}
 \end{figure*}
 
 %\begin{figure*}[]
@@ -642,7 +644,7 @@ We notice that considering optimal MDP policies as discussed in this paper bring
 
 %We believe that the proposed approach could be deployed in any autonomous CPS to check for sensor/action consistency during run-time. This technique could also be used to detect and recover from a given failure in the system. A drawback of our approach and of any machine learning technique is that there are a lot of parameters to tune such as reward values, transition probabilities, thresholds, which are up to a designer. An incorrect choice of parameters could delay the inference. 
 
-Our current and future work are toward expanding this framework to deal with continuous states and action spaces, and the problem of {\em checkpointing} and {\em recovery}, specifically to consider the inference to retrieve the point in past time where an attack started.
+Our current and future work are toward expanding this framework to deal with continuous states and action spaces, and the problem of {\em checkpointing} and {\em recovery}, to retrieve the point in past time where an attack started.
 %We are finally working on improving computation complexity of the proposed framework by expanding the idea proposed in Section IV.B to bring the problem into the continuous time domain.
 %We are also working on experiments on real quadrotor UAVs that we plan to include in future contributions.
 %\NB{maybe we can add that a drawback is that there are a lot of parameters to tune to have that teh proposed technique works}
@@ -680,6 +682,7 @@ This work is based on research sponsored by ONR under agreement number N00014171
 % <OR> manually copy in the resultant .bbl file
 % set second argument of \begin to the number of references
 % (used to reserve space for the reference number labels box)
+\vspace{-15pt}
 \bibliographystyle{IEEEtran}
 \bibliography{mendeley,bibliography}
 
